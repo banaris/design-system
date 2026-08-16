@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "project": ["**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,css}"],
+  // The package's public surface plus the entry points knip cannot infer.
+  // Without `src/index.ts` every export reads as unused, since nothing inside
+  // the repo consumes the library itself.
+  "entry": [
+    "src/index.ts",
+    "scripts/*.mjs",
+    ".storybook/{main,preview,vitest.setup}.{ts,tsx}",
+    "stories/**/*.stories.tsx",
+  ],
+}

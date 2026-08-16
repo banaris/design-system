@@ -1,0 +1,52 @@
+/* @banaris/design-system — the minimum global rules the components rely on.
+ *
+ * This is deliberately NOT Tailwind's preflight. Preflight rewrites defaults
+ * across the whole document — margins, heading sizes, list markers — and a
+ * component library has no business doing that to a page it does not own. A
+ * consumer who wants preflight already gets it from their own
+ * `@import "tailwindcss"`.
+ *
+ * What remains is only what a component would otherwise be unable to
+ * guarantee about itself.
+ */
+
+@layer base {
+  /* Every component sizes itself with padding and a width in the same
+     breath; without this those two fight and the rendered box is wrong. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Form controls do not inherit the page font in any browser, so an input
+     rendered inside the design system would otherwise fall back to the UA
+     font while the label beside it uses the brand one. */
+  button,
+  input,
+  optgroup,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Portalled layers (dialog, popover, tooltip) are positioned against the
+     nearest containing block. Without an isolated stacking context at the
+     root they can be trapped behind an ancestor that happens to create one.
+     Base UI's own setup guidance calls for this. */
+  :root {
+    isolation: isolate;
+  }
+
+  /* Honour a reader who has asked for less movement. Components express
+     motion through `--duration-*`, so zeroing the tokens reaches all of them
+     at once rather than requiring each to carry its own media query. */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --duration-fast: 0ms;
+      --duration-base: 0ms;
+      --duration-slow: 0ms;
+    }
+  }
+}

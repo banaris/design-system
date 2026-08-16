@@ -1,0 +1,439 @@
+/* @banaris/design-system — the design token contract.
+ *
+ * Every component in this package reads its colour, radius, shadow and motion
+ * from the tokens declared here. Nothing else in the package holds a raw hex.
+ *
+ * ── Consuming this file ────────────────────────────────────────────────
+ * Most consumers want the prebuilt stylesheet instead, which already contains
+ * these tokens:
+ *
+ *   import "@banaris/design-system/styles.css";
+ *
+ * Import this file directly only to use the tokens in your OWN markup through
+ * Tailwind (`bg-accent`, `text-ink-dim`, …):
+ *
+ *   @import "tailwindcss";
+ *   @import "@banaris/design-system/theme.css";
+ *
+ * ── Light is the default ───────────────────────────────────────────────
+ * The values below are the light tone and live on `:root`, so a product that
+ * never sets a theme gets light. Dark is an overlay at the end of this file,
+ * active under `[data-theme="dark"]` and under `prefers-color-scheme: dark`
+ * unless `[data-theme="light"]` opts out.
+ *
+ * Do not restate a light value inside the dark overlay: the `@theme` value is
+ * already the default, so a duplicate only adds a second place to maintain.
+ *
+ * ── Naming ─────────────────────────────────────────────────────────────
+ * Tokens are named for their ROLE, never their colour. `--color-accent`, not
+ * `--color-lime`. A palette that is renamed for its hue survives exactly one
+ * rebrand: once the brand moves, every name lies about its value and callers
+ * can no longer predict what they will get. Role names stay true.
+ *
+ * The palette is drawn from the Japanese pond turtle (クサガメ): a dark brown
+ * shell over warm paper, with the yellow-green stripe of its neck as accent.
+ * That motif explains the values; it must not leak into the token names.
+ *
+ * ── Contrast ───────────────────────────────────────────────────────────
+ * Ratios quoted in comments are measured, not estimated, and are asserted by
+ * `scripts/check-contrast.mjs` in CI. Two WCAG thresholds apply:
+ *   - 1.4.3 (text)          4.5:1
+ *   - 1.4.11 (non-text UI)  3:1
+ */
+
+@theme static {
+  /* ── Brand ──────────────────────────────────────────────────────────
+     The accent splits in two by role, and the split is not optional.
+
+     The neck stripe is a high-luminance yellow-green: 1.08:1 on paper. As a
+     FILL under dark ink that is excellent (14.46:1 for the label). As TEXT on
+     paper it is invisible. Darkening the single token far enough to serve as
+     text would drag the fill down to a muddy olive and cost the brand its one
+     vivid note, so the roles get separate tokens instead.
+
+     - `--color-accent`      fills only (buttons, indicators, marks)
+     - `--color-accent-soft` text and icons only
+     Reach for `accent-soft` whenever the accent has to be READ. */
+  --color-accent: #d8f26f; /* Fill only. Light tone */
+  --color-accent-soft: #59691a; /* Text/icons. Light tone. On paper: 5.28:1 */
+  --color-accent-hover: #cbe95a; /* Fill hover. Light tone */
+  /* The label on an accent fill. Pinned dark in BOTH themes, and therefore
+     absent from the dark overlay: the fill itself does not change between
+     themes, so a label following `--color-ink` would invert to near-white on
+     an unchanged pale green — measured 1.08:1. Any "on-<fill>" token has to
+     track its own fill, never the page. */
+  --color-on-accent: #1c1512; /* On the accent fill: 14.46:1 */
+
+  /* The shell. A filled dark-brown plane used for inverted sections — the
+     site header, a call-to-action band, the Storybook chrome. Paper text sits
+     on it at 11.95:1 and the accent at 11.01:1, so the neck stripe becomes
+     readable as text ONLY here. */
+  --color-shell: #3a2a1e;
+  --color-shell-hover: #453324;
+  --color-on-shell: #f2efe7;
+
+  /* ── Surfaces, back to front ────────────────────────────────────────
+     `bg` is the page. `surface` is a card or panel raised off it.
+     `surface-sunken` is the recessed plane a disabled control sits in. */
+  --color-bg: #f2efe7;
+  --color-bg-elevated: #fbf9f4;
+  --color-surface: #fbf9f4;
+  --color-surface-sunken: #e9e4d8;
+  --color-surface-hover: #eae5d9;
+
+  /* ── Text ───────────────────────────────────────────────────────────
+     Warm near-black rather than a neutral grey: on paper this reads as ink
+     rather than as print on a screen. All three clear 4.5:1 on every surface. */
+  --color-ink: #1c1512; /* 15.68:1 on bg */
+  --color-ink-dim: #5c5047; /* 6.79:1 on bg */
+  --color-ink-faint: #6f6459; /* 5.02:1 on bg */
+
+  /* ── Neutral fill ───────────────────────────────────────────────────
+     The default (non-accent) filled control. Inverts between themes: dark
+     plane in light, light plane in dark. */
+  --color-fill: #29201a;
+  --color-fill-hover: #362a22;
+  --color-on-fill: #f7f5ef;
+
+  /* ── Borders ────────────────────────────────────────────────────────
+     `border` and `border-strong` are DECORATIVE — dividers, card edges. Their
+     low contrast against the surface is deliberate and must not be raised.
+
+     `control-border` is a different role and therefore a different token. On
+     an unchecked checkbox or radio, the border is the ONLY thing announcing
+     that a control is there, which puts it under 1.4.11's 3:1. Reusing
+     `border-strong` for it measures 1.59:1 and fails; hardening `border-strong`
+     itself to compensate would stiffen every divider in the system.
+
+     This value is the most restrained one clearing 3:1 on every surface in
+     BOTH themes (light 3.39–4.09:1, dark 3.23–4.30:1), which is why the dark
+     overlay does not redeclare it. */
+  --color-border: #ded7c8;
+  --color-border-strong: #c8bfad;
+  --color-control-border: #857868;
+
+  /* ── Status ─────────────────────────────────────────────────────────
+     Each status has a text tone (4.5:1 on bg) and a tinted plane to sit on.
+     The planes are `color-mix` against `--color-bg`, so they follow the theme
+     without being redeclared in the dark overlay. */
+  --color-success: #2f6b3f; /* 5.55:1 on bg */
+  --color-warning: #8a5a12; /* 5.15:1 on bg */
+  --color-danger: #a33822; /* 5.81:1 on bg */
+  --color-info: #1f5d8f; /* 6.05:1 on bg */
+  --color-success-surface: color-mix(
+    in srgb,
+    var(--color-success) 12%,
+    var(--color-bg)
+  );
+  --color-warning-surface: color-mix(
+    in srgb,
+    var(--color-warning) 12%,
+    var(--color-bg)
+  );
+  --color-danger-surface: color-mix(
+    in srgb,
+    var(--color-danger) 12%,
+    var(--color-bg)
+  );
+  --color-info-surface: color-mix(
+    in srgb,
+    var(--color-info) 12%,
+    var(--color-bg)
+  );
+  --color-success-border: color-mix(
+    in srgb,
+    var(--color-success) 34%,
+    var(--color-bg)
+  );
+  --color-warning-border: color-mix(
+    in srgb,
+    var(--color-warning) 34%,
+    var(--color-bg)
+  );
+  --color-danger-border: color-mix(
+    in srgb,
+    var(--color-danger) 34%,
+    var(--color-bg)
+  );
+  --color-info-border: color-mix(
+    in srgb,
+    var(--color-info) 34%,
+    var(--color-bg)
+  );
+
+  /* ── Focus ──────────────────────────────────────────────────────────
+     TWO rings, not one, and the pair is not decorative.
+
+     A focus indicator has to clear 1.4.11's 3:1 against whatever it lands on,
+     and this system's controls sit on surfaces from paper (#f2efe7) to the
+     shell (#3a2a1e) to the accent fill. No single colour spans that: lighten a
+     blue until it reads on the shell and it fails on paper; darken it until it
+     reads on paper and it fails on the shell. The single blue used before
+     measured 2.50:1 on the shell and 2.05:1 on the dark accent fill — both
+     below the bar, on a token whose comment claimed the opposite.
+
+     A light inner ring and a dark outer ring together always leave one of the
+     two contrasting: measured across all 11 surfaces this system renders,
+     worst case 8.13:1 (`scripts/check-contrast.mjs` asserts every one). The
+     outer keeps the brand's blue hue so the indicator still reads as ours. */
+  --color-focus-inner: #ffffff;
+  --color-focus-outer: #1a3f7a;
+  --focus-ring-width: 2px;
+
+  /* ── Spacing ────────────────────────────────────────────────────────
+     The base unit every spacing and sizing utility is derived from: `px-4` is
+     4 × this, `size-3` is 3 × this. Importing `tailwindcss/utilities.css`
+     rather than the full `tailwindcss` leaves it undefined, and then those
+     utilities are not generated at all — the class names reach the DOM with no
+     rule behind them. `scripts/check-styles.mjs` is what catches that. */
+  --spacing: 0.25rem;
+
+  /* ── Radius ─────────────────────────────────────────────────────────
+     The shell of a クサガメ is tiled in hexagons, and `--radius-shell` is the
+     one place that geometry reaches the tokens: it is the corner used by the
+     hexagonal brand mark and by surfaces that quote it. The rest is an
+     ordinary scale. */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-shell: 8px;
+  --radius-pill: 9999px;
+
+  /* ── Elevation ──────────────────────────────────────────────────────
+     Warm-tinted rather than neutral black, so a raised surface does not go
+     grey against the paper.
+
+     ⚠ Each token forwards to a plain `--ds-shadow-*` variable rather than
+     holding its value, and the dark overlay moves those instead. Tailwind
+     inlines a `--shadow-*` theme value into the utility it generates, so a
+     `.shadow-soft` built from a literal keeps the light shadow forever and the
+     dark overlay is dead (measured: `.shadow-soft` emitted `rgb(28 21 18 / 6%)`
+     literally). Indirecting through a variable the utility still has to read at
+     use time is what lets the theme reach it. */
+  --shadow-soft: var(--ds-shadow-soft);
+  --shadow-raised: var(--ds-shadow-raised);
+  --shadow-overlay: var(--ds-shadow-overlay);
+  /* Inner ring first, outer ring offset by its width — the order matters, a
+     later shadow paints under an earlier one. Opaque on purpose: a translucent
+     ring composites against whatever it sits on, which is the contrast the two
+     rings exist to guarantee. */
+  --shadow-focus:
+    0 0 0 var(--focus-ring-width) var(--color-focus-inner),
+    0 0 0 calc(var(--focus-ring-width) * 2) var(--color-focus-outer);
+
+  /* ── Typography ─────────────────────────────────────────────────────
+     Two scales, deliberately.
+
+     The SEMANTIC tier (`text-display` … `text-label`) bakes in weight,
+     line-height and tracking, so applying one class produces the intended
+     voice with no `font-bold` alongside it. Use it for prose and headings.
+
+     The UTILITY tier (`text-lg` … `text-xs`) sets size and line-height only,
+     leaving weight to the caller. Use it inside controls — buttons, inputs,
+     badges — where weight varies by variant.
+
+     Sizes overlap across tiers on purpose: `text-body` and `text-lg` are both
+     16px, and the difference is whether weight comes with it. Wanting a step
+     BETWEEN two utility sizes is a sign the role belongs in the semantic tier,
+     not a reason to add a step.
+
+     No step uses `line-height: normal`; the rendering font would then decide
+     the leading and the same size would set differently across platforms. */
+  --font-sans:
+    "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Yu Gothic", YuGothic, Arial,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  /* The weights the utility tier can ask for. Only what components use: an
+     unused weight generates a class nobody applies. Their absence does not
+     error — `font-semibold` simply produces no rule. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --text-display: 44px;
+  --text-display--line-height: 1;
+  --text-display--font-weight: 800;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: 32px;
+  --text-h1--line-height: 1.05;
+  --text-h1--font-weight: 800;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: 22px;
+  --text-h2--line-height: 1.15;
+  --text-h2--font-weight: 700;
+  --text-body: 16px;
+  --text-body--line-height: 1.6;
+  --text-body--font-weight: 400;
+  --text-small: 14px;
+  --text-small--line-height: 1.5;
+  --text-small--font-weight: 400;
+  --text-label: 11px;
+  --text-label--line-height: 1;
+  --text-label--font-weight: 600;
+  --text-label--letter-spacing: 0.14em;
+
+  --text-lg: 16px;
+  --text-lg--line-height: 1.4;
+  --text-base: 14px;
+  --text-base--line-height: 1.45;
+  --text-sm: 12px;
+  --text-sm--line-height: 1.4;
+  --text-xs: 11px;
+  --text-xs--line-height: 1.35;
+
+  /* ── Motion ─────────────────────────────────────────────────────────
+     `spring` overshoots and belongs to shape and position; `standard` does
+     not and belongs to colour, opacity and shadow. Sending a colour change
+     through `spring` makes it wobble. */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  /* ⚠ Unlike `--ease-*`, these are plain variables rather than a Tailwind
+     namespace: `duration-*` takes a number and will not resolve a named step,
+     so `duration-fast` generates nothing and the transition silently stays at
+     the `0s` fallback (measured). Reference them as `duration-[var(--duration-fast)]`.
+     They are still tokens — `base.css` zeroes all three under
+     `prefers-reduced-motion`, which reaches every component at once. */
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 280ms;
+
+  /* ── Stacking ───────────────────────────────────────────────────────
+     Portalled layers need a shared order; leaving each component to invent
+     its own z-index is how a dialog ends up behind a sticky header.
+
+     ⚠ Same trap as `--duration-*` above: `z-*` is not a Tailwind namespace, so
+     `z-sticky` generates nothing at all (measured). Write
+     `z-[var(--z-sticky)]`, and read these with `var()` in plain CSS. */
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-overlay: 300;
+  --z-toast: 400;
+}
+
+/* The light elevation values. Declared outside `@theme` on purpose — see the
+   elevation block above for why the `--shadow-*` tokens forward here. */
+:root {
+  --ds-shadow-soft: 0 1px 2px rgb(28 21 18 / 6%), 0 2px 8px rgb(28 21 18 / 6%);
+  --ds-shadow-raised:
+    0 2px 4px rgb(28 21 18 / 8%), 0 8px 24px rgb(28 21 18 / 10%);
+  --ds-shadow-overlay:
+    0 8px 16px rgb(28 21 18 / 12%), 0 24px 48px rgb(28 21 18 / 16%);
+}
+
+/* ── Dark ──────────────────────────────────────────────────────────────
+ * Only the tokens whose raw value changes are redeclared. Anything built with
+ * `color-mix(…, var(--color-bg))` — every status plane and border — follows
+ * automatically once `--color-bg` moves.
+ *
+ * `--color-control-border` is absent by design: its light value already clears
+ * 3:1 on every dark surface too.
+ *
+ * The two blocks below are identical in content and cannot be merged: one
+ * answers the explicit opt-in, the other the OS preference, and a product that
+ * pins `data-theme="light"` must not be overridden by the OS.
+ * `scripts/check-contrast.mjs` asserts they stay identical — by hand they will
+ * not, and a one-sided edit is invisible to every other check.
+ */
+
+/* ⚠ Both activation routes, matching the token overlay below. Covering only
+   `[data-theme="dark"]` would leave a `dark:` utility light while the tokens
+   around it went dark — the two halves of the same theme disagreeing.
+   The second route must stay wrapped in the media query: as a bare selector it
+   matches whenever no attribute is set, so `dark:` would fire under an OS set
+   to light (measured). */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(
+      :root:not([data-theme="light"]) *,
+      :root:not([data-theme="light"])
+    ) {
+      @slot;
+    }
+  }
+}
+
+:root[data-theme="dark"] {
+  /* On dark the stripe is readable as text (14.82:1 on bg), so `accent-soft`
+     stops being a darkened olive and becomes the stripe itself, pulled back
+     slightly so body text stays the brighter element. */
+  --color-accent-soft: #c3dd63;
+  --color-accent-hover: #e2f78a;
+
+  /* The shell lightens rather than darkens: against a dark page a darker
+     plane would disappear, and the inverted band has to stay legible as a
+     distinct surface. */
+  --color-shell: #4a3728;
+  --color-shell-hover: #55402f;
+
+  --color-bg: #171310;
+  --color-bg-elevated: #1f1a15;
+  --color-surface: #272019;
+  --color-surface-sunken: #2f2720;
+  --color-surface-hover: #332b23;
+
+  --color-ink: #f2efe7; /* 16.07:1 on bg */
+  --color-ink-dim: #b3a898; /* 7.89:1 on bg */
+  --color-ink-faint: #9d9284; /* 6.05:1 on bg */
+
+  --color-fill: #f0ece2;
+  --color-fill-hover: #e4dfd2;
+  --color-on-fill: #1c1512;
+
+  --color-border: #332b22;
+  --color-border-strong: #453b2f;
+
+  /* Status text lightens to clear 4.5:1 against the dark page. The planes and
+     borders are mixes and need no restatement. */
+  --color-success: #6fc98a;
+  --color-warning: #dda43f;
+  --color-danger: #f08163;
+  --color-info: #74b4e8;
+
+  --ds-shadow-soft: 0 1px 2px rgb(0 0 0 / 40%), 0 2px 8px rgb(0 0 0 / 32%);
+  --ds-shadow-raised: 0 2px 4px rgb(0 0 0 / 44%), 0 8px 24px rgb(0 0 0 / 40%);
+  --ds-shadow-overlay:
+    0 8px 16px rgb(0 0 0 / 48%), 0 24px 48px rgb(0 0 0 / 52%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-accent-soft: #c3dd63;
+    --color-accent-hover: #e2f78a;
+
+    --color-shell: #4a3728;
+    --color-shell-hover: #55402f;
+
+    --color-bg: #171310;
+    --color-bg-elevated: #1f1a15;
+    --color-surface: #272019;
+    --color-surface-sunken: #2f2720;
+    --color-surface-hover: #332b23;
+
+    --color-ink: #f2efe7;
+    --color-ink-dim: #b3a898;
+    --color-ink-faint: #9d9284;
+
+    --color-fill: #f0ece2;
+    --color-fill-hover: #e4dfd2;
+    --color-on-fill: #1c1512;
+
+    --color-border: #332b22;
+    --color-border-strong: #453b2f;
+
+    --color-success: #6fc98a;
+    --color-warning: #dda43f;
+    --color-danger: #f08163;
+    --color-info: #74b4e8;
+
+    --ds-shadow-soft: 0 1px 2px rgb(0 0 0 / 40%), 0 2px 8px rgb(0 0 0 / 32%);
+    --ds-shadow-raised: 0 2px 4px rgb(0 0 0 / 44%), 0 8px 24px rgb(0 0 0 / 40%);
+    --ds-shadow-overlay:
+      0 8px 16px rgb(0 0 0 / 48%), 0 24px 48px rgb(0 0 0 / 52%);
+  }
+}

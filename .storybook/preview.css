@@ -1,0 +1,21 @@
+/* Catalogue-only styling. Nothing here ships to consumers.
+ *
+ * Tokens come from source rather than from `dist/styles.css`, so the catalogue
+ * reflects the working tree without a build step in between. */
+
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "../src/styles/theme.css";
+@import "../src/styles/base.css";
+@import "../src/styles/components.css";
+
+@source "../src";
+@source "../stories";
+
+/* The preview iframe has no page of its own to inherit from, so give it the
+   ground the tokens assume. */
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}

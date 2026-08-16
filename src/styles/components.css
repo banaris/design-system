@@ -1,0 +1,50 @@
+/* @banaris/design-system — CSS that utilities cannot express.
+ *
+ * Components are styled with Tailwind utility strings in their `.tsx`, which
+ * keeps every rule visible at the call site. Only what has no utility form
+ * lives here: keyframes, and the hexagon geometry of the brand mark.
+ *
+ * ⚠ Anything added here must also reach consumers who import `theme.css` and
+ * `components.css` separately rather than the prebuilt `styles.css`. Keep this
+ * file free of utility-shaped rules so those two paths stay equivalent.
+ */
+
+@layer components {
+  /* The shell tile — the hexagon of a クサガメ's carapace, used by the brand
+     mark and by anything quoting that geometry. A clip-path rather than an
+     SVG so it can wrap arbitrary content and inherit the surrounding colour.
+
+     The polygon is a regular hexagon with a flat top: vertices at 25% and 75%
+     across, which is where a flat-top hexagon's corners land when its width
+     is the long diagonal. */
+  .ds-hex {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  /* A pointed-top hexagon, for tiling. Rotating `.ds-hex` would rotate its
+     content too, so the two orientations are separate shapes. */
+  .ds-hex-pointy {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+}
+
+/* Keyframes sit outside `@layer` — a layer would not change how they cascade,
+   and Tailwind's `animate-[name_…]` arbitrary values resolve them by name. */
+@keyframes ds-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ds-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes ds-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

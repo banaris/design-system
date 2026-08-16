@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Cancelling an in-progress main run would leave that commit with no CI verdict.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Both jobs call a single package.json script rather than listing the
+  # individual checks. Enumerating them here lets CI and local runs drift apart
+  # silently — a check added to `verify` would simply never run in CI.
+  Verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: nemolize/actions/setup@77ba465744c758cc704be356f9fbc48d152baa4c # v1.1.0
+      - run: pnpm run verify
+
+  Accessibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      # Without --ipc=host chromium can run out of memory and crash.
+      options: --init --ipc=host
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # checkout's own safe.directory lasts only for its step; the `prepare`
+      # script (`lefthook install`) that `pnpm install` runs needs it too.
+      - run: git config --global --add safe.directory "$(pwd)"
+      - uses: nemolize/actions/setup@77ba465744c758cc704be356f9fbc48d152baa4c # v1.1.0
+      - name: Assert the image ships the Playwright version we depend on
+        run: |
+          img="$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('/ms-playwright/.docker-info', 'utf8')).driverVersion)")"
+          pw="$(node -p "require('playwright/package.json').version")"
+          if [ "$pw" != "$img" ]; then
+            echo "::error::image ships Playwright $img, but playwright is $pw; update this job's container image tag to v$pw"
+            exit 1
+          fi
+      - run: pnpm run test

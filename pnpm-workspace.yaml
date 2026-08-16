@@ -1,0 +1,8 @@
+allowBuilds:
+  "@tailwindcss/oxide": true
+  esbuild: true
+  lefthook: true
+  sharp: true
+  workerd: true
+  # Storybook's file watcher; only reached by `storybook dev`.
+  "@parcel/watcher": true

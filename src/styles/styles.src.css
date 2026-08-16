@@ -1,0 +1,27 @@
+/* Build input for the distributed stylesheet (`dist/styles.css`).
+ *
+ * `pnpm run build:css` runs Tailwind over this file, which scans `src/` and
+ * emits ONLY the utilities the components actually reference, alongside the
+ * tokens and the component CSS. The result is self-contained: a consumer
+ * imports one file and needs no Tailwind of their own.
+ *
+ * This is the default distribution path on purpose. The alternative — shipping
+ * source and asking the consumer to point `@source` at our `dist` — fails
+ * silently when the path is wrong: the class names still reach the DOM, no
+ * error is raised, and only some of the CSS goes missing, so the page looks
+ * plausible rather than broken. It also locks out any consumer not already on
+ * Tailwind v4. Generating the utilities here removes that failure mode.
+ *
+ * ⚠ `@import "tailwindcss"` is absent by design. It would pull in preflight
+ * and reset the consumer's page; `base.css` carries the little we do need.
+ */
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "./theme.css";
+@import "./base.css";
+@import "./components.css";
+
+/* Tailwind cannot see the component sources from a CSS file, so name them. */
+@source "../";
