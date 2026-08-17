@@ -34,13 +34,18 @@ jobs:
       - id: deploy
         name: Deploy to Cloudflare Workers
         run: |
+          # Under `bash -e` a bare `out="$(wrangler ...)"` aborts the step with
+          # wrangler's diagnostics still trapped in $out, so echo before failing.
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            out="$(pnpm exec wrangler deploy 2>&1)"
+            out="$(pnpm exec wrangler deploy 2>&1)" && rc=0 || rc=$?
           else
-            out="$(pnpm exec wrangler versions upload 2>&1)"
+            out="$(pnpm exec wrangler versions upload 2>&1)" && rc=0 || rc=$?
           fi
           echo "$out"
-          url="$(printf '%s' "$out" | grep -oE 'https://[a-z0-9.-]+\.workers\.dev' | head -1)"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          # grep exits 1 when no URL was printed; 2+ is a real failure.
+          url="$(printf '%s' "$out" | grep -oE 'https://[a-z0-9.-]+\.workers\.dev' | head -1)" && grc=0 || grc=$?
+          [ "$grc" -le 1 ] || exit "$grc"
           echo "url=$url" >> "$GITHUB_OUTPUT"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
