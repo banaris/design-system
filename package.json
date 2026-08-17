@@ -1,6 +1,6 @@
 {
   "name": "@banaris/design-system",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Banaris design system — design tokens and React UI primitives built on Base UI and Tailwind CSS.",
   "license": "MIT",
   "type": "module",
