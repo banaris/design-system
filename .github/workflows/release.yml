@@ -1,43 +1,99 @@
 name: Release
 
+# npmjs.com must have this repo + filename registered as a trusted publisher
+# before the OIDC publish below can work.
 on:
   push:
     branches: [main]
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
-  group: ${{ github.workflow }}
+  group: release
+  # Drop this and a pending publish is evicted. actionlint rejects the key.
+  queue: max
 
 jobs:
-  Release:
+  select-mode:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 10
+    outputs:
+      mode: ${{ steps.select-mode.outputs.mode }}
+      publish-plan-artifact-id: ${{ steps.select-mode.outputs.publish-plan-artifact-id }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nemolize/actions/setup@0a6e86438446cdc086f5dc490688523d8fb8282c # v1.4.0
+
+      # Decides between opening a version PR, publishing one that was merged,
+      # and doing nothing. Without this the action would skip straight to
+      # publishing on a repo with no changeset — which on a package that has
+      # never shipped means pushing 0.0.0 on the first merge to main.
+      - id: select-mode
+        uses: changesets/action/select-mode@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
+
+  version:
+    if: needs.select-mode.outputs.mode == 'version'
+    needs: select-mode
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
-      # Required for npm provenance, which package.json opts into.
-      id-token: write
-
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: nemolize/actions/setup@77ba465744c758cc704be356f9fbc48d152baa4c # v1.1.0
-      - run: pnpm run build
-
-      # Opens (or updates) a version PR while changesets are pending, and
-      # publishes once that PR is merged — so a release is always a reviewed
-      # commit rather than a side effect of pushing to main.
-      - uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
         with:
-          version: pnpm run changeset:version
-          publish: pnpm exec changeset publish
-          commit: "chore: version the package"
-          title: "chore: version the package"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
-          # The action writes ~/.npmrc from NPM_TOKEN. NODE_AUTH_TOKEN is a
-          # setup-node convention and nothing here runs setup-node, so it would
-          # publish `_authToken=undefined` and fail only once a version PR merges.
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          persist-credentials: false
+      - uses: nemolize/actions/setup@0a6e86438446cdc086f5dc490688523d8fb8282c # v1.4.0
+
+      # ci.yml does not run on the PR this opens — GITHUB_TOKEN authors it.
+      - run: pnpm run verify
+
+      - uses: changesets/action/version@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
+
+  pack:
+    if: needs.select-mode.outputs.mode == 'publish'
+    needs: select-mode
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nemolize/actions/setup@0a6e86438446cdc086f5dc490688523d8fb8282c # v1.4.0
+
+      # ci.yml runs on this push too, but nothing here can await another
+      # workflow. `verify` ends in check:package, which is what proves the
+      # exports map matches the artefact about to be packed.
+      - run: pnpm run verify
+
+      - id: pack
+        uses: changesets/action/pack@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
+        with:
+          publish-plan-artifact-id: ${{ needs.select-mode.outputs.publish-plan-artifact-id }}
+
+  publish:
+    needs: pack
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      # Trusted publishing: npm verifies this workflow through OIDC, so no
+      # long-lived NPM_TOKEN is stored anywhere.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nemolize/actions/setup@0a6e86438446cdc086f5dc490688523d8fb8282c # v1.4.0
+
+      - uses: changesets/action/publish@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
+        with:
+          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
