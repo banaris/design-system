@@ -4,8 +4,8 @@ Design tokens and React UI primitives for Banaris, built on [Base UI](https://ba
 
 The palette is drawn from the Japanese pond turtle (クサガメ): dark brown over warm paper, with the yellow-green of its neck stripe as the accent, and the hexagons of its carapace as the brand mark.
 
-- **Catalogue:** published from `main` (see [Publishing the catalogue](#publishing-the-catalogue))
-- **Package:** `@banaris/design-system` on npm
+- **Catalogue:** <https://banaris-design-system.banaris.workers.dev>
+- **Package:** `@banaris/design-system` on npm — requires React 19 as a peer dependency
 
 ## Install
 
@@ -22,19 +22,21 @@ That one stylesheet is self-contained — tokens, component CSS, and the Tailwin
 
 > The class names that appear in the DOM (`inline-flex`, `bg-accent`, …) are not a public contract. Do not hook your own CSS to them.
 
-### The three CSS entry points
+### The four CSS entry points
 
-| Entry point                             | Contents                                      | When                                                                                     |
-| --------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt | **Default.** Everything, one import                                                      |
-| `@banaris/design-system/theme.css`      | Design tokens only (`@theme`)                 | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup |
-| `@banaris/design-system/components.css` | Component CSS and keyframes only              | Rarely — only alongside `theme.css` if you are generating utilities yourself             |
+| Entry point                             | Contents                                      | When                                                                                                               |
+| --------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt | **Default.** Everything, one import                                                                                |
+| `@banaris/design-system/theme.css`      | Design tokens only (`@theme`)                 | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup                           |
+| `@banaris/design-system/base.css`       | The minimum globals the components rely on    | With `theme.css` on the split path — without it components lose `box-sizing` and form controls lose the brand font |
+| `@banaris/design-system/components.css` | Component CSS and keyframes only              | Rarely — only alongside `theme.css` if you are generating utilities yourself                                       |
 
 Using Tailwind and want the tokens in your own markup? Import both. The duplicate `:root` variables are harmless.
 
 ```css
 @import "tailwindcss";
 @import "@banaris/design-system/theme.css";
+@import "@banaris/design-system/base.css";
 ```
 
 ```ts
@@ -72,7 +74,7 @@ Two conventions worth knowing before you reach for a colour:
 
 - **`accent` fills, `accent-soft` reads.** The yellow-green measures 1.08:1 on paper, so it can never be text on a light surface. Anything that has to be _read_ in the accent colour uses `--color-accent-soft`. Anything _filled_ uses `--color-accent`, with `--color-on-accent` for its label.
 - **`border` is decorative, `control-border` is not.** On an unchecked checkbox the border is the only thing announcing the control exists, so it is held to WCAG 1.4.11's 3:1 on every surface. Dividers and card edges are deliberately softer.
-- **Focus is two rings, not one.** Controls here sit on everything from paper to the dark shell to the accent fill, and no single colour clears 3:1 across that range. A light inner ring inside a dark outer one always leaves one of the two contrasting — worst case 8.13:1 across the eleven surfaces the system renders.
+- **Focus is two rings, not one.** Controls here sit on everything from paper to the dark shell to the accent fill, and no single colour clears 3:1 across that range. A light inner ring inside a dark outer one always leaves one of the two contrasting — worst case 8.13:1 across the eight surfaces a control can sit on, in both themes.
 
 Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `text-body`, …) bakes in weight and line-height — one class produces the intended voice. The **utility** tier (`text-lg`, `text-base`, `text-sm`, `text-xs`) sets size only and leaves weight to you; use it inside controls. Sizes overlap between tiers on purpose.
 
@@ -83,29 +85,32 @@ Every token, rendered from the live cascade, is in the catalogue under **Foundat
 ```bash
 mise install
 pnpm install
-pnpm run storybook   # http://localhost:6006
+pnpm exec playwright install chromium   # only needed for `verify:full`
+pnpm run storybook                      # http://localhost:6006
 ```
 
 The catalogue imports the package by name, exactly as a consumer would, so stories double as usage examples. During development that self-reference resolves to source rather than `dist`.
 
 ### Checks
 
-`pnpm run verify` is the single source of truth for what CI decides — the workflow calls it rather than listing the checks, so the two cannot drift apart.
+CI calls these scripts rather than listing the individual checks, so adding a check to `verify` reaches CI with no workflow edit. The one seam to know: CI runs `verify` and `test` as two separate jobs, so together they cover `verify:full` — a step added only to `verify:full` itself would not run.
 
 ```bash
 pnpm run verify        # lint, types, tokens, build, package (seconds)
 pnpm run verify:full   # the above plus axe over every story in a real browser
 ```
 
-Beyond the usual lint and type checks, five deterministic guards cover failures that are otherwise **silent** — green build, green types, green lint, broken output:
+Beyond the usual lint and type checks, seven deterministic guards cover failures that are otherwise **silent** — green build, green types, green lint, broken output:
 
-| Check            | Catches                                                                                                                                        |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `check:contrast` | A token that no longer meets WCAG, in either theme. Measured, not asserted by hand — the ratios quoted in `theme.css` are kept honest by this. |
-| `check:tw-merge` | A token missing from the merge config, which silently misgroups a class so two utilities annihilate each other.                                |
-| `check:styles`   | A class that reaches the DOM with no CSS behind it — the classic Tailwind scanning failure, which raises no error anywhere.                    |
-| `check:stories`  | An exported component with no story. Absent from the catalogue means undiscoverable, which for this package means it may as well not exist.    |
-| `check:package`  | `exports` pointing at a file the build does not produce, and a stylesheet shipping preflight or missing tokens.                                |
+| Check            | Catches                                                                                                                                                                            |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `check:contrast` | A token that no longer meets WCAG, in either theme. Measured, not asserted by hand — the ratios quoted in `theme.css` are kept honest by this.                                     |
+| `check:tw-merge` | A token missing from the merge config, which silently misgroups a class so two utilities annihilate each other.                                                                    |
+| `check:styles`   | A class that reaches the DOM with no CSS behind it — the classic Tailwind scanning failure, which raises no error anywhere.                                                        |
+| `check:stories`  | An exported component with no story. Absent from the catalogue means undiscoverable, which for this package means it may as well not exist.                                        |
+| `check:package`  | `exports` pointing at a file the build does not produce, and a stylesheet shipping preflight or missing tokens.                                                                    |
+| `check:geometry` | The brand mark's hexagons overlapping instead of tiling — valid SVG, passing build, visibly wrong render.                                                                          |
+| `check:axe-live` | The accessibility suite having stopped running. Seeds a violation and requires the suite to go red, because a suite that checks nothing reports the same green as one that passes. |
 
 They exist because each of these was possible to ship without a single tool complaining, and they have already earned it — `check:contrast` caught the accent button's label measuring 1.08:1 against its own fill in dark, and `check:styles` caught three separate cases of a class reaching the DOM with no rule behind it.
 

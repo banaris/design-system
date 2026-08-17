@@ -16,8 +16,11 @@
  * ── What it checks ─────────────────────────────────────────────────────
  *   1. Every static class name in `src/` exists as a selector in the built CSS.
  *   2. Every `animate-[name_…]` has a matching `@keyframes name`.
- *   3. The stylesheet carries tokens, carries real utilities, and does not
- *      carry preflight.
+ *   3. Tailwind scanned something at all — a total scan failure would
+ *      otherwise report as hundreds of per-class errors with no cause named.
+ *
+ * Whether the published stylesheet carries tokens and stays free of preflight
+ * belongs to `check:package`, which owns the shipped artefact.
  *
  * ── What it deliberately does not check ────────────────────────────────
  * Classes built through `${…}` interpolation, which cannot be resolved

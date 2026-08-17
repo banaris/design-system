@@ -135,6 +135,13 @@
     var(--color-danger) 12%,
     var(--color-bg)
   );
+  /* The one status plane a control hovers on today. Deepening the same mix
+     keeps the hue and follows the theme, like the plane itself. */
+  --color-danger-surface-hover: color-mix(
+    in srgb,
+    var(--color-danger) 20%,
+    var(--color-bg)
+  );
   --color-info-surface: color-mix(
     in srgb,
     var(--color-info) 12%,
@@ -173,8 +180,8 @@
      below the bar, on a token whose comment claimed the opposite.
 
      A light inner ring and a dark outer ring together always leave one of the
-     two contrasting: measured across all 11 surfaces this system renders,
-     worst case 8.13:1 (`scripts/check-contrast.mjs` asserts every one). The
+     two contrasting: measured across the 8 surfaces a control can sit on, in both
+     themes, worst case 8.13:1 (`scripts/check-contrast.mjs` asserts every one). The
      outer keeps the brand's blue hue so the indicator still reads as ours. */
   --color-focus-inner: #ffffff;
   --color-focus-outer: #1a3f7a;

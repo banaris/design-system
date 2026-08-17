@@ -3,6 +3,14 @@
  * Tokens come from source rather than from `dist/styles.css`, so the catalogue
  * reflects the working tree without a build step in between. */
 
+/* ⚠ The layer order must be declared, and must match `styles.src.css`.
+   Without this line the layers are ordered by first appearance, which puts
+   `utilities` first and lets `base` and `components` override it — so the
+   catalogue renders differently from the CSS consumers get. Measured: the
+   primary button came out fully transparent, and axe reported a contrast
+   violation the tokens themselves do not have. */
+@layer theme, base, components, utilities;
+
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "../src/styles/theme.css";
 @import "../src/styles/base.css";

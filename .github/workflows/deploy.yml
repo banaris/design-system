@@ -27,9 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: nemolize/actions/setup@77ba465744c758cc704be356f9fbc48d152baa4c # v1.1.0
-      # The catalogue reads tokens from source, but a preview should exercise
-      # the same stylesheet consumers get.
-      - run: pnpm run build
+      # No `pnpm run build` here: the catalogue reads tokens and components
+      # from source, so nothing it serves comes out of `dist/`.
       - run: pnpm run build-storybook
 
       - id: deploy

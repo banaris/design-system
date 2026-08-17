@@ -37,4 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # The action writes ~/.npmrc from NPM_TOKEN. NODE_AUTH_TOKEN is a
+          # setup-node convention and nothing here runs setup-node, so it would
+          # publish `_authToken=undefined` and fail only once a version PR merges.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
