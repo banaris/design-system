@@ -134,7 +134,11 @@ Versioning is driven by [changesets](https://github.com/changesets/changesets).
 pnpm run changeset
 ```
 
-Merging that to `main` opens a version PR; merging the version PR publishes to npm with provenance. A release is therefore always a reviewed commit rather than a consequence of pushing.
+Merging that to `main` opens a version PR; merging the version PR publishes to npm. A release is therefore always a reviewed commit rather than a consequence of pushing.
+
+The workflow decides between those two states — and doing nothing — with changesets' own `select-mode`, so a push with no changeset pending publishes nothing. Skipping that gate is how a package that has never shipped ends up pushing `0.0.0` on its first merge to `main`.
+
+Publishing uses npm's **trusted publishing**: npm verifies the workflow over OIDC and no long-lived token is stored anywhere. This requires registering `banaris/design-system` with the workflow file `release.yml` as a trusted publisher on npmjs.com; until that is done the package is catalogue-only, and the release job still passes because it has nothing to publish.
 
 ## Publishing the catalogue
 
