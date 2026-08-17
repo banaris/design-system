@@ -1,8 +1,11 @@
 /* Utility strings shared across components, so a change to the focus ring or
  * the interaction timing lands everywhere at once. */
 
-/* Focus is drawn with a shadow, not an outline: an outline is clipped by any
- * ancestor with `overflow: hidden`, which is most cards and toolbars. */
+/* Focus is drawn with shadows because the indicator is TWO rings, and
+ * `box-shadow` is the only property that stacks — a single `outline` cannot
+ * draw a light ring inside a dark one. See `--shadow-focus` for why one colour
+ * is not enough. `z-10` lifts the ring above adjacent siblings that would
+ * otherwise paint over it. */
 export const FOCUS_RING =
   "outline-none focus-visible:shadow-focus focus-visible:z-10";
 

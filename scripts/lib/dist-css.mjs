@@ -1,9 +1,10 @@
-/* Structural assertions about the built stylesheet, shared by `check-styles`
- * and `check-package`.
+/* Structural assertions about the published stylesheet. `check-package` is the
+ * only caller — it owns the shipped artefact.
  *
- * Both guards need them and both had their own copy, which meant the preflight
- * signature had to be edited in two places — and one of them being wrong is
- * exactly the state this file was extracted from.
+ * These lived in both `check-package` and `check-styles`, which meant the
+ * preflight signature had to be edited twice; one copy being wrong is the state
+ * this file was extracted from. The duplication is resolved by ownership rather
+ * than by sharing: `check-styles` no longer makes these assertions at all.
  */
 
 /* Tailwind v4's preflight opens with a universal reset. Match it on the

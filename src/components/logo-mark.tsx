@@ -12,16 +12,20 @@ export type LogoMarkProps = {
 /* The carapace of a クサガメ is tiled in hexagons, and the mark is that tiling
  * reduced to its smallest honest unit: one central scute ringed by six.
  *
- * Geometry is a pointy-top hexagonal grid. For circumradius R, neighbouring
- * centres sit √3·R apart, so the six around the centre land at angle 30° + k·60°
- * — the flat-side directions, not the vertex ones. Getting that wrong produces
- * a ring that overlaps at the corners and gaps at the edges. The coordinates
- * below are precomputed from that relation rather than eyeballed. */
+ * `hexPoints` puts a vertex straight up (angle −90°), so these are POINTY-TOP
+ * hexagons, and a pointy-top tile's neighbours lie across its flat sides — at
+ * 0° + k·60°, which is 30° off its vertex directions. Placing the ring on the
+ * vertex directions instead is the mistake that looks plausible and renders
+ * wrong: measured, the tiles then interpenetrate by 1.19 units and the 0.28
+ * alpha doubles to a dark blotch at every corner. `scripts/check-geometry.mjs`
+ * asserts the separation so the two angle conventions cannot drift apart. */
 const R = 9.4;
 const GAP = 1.15;
+/* Centre-to-centre spacing. √3·R is twice the inradius — the distance at which
+   flat sides touch exactly — so adding GAP is what opens the seam. */
 const STEP = Math.sqrt(3) * R + GAP;
 const RING = Array.from({ length: 6 }, (_, k) => {
-  const angle = ((30 + k * 60) * Math.PI) / 180;
+  const angle = (k * 60 * Math.PI) / 180;
   return { x: 48 + STEP * Math.cos(angle), y: 48 + STEP * Math.sin(angle) };
 });
 
@@ -67,10 +71,10 @@ export function LogoMark({
           opacity={0.28}
         />
       ))}
-      <polygon
-        points={hexPoints(48, 48, R * 1.32)}
-        fill="var(--color-accent)"
-      />
+      {/* Same R as the ring: the centre is the accent because of its colour
+          and full opacity, not because it is bigger. Enlarging it eats the
+          seam — at R × 1.32 it interpenetrated its neighbours by 1.46 units. */}
+      <polygon points={hexPoints(48, 48, R)} fill="var(--color-accent)" />
     </svg>
   );
 }

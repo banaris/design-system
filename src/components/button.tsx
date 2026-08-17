@@ -16,6 +16,17 @@ export type ButtonProps = {
   /** Render fully rounded instead of the default corner radius. */
   pill?: boolean;
   children: ReactNode;
+  /* Two props are deliberately withheld from Base UI's surface.
+   *
+   * `render` would let a caller swap the element — the canonical way to get a
+   * button-shaped link — but this component injects its own children (the
+   * spinner) and a render function receives them already assembled, so the two
+   * need a design decision rather than a pass-through. Add it when a link
+   * actually needs it, not before.
+   *
+   * `className` is narrowed from Base UI's `string | (state) => string` to a
+   * plain string because `cn()` merges strings; the callback form would have to
+   * be resolved before merging and silently is not. */
 } & Omit<ComponentProps<typeof BaseButton>, "className" | "render"> & {
     className?: string;
   };
@@ -26,13 +37,15 @@ export type ButtonProps = {
  * point the `:disabled` pseudo-class stops matching, which would leave the
  * button looking enabled AND responding to hover. `data-disabled` is emitted
  * for both routes, so one spelling covers them. */
-const BASE = `inline-flex items-center justify-center gap-2 border border-solid box-border font-sans cursor-pointer select-none ${TRANSITION_INTERACTIVE} ${FOCUS_RING} not-data-disabled:active:scale-[0.98] data-disabled:cursor-not-allowed data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:border-transparent data-disabled:shadow-none data-disabled:forced-colors:text-[GrayText]`;
+const BASE = `inline-flex items-center justify-center gap-2 border border-solid box-border font-sans cursor-pointer select-none ${TRANSITION_INTERACTIVE} ${FOCUS_RING} active:not-data-disabled:scale-[0.98] data-disabled:cursor-not-allowed data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:border-transparent data-disabled:shadow-none data-disabled:forced-colors:text-[GrayText]`;
 
 /* ⚠ Each variant sets background, text and border colour EXACTLY once, and
- * `BASE` sets none of them. Two utilities for one property in a single class
- * string would be resolved by `cn`, but which of them survives would then be
- * an argument-order detail a reader has to reconstruct — so the split is kept
- * at the source. A new variant must name all three.
+ * `BASE` sets none of them UNPREFIXED — its `data-disabled:` overrides are a
+ * higher-specificity state that cannot lose an ordering race. Two unprefixed
+ * utilities for one property would be resolved by `cn`, but which survives
+ * becomes an argument-order detail a reader has to reconstruct, so the split is
+ * kept at the source. A new variant must name all three, and every state must
+ * be written `<state>:not-data-disabled:` in that order.
  *
  * Note `accent` takes `text-on-accent`, not `text-ink`: the accent fill is the
  * same pale green in both themes, so a label following the page's ink would
@@ -47,7 +60,7 @@ const VARIANT: Record<ButtonVariant, string> = {
   ghost:
     "bg-transparent border-transparent text-accent-soft font-semibold hover:not-data-disabled:bg-surface-hover",
   danger:
-    "bg-danger-surface border-danger-border text-danger font-semibold hover:not-data-disabled:bg-danger-surface",
+    "bg-danger-surface border-danger-border text-danger font-semibold hover:not-data-disabled:bg-danger-surface-hover",
 };
 
 const SIZE: Record<ButtonSize, string> = {

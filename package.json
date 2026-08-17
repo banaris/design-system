@@ -23,7 +23,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     },
     "./styles.css": "./dist/styles.css",
     "./theme.css": "./src/styles/theme.css",
@@ -62,13 +63,15 @@
     "fix:eslint": "eslint . --fix",
     "fix:prettier": "prettier --write .",
     "check:contrast": "node scripts/check-contrast.mjs",
+    "check:geometry": "node scripts/check-geometry.mjs",
+    "check:axe-live": "node scripts/check-axe-live.mjs",
     "check:tw-merge": "node scripts/check-tw-merge.mjs",
     "check:stories": "node scripts/check-stories.mjs",
     "check:styles": "node scripts/check-styles.mjs",
     "check:package": "node scripts/check-package.mjs",
     "test": "vitest run --project=storybook",
-    "verify": "run-s lint check:contrast check:tw-merge check:stories build check:styles check:package",
-    "verify:full": "run-s verify test",
+    "verify": "run-s lint check:contrast check:geometry check:tw-merge check:stories build check:styles check:package",
+    "verify:full": "run-s verify test check:axe-live",
     "changeset": "changeset",
     "changeset:version": "changeset version",
     "prepare": "lefthook install"

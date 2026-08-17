@@ -49,3 +49,6 @@ jobs:
             exit 1
           fi
       - run: pnpm run test
+      # Proves the run above could have failed. Without it a suite that stopped
+      # running axe reports the same green as one that ran it.
+      - run: pnpm run check:axe-live
