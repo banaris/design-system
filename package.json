@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/banaris/design-system.git"
   },
-  "homepage": "https://banaris-design-system.banaris.workers.dev",
+  "homepage": "https://design-system.banaris.workers.dev",
   "bugs": "https://github.com/banaris/design-system/issues",
   "keywords": [
     "design-system",

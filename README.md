@@ -4,7 +4,7 @@ Design tokens and React UI primitives for Banaris, built on [Base UI](https://ba
 
 The palette is drawn from the Japanese pond turtle (クサガメ): dark brown over warm paper, with the yellow-green of its neck stripe as the accent, and the hexagons of its carapace as the brand mark.
 
-- **Catalogue:** <https://banaris-design-system.banaris.workers.dev>
+- **Catalogue:** <https://design-system.banaris.workers.dev>
 - **Package:** `@banaris/design-system` on npm — requires React 19 as a peer dependency
 
 ## Install
