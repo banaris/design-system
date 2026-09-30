@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: nemolize/actions/setup@0a6e86438446cdc086f5dc490688523d8fb8282c # v1.4.0
+      - uses: nemolize/actions/setup@31784ace32e5c3d8519ee1a975d3ff47f9e7f6e5
       # No `pnpm run build` here: the catalogue reads tokens and components
       # from source, so nothing it serves comes out of `dist/`.
       - run: pnpm run build-storybook
