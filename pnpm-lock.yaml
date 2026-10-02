@@ -125,7 +125,7 @@ importers:
         version: 5.0.2(@types/node@24.19.0)(@vitest/browser-playwright@5.0.2)(@vitest/ui@5.0.2)(vite@8.3.1(@types/node@24.19.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       wrangler:
         specifier: ^4.110.0
-        version: 4.143.1(@types/node@24.19.0)
+        version: 4.144.0(@types/node@24.19.0)
 
 packages:
 
@@ -4208,8 +4208,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.143.1:
-    resolution: {integrity: sha512-ilQJRMRcMgdk82XWIg7hlgeB1I2CoOWmSiJeoqZufoNCWUiJTN5DaYPYb6M/oIXBXk3+IQIxNDgdtPUuxcxdeg==}
+  wrangler@4.144.0:
+    resolution: {integrity: sha512-4xIASysrsGBLkTuyoYUTJuhqjlnhwX90Ui8HVLElLJ9Unfqn0Hq51YuMP6GMmijbKFK/7Jmlgk6WkMZDCAklLQ==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -8072,7 +8072,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260926.1
       '@cloudflare/workerd-windows-64': 1.20260926.1
 
-  wrangler@4.143.1(@types/node@24.19.0):
+  wrangler@4.144.0(@types/node@24.19.0):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.2(unenv@2.0.0-rc.24)(workerd@1.20260926.1)
