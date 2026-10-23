@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   select-mode:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     outputs:
       mode: ${{ steps.select-mode.outputs.mode }}
@@ -38,7 +38,7 @@ jobs:
   version:
     if: needs.select-mode.outputs.mode == 'version'
     needs: select-mode
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
       contents: write
@@ -57,7 +57,7 @@ jobs:
   pack:
     if: needs.select-mode.outputs.mode == 'publish'
     needs: select-mode
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     outputs:
       pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
@@ -81,7 +81,7 @@ jobs:
 
   publish:
     needs: pack
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
       contents: write
