@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 
 import { includeIgnoreFile } from "@eslint/compat";
 import js from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
@@ -10,7 +11,7 @@ import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   includeIgnoreFile(fileURLToPath(new URL(".gitignore", import.meta.url))),
   { ignores: ["storybook-static/"] },
   // Warnings do not fail `eslint .`, so a disable directive that no longer
