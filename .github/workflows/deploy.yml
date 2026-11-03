@@ -57,8 +57,8 @@ jobs:
           egress-policy: block
           # Raw-IP packets bypass the filter, and sudo is what can send them.
           enable-sudo: false
-          # productionresultssa*: artifact storage, per GitHub's Copilot allowlist reference;
-          # release-assets.githubusercontent.com: where setup-node's Node download redirects.
+          # productionresultssa*: artifact storage; accounts beyond the 20 GitHub's Copilot
+          # allowlist names do occur (sa31). release-assets.githubusercontent.com: setup-node's Node download.
           allowed-domains: |
             github.com
             api.github.com
@@ -83,6 +83,26 @@ jobs:
             productionresultssa17.blob.core.windows.net
             productionresultssa18.blob.core.windows.net
             productionresultssa19.blob.core.windows.net
+            productionresultssa20.blob.core.windows.net
+            productionresultssa21.blob.core.windows.net
+            productionresultssa22.blob.core.windows.net
+            productionresultssa23.blob.core.windows.net
+            productionresultssa24.blob.core.windows.net
+            productionresultssa25.blob.core.windows.net
+            productionresultssa26.blob.core.windows.net
+            productionresultssa27.blob.core.windows.net
+            productionresultssa28.blob.core.windows.net
+            productionresultssa29.blob.core.windows.net
+            productionresultssa30.blob.core.windows.net
+            productionresultssa31.blob.core.windows.net
+            productionresultssa32.blob.core.windows.net
+            productionresultssa33.blob.core.windows.net
+            productionresultssa34.blob.core.windows.net
+            productionresultssa35.blob.core.windows.net
+            productionresultssa36.blob.core.windows.net
+            productionresultssa37.blob.core.windows.net
+            productionresultssa38.blob.core.windows.net
+            productionresultssa39.blob.core.windows.net
             registry.npmjs.org
             api.cloudflare.com
             release-assets.githubusercontent.com
