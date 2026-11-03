@@ -22,9 +22,31 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: nemolize/actions/setup@a78b0df6a8df72fe3a12a16e1c608d27ff490950 # v1.4.1
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nemolize/actions/setup@v1.4.1
       - run: pnpm run verify
+      - if: ${{ !cancelled() }}
+        id: zizmor-version
+        name: Read the zizmor version pinned in mise.toml
+        run: |
+          version="$(mise current zizmor)"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+      - if: ${{ !cancelled() && steps.zizmor-version.outcome == 'success' }}
+        uses: zizmorcore/zizmor-action@v0.8.0
+        with:
+          version: ${{ steps.zizmor-version.outputs.version }}
+          # SARIF upload needs code scanning, which a private repository only
+          # gets with GitHub Code Security; off, findings fail this step instead.
+          advanced-security: false
+      - if: ${{ !cancelled() }}
+        name: Verify the workflow lockfile
+        run: |
+          gh extension install github/gh-actions-lock --pin v0.4.0
+          gh actions-lock --verify
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   Changeset:
     if: github.event_name == 'pull_request'
@@ -32,7 +54,7 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -56,11 +78,13 @@ jobs:
       options: --init --ipc=host
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
       # checkout's own safe.directory lasts only for its step; the `prepare`
       # script (`lefthook install`) that `pnpm install` runs needs it too.
       - run: git config --global --add safe.directory "$(pwd)"
-      - uses: nemolize/actions/setup@a78b0df6a8df72fe3a12a16e1c608d27ff490950 # v1.4.1
+      - uses: nemolize/actions/setup@v1.4.1
       - name: Assert the image ships the Playwright version we depend on
         run: |
           img="$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('/ms-playwright/.docker-info', 'utf8')).driverVersion)")"

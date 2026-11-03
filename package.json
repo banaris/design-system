@@ -55,6 +55,7 @@
     "lint:eslint": "eslint .",
     "lint:knip": "knip",
     "lint:prettier": "prettier --check .",
+    "lint:zizmor": "zizmor --offline .",
     "lint:typecheck": "run-p --continue-on-error typecheck:src typecheck:node",
     "typecheck:src": "tsc --noEmit",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
