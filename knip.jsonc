@@ -2,14 +2,22 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   // Not an npm package: zizmor comes from mise.toml.
   "ignoreBinaries": ["zizmor"],
-  "project": ["**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,css}"],
-  // The package's public surface plus the entry points knip cannot infer.
-  // Without `src/index.ts` every export reads as unused, since nothing inside
-  // the repo consumes the library itself.
-  "entry": [
-    "src/index.ts",
-    "scripts/*.mjs",
-    ".storybook/{main,preview,vitest.setup}.{ts,tsx}",
-    "stories/**/*.stories.tsx",
-  ],
+  "workspaces": {
+    ".": {
+      "project": ["**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,css}"],
+      // The package's public surface plus the entry points knip cannot infer.
+      // Without `src/index.ts` every export reads as unused, since nothing inside
+      // the repo consumes the library itself.
+      "entry": [
+        "src/index.ts",
+        "scripts/*.mjs",
+        ".storybook/{main,preview,vitest.setup}.{ts,tsx}",
+        "stories/**/*.stories.tsx",
+      ],
+    },
+    // The Deploy job runs it through wrangler-action; nothing imports it.
+    "deploy": {
+      "ignoreDependencies": ["wrangler"],
+    },
+  },
 }
