@@ -97,3 +97,28 @@ jobs:
       - uses: changesets/action/publish@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
+
+  github-release:
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p 'JSON.parse(require("fs").readFileSync("package.json", "utf8")).version')
+          tag="v$version"
+          if gh release view "$tag" --json tagName > /dev/null 2> "$RUNNER_TEMP/err"; then
+            echo "$tag already has a release"
+            exit 0
+          fi
+          grep -q 'release not found' "$RUNNER_TEMP/err" || { cat "$RUNNER_TEMP/err"; exit 1; }
+          awk -v h="## $version" '$0 == h { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          [ -s "$RUNNER_TEMP/notes.md" ] || { echo "::error::CHANGELOG.md has no notes under \"## $version\""; exit 1; }
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file "$RUNNER_TEMP/notes.md"

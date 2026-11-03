@@ -26,6 +26,27 @@ jobs:
       - uses: nemolize/actions/setup@a78b0df6a8df72fe3a12a16e1c608d27ff490950 # v1.4.1
       - run: pnpm run verify
 
+  Changeset:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --name-only "$BASE_SHA"...HEAD > "$RUNNER_TEMP/changed"
+          grep -q '^src/' "$RUNNER_TEMP/changed" || { echo "no src/ change, no changeset needed"; exit 0; }
+          git diff --name-only --diff-filter=A "$BASE_SHA"...HEAD -- .changeset > "$RUNNER_TEMP/added"
+          grep -E '^\.changeset/.+\.md$' "$RUNNER_TEMP/added" | grep -v '^\.changeset/README\.md$' | grep -q . || {
+            echo "::error::src/ changed but no changeset was added; run 'pnpm run changeset' (or 'pnpm run changeset --empty' if nothing needs announcing)"
+            exit 1
+          }
+
   Accessibility:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
