@@ -1,31 +1,20 @@
-name: Task
-description: Documentation, tooling, dependencies, or maintenance work
+name: Documentation
+description: A doc that is wrong, missing or unclear
+labels: ["type:docs"]
 body:
   - type: markdown
     attributes:
       value: |
-        For work that is neither a defect nor a new capability — a doc that is
-        wrong, a dependency to bump, a script to tidy.
-
-  - type: dropdown
-    id: kind
-    attributes:
-      label: Kind
-      description: Picks the type label a maintainer applies.
-      options:
-        - "docs — documentation only"
-        - "chore — tooling, infra, dependencies, maintenance"
-      default: 0
-    validations:
-      required: true
+        For documentation-only work — a doc that is wrong, missing or unclear.
+        Code, tooling and dependency work belongs in the Chore form.
 
   - type: textarea
     id: what
     attributes:
       label: What needs doing
       description: |
-        The work itself. For a documentation fix, quote the line that is wrong
-        and say what it should say instead.
+        The work itself. Quote the line that is wrong, or say where the missing
+        text belongs, and say what it should say.
     validations:
       required: true
 
@@ -43,7 +32,10 @@ body:
     id: area
     attributes:
       label: Area
-      description: Which layer this sits in.
+      description: |
+        There is no docs layer. Pick the layer the passage you are reporting
+        describes (the README's CI section is ci); for a passage about the
+        project as a whole, such as setup or overview, pick build.
       options:
         - "not sure"
         - "ui — screens, components, styles"
