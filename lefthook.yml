@@ -1,3 +1,20 @@
-remotes:
-  - git_url: https://github.com/nemolize/lefthook-configs.git
-    refetch: true
+pre-commit:
+  jobs:
+    - name: eslint
+      glob: "*.{js,mjs,jsx,ts,tsx}"
+      run: pnpm exec eslint --fix {staged_files}
+      stage_fixed: true
+    - name: prettier
+      glob: "*.{js,mjs,jsx,ts,tsx,json,md,yml,yaml,css,html}"
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+post-merge:
+  files: "git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD"
+  parallel: true
+  jobs:
+    - name: pnpm install
+      glob: "pnpm-lock.yaml"
+      run: pnpm install
+    - name: mise install
+      glob: "{.mise.toml,mise.toml}"
+      run: mise install
