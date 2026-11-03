@@ -25,8 +25,10 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: nemolize/actions/setup@a78b0df6a8df72fe3a12a16e1c608d27ff490950 # v1.4.1
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nemolize/actions/setup@v1.4.1
       # No `pnpm run build` here: the catalogue reads tokens and components
       # from source, so nothing it serves comes out of `dist/`.
       - run: pnpm run build-storybook
@@ -36,7 +38,7 @@ jobs:
         run: |
           # Under `bash -e` a bare `out="$(wrangler ...)"` aborts the step with
           # wrangler's diagnostics still trapped in $out, so echo before failing.
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
             out="$(pnpm exec wrangler deploy 2>&1)" && rc=0 || rc=$?
           else
             out="$(pnpm exec wrangler versions upload 2>&1)" && rc=0 || rc=$?
@@ -52,7 +54,7 @@ jobs:
 
       - if: ${{ github.event_name == 'pull_request' && steps.deploy.outputs.url != '' }}
         name: Write the catalogue URL into the PR description
-        uses: nemolize/actions/upsert@a78b0df6a8df72fe3a12a16e1c608d27ff490950 # v1.4.1
+        uses: nemolize/actions/upsert@v1.4.1
         with:
           marker: catalogue
           body: |

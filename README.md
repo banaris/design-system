@@ -126,6 +126,18 @@ Three rules the guards enforce, worth knowing before they fail on you:
 
 Disabled state is written `data-disabled:`, never `disabled:` — Base UI switches to `aria-disabled` when a control stays keyboard-reachable, and `:disabled` stops matching at that point.
 
+### Workflow security
+
+GitHub Actions are referenced by tag, and `.github/workflows/actions.lock` pins each one, transitive dependencies included, to a commit. Generate it with the `gh actions-lock` extension at the version CI installs (`gh extension install github/gh-actions-lock --pin v0.4.0`), and rerun `gh actions-lock` after adding a workflow or changing a `uses:`. CI runs `gh actions-lock --verify`, so a stale lockfile fails the `Verify` job. Renovate keeps `pinDigests` off for GitHub Actions, since the lockfile already pins them.
+
+CI audits the workflows with [zizmor](https://docs.zizmor.sh/), pinned in `mise.toml`. `pnpm run lint` runs its offline audits; the online ones need a token and are left to CI. To run the full audit locally:
+
+```bash
+GH_TOKEN="$(gh auth token)" zizmor .
+```
+
+zizmor 1.31 cannot read the lockfile, so `zizmor.yml` lets `unpinned-uses` accept tag references. Remove that policy once zizmor 1.32 or later is pinned.
+
 ## Releasing
 
 Versioning is driven by [changesets](https://github.com/changesets/changesets).
