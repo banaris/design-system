@@ -98,6 +98,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
+      data-loading={loading || undefined}
       /* Order is priority: `className` sits last so a caller's utility beats
          the variant without needing `!`. */
       className={cn(
