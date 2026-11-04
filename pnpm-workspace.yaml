@@ -1,4 +1,5 @@
 packages:
+  - "."
   - deploy
 allowBuilds:
   "@tailwindcss/oxide": true
