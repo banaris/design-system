@@ -98,6 +98,10 @@ jobs:
         with:
           pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
 
+      # pnpm swallows a rejected OIDC exchange, leaving only a bare 404 above.
+      - if: failure()
+        run: node scripts/diagnose-npm-oidc.mjs
+
   github-release:
     needs: publish
     runs-on: ubuntu-24.04
