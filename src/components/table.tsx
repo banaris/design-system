@@ -23,7 +23,7 @@ export function Table({ className, ...rest }: TableProps) {
 
 export function TableHeader({ className, ...rest }: TableHeaderProps) {
   return (
-    <thead className={cn("border-border border-b", className)} {...rest} />
+    <thead className={cn("border-divider border-b", className)} {...rest} />
   );
 }
 
@@ -33,7 +33,7 @@ export function TableBody(props: TableBodyProps) {
 
 export function TableFooter({ className, ...rest }: TableFooterProps) {
   return (
-    <tfoot className={cn("border-border border-t", className)} {...rest} />
+    <tfoot className={cn("border-divider border-t", className)} {...rest} />
   );
 }
 

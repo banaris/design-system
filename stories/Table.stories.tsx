@@ -88,6 +88,71 @@ export const Default: Story = {
   },
 };
 
+export const DarkRowDivider: Story = {
+  globals: { theme: "dark" },
+  render: () => (
+    <Table aria-label="Dark dividers">
+      <TableHeader>
+        <TableRow>
+          <TableHead scope="col">Project</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell>Upper row</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>Lower row</TableCell>
+        </TableRow>
+      </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell>Total</TableCell>
+        </TableRow>
+      </TableFooter>
+    </Table>
+  ),
+  play: async ({ canvas }) => {
+    const row = (name: string) => {
+      const found = canvas.getByRole("cell", { name }).closest("tr");
+      if (!found) throw new Error("row missing");
+      return found;
+    };
+    const lower = row("Lower row");
+    const thead = canvas.getAllByRole("columnheader")[0]?.closest("thead");
+    const tfoot = row("Total").closest("tfoot");
+    if (!thead || !tfoot) throw new Error("sections missing");
+
+    const divider = resolveToken("--color-border-strong");
+    await expect(getComputedStyle(lower).borderTopColor).toBe(divider);
+    await expect(getComputedStyle(thead).borderBottomColor).toBe(divider);
+    await expect(getComputedStyle(tfoot).borderTopColor).toBe(divider);
+  },
+};
+
+export const DarkCallerBorderColor: Story = {
+  globals: { theme: "dark" },
+  render: () => (
+    <Table aria-label="Dark caller colour">
+      <TableBody>
+        <TableRow>
+          <TableCell>Upper row</TableCell>
+        </TableRow>
+        <TableRow className="border-danger">
+          <TableCell>Lower row</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvas }) => {
+    const lower = canvas.getByRole("cell", { name: "Lower row" }).closest("tr");
+    if (!lower) throw new Error("row missing");
+    await expect(getComputedStyle(lower).borderTopColor).toBe(
+      resolveToken("--color-danger"),
+    );
+  },
+};
+
 export const CallerClassName: Story = {
   render: () => (
     <Table aria-label="Override" className="w-1/2">
