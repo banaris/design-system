@@ -43,7 +43,7 @@ export const twMerge = extendTailwindMerge({
   extend: {
     theme: {
       // Semantic type steps. Omitting these misfiles them as colours.
-      text: ["display", "h1", "h2", "body", "small", "label"],
+      text: ["display", "h1", "h2", "h3", "body", "small", "label"],
       // `xs`/`sm`/`md`/`lg` are stock t-shirt sizes; `shell` and `pill` are not.
       radius: ["shell", "pill"],
       shadow: ["soft", "raised", "overlay", "focus"],

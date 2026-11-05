@@ -95,6 +95,7 @@ export const Typography: Story = {
         <p className="text-display text-ink">Display</p>
         <p className="text-h1 text-ink">Heading 1</p>
         <p className="text-h2 text-ink">Heading 2</p>
+        <p className="text-h3 text-ink">Heading 3</p>
         <p className="text-body text-ink">
           Body. The semantic tier carries its own weight and line height, so one
           class is enough.
