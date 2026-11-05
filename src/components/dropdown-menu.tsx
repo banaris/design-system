@@ -92,7 +92,7 @@ export type DropdownMenuLinkItemProps = Omit<
    * Whether to close the menu when the item is clicked.
    * @default true
    */
-  closeOnClick?: boolean;
+  closeOnClick?: boolean | undefined;
 };
 
 export function DropdownMenuLinkItem({
