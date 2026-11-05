@@ -6,7 +6,9 @@ export type HeadingLevel = 1 | 2 | 3;
 export type HeadingSize = "display" | "h1" | "h2" | "h3";
 
 export type HeadingProps = {
+  /** Position in the document outline; picks the `h1`–`h3` element. */
   level: HeadingLevel;
+  /** The look only; defaults to the tier matching `level`. */
   size?: HeadingSize;
 } & ComponentProps<"h1">;
 
@@ -19,7 +21,6 @@ const SIZE: Record<HeadingSize, string> = {
   h3: "text-h3",
 };
 
-/** `level` sets the outline screen readers navigate by; `size` is only the look. */
 export function Heading({ level, size, className, ...rest }: HeadingProps) {
   const Element = ELEMENT[level];
   return (

@@ -8,7 +8,9 @@ export type TextElement = "p" | "span" | "div";
 export type TextProps = {
   variant?: TextVariant;
   as?: TextElement;
-} & ComponentProps<"p">;
+  /* No `ref`: `ComponentProps<"p">` would type it as a paragraph ref whatever
+     `as` renders. */
+} & Omit<ComponentProps<"p">, "ref">;
 
 const VARIANT: Record<TextVariant, string> = {
   body: "text-body",

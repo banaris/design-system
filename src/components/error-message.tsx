@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import { Children, type ComponentProps } from "react";
 
 import { cn } from "../lib/cn";
 
@@ -10,9 +10,7 @@ export function ErrorMessage({
   className,
   ...rest
 }: ErrorMessageProps) {
-  if (children === null || children === undefined || children === false)
-    return null;
-  if (children === "") return null;
+  if (Children.toArray(children).every((child) => child === "")) return null;
   return (
     <p
       role="alert"
