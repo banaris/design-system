@@ -112,6 +112,7 @@ for (const file of sourceFiles) {
        comments turns every `data-disabled` mentioned in an explanation into a
        missing class. */
     .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(?<=\s)type="[^"]*"/g, "")
     .split("\n")
     .filter(
       (line) =>

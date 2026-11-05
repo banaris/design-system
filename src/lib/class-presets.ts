@@ -20,3 +20,10 @@ export const FOCUS_RING =
  * fallback — the transition silently never runs. */
 export const TRANSITION_INTERACTIVE =
   "transition-[color,background-color,border-color,box-shadow,transform] duration-[var(--duration-fast)] ease-standard";
+
+/* `disabled:` covers a native input, `data-disabled:` Base UI's span radio
+ * (never `:disabled`); `not-disabled:not-data-disabled:` keeps invalid from racing disabled. */
+export const CONTROL_SURFACE = `border border-solid border-control-border ${TRANSITION_INTERACTIVE} ${FOCUS_RING} aria-invalid:not-disabled:not-data-disabled:border-danger disabled:cursor-not-allowed disabled:border-transparent disabled:bg-surface-sunken disabled:text-ink-faint disabled:forced-colors:text-[GrayText] data-disabled:cursor-not-allowed data-disabled:border-transparent data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]`;
+
+export const TEXT_ENTRY_BOX =
+  "box-border rounded-md bg-transparent px-4 py-2.5 text-base text-ink placeholder:text-ink-faint";
