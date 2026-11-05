@@ -7,7 +7,7 @@
  * is not enough. `z-10` lifts the ring above adjacent siblings that would
  * otherwise paint over it. */
 export const FOCUS_RING =
-  "outline-none focus-visible:shadow-focus focus-visible:z-10";
+  "outline-none focus-visible:outline-hidden focus-visible:shadow-focus focus-visible:z-10";
 
 /* Named properties rather than `transition-all`, which would also animate
  * layout and make every reflow visible. Colour goes through `standard`;
@@ -21,9 +21,7 @@ export const FOCUS_RING =
 export const TRANSITION_INTERACTIVE =
   "transition-[color,background-color,border-color,box-shadow,transform] duration-[var(--duration-fast)] ease-standard";
 
-/* `disabled:` covers a native input, `data-disabled:` Base UI's span radio
- * (never `:disabled`); `not-disabled:not-data-disabled:` keeps invalid from racing disabled. */
-export const CONTROL_SURFACE = `border border-solid border-control-border ${TRANSITION_INTERACTIVE} ${FOCUS_RING} aria-invalid:not-disabled:not-data-disabled:border-danger disabled:cursor-not-allowed disabled:border-transparent disabled:bg-surface-sunken disabled:text-ink-faint disabled:forced-colors:text-[GrayText] data-disabled:cursor-not-allowed data-disabled:border-transparent data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]`;
+export const CONTROL_SURFACE = `border border-solid border-control-border ${TRANSITION_INTERACTIVE} ${FOCUS_RING} aria-invalid:not-data-disabled:border-danger data-disabled:cursor-not-allowed data-disabled:border-transparent data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]`;
 
 export const TEXT_ENTRY_BOX =
   "box-border rounded-md bg-transparent px-4 py-2.5 text-base text-ink placeholder:text-ink-faint";

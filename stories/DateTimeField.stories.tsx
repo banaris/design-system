@@ -1,6 +1,8 @@
-import { DateTimeField } from "@banaris/design-system";
+import { Button, DateTimeField } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
+
+import { expectStateBorders } from "./border-color";
 
 const meta = {
   title: "Forms/DateTimeField",
@@ -25,6 +27,14 @@ export const ValuePassthrough: Story = {
 };
 
 export const States: Story = {
+  play: async ({ canvas }) => {
+    await expectStateBorders({
+      resting: canvas.getByLabelText("Default"),
+      invalid: canvas.getByLabelText("Invalid"),
+      disabled: canvas.getByLabelText("Disabled"),
+      disabledInvalid: canvas.getByLabelText("Disabled and invalid"),
+    });
+  },
   render: (args) => (
     <div className="flex flex-col gap-3">
       <DateTimeField {...args} aria-label="Default" />
@@ -38,4 +48,19 @@ export const States: Story = {
       />
     </div>
   ),
+};
+
+export const MatchesButtonHeight: Story = {
+  render: (args) => (
+    <div className="flex items-start gap-3">
+      <DateTimeField {...args} />
+      <Button>Save</Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const height = (el: HTMLElement) => el.getBoundingClientRect().height;
+    await expect(
+      height(canvas.getByLabelText(meta.args["aria-label"])),
+    ).toBeCloseTo(height(canvas.getByRole("button", { name: "Save" })), 1);
+  },
 };

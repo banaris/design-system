@@ -1,6 +1,8 @@
 import { Radio, RadioGroup } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
+
+import { expectStateBorders } from "./border-color";
 
 const meta = {
   title: "Forms/Radio",
@@ -49,6 +51,25 @@ export const Selection: Story = {
 };
 
 export const States: Story = {
+  play: async ({ canvas }) => {
+    const first = (group: string) =>
+      within(canvas.getByRole("radiogroup", { name: group })).getByRole(
+        "radio",
+        { name: "daily" },
+      );
+    await expectStateBorders({
+      resting: first("Default"),
+      invalid: first("Invalid"),
+      disabled: first("Disabled"),
+      disabledInvalid: first("Disabled and invalid"),
+    });
+    await expectStateBorders({
+      resting: first("Default"),
+      invalid: first("Invalid group"),
+      disabled: first("Disabled"),
+      disabledInvalid: first("Disabled and invalid"),
+    });
+  },
   render: (args) => (
     <div className="flex flex-col gap-4">
       <RadioGroup {...args} aria-label="Default">
@@ -56,6 +77,9 @@ export const States: Story = {
       </RadioGroup>
       <RadioGroup {...args} aria-label="Invalid">
         {options({ invalid: true })}
+      </RadioGroup>
+      <RadioGroup {...args} aria-label="Invalid group" aria-invalid="true">
+        {options()}
       </RadioGroup>
       <RadioGroup {...args} aria-label="Disabled" disabled>
         {options({ disabled: true })}

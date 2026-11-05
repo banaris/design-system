@@ -19,7 +19,7 @@ export function DateTimeField({ className, ...rest }: DateTimeFieldProps) {
       className={cn(
         TEXT_ENTRY_BOX,
         CONTROL_SURFACE,
-        "[color-scheme:light] dark:[color-scheme:dark]",
+        "[color-scheme:light] dark:[color-scheme:dark] [&::-webkit-datetime-edit-fields-wrapper]:p-0",
         className,
       )}
       {...rest}
