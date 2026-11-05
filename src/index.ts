@@ -13,6 +13,18 @@ export {
   type DateTimeFieldProps,
 } from "./components/date-time-field";
 export {
+  DropdownMenu,
+  DropdownMenuContent,
+  type DropdownMenuContentProps,
+  DropdownMenuItem,
+  type DropdownMenuItemProps,
+  DropdownMenuLinkItem,
+  type DropdownMenuLinkItemProps,
+  type DropdownMenuProps,
+  DropdownMenuTrigger,
+  type DropdownMenuTriggerProps,
+} from "./components/dropdown-menu";
+export {
   ErrorMessage,
   type ErrorMessageProps,
 } from "./components/error-message";
