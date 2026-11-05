@@ -85,9 +85,14 @@ export function DropdownMenuItem({
 
 export type DropdownMenuLinkItemProps = Omit<
   ComponentProps<typeof BaseMenu.LinkItem>,
-  "className" | "render"
+  "className" | "render" | "closeOnClick"
 > & {
   className?: string;
+  /**
+   * Whether to close the menu when the item is clicked.
+   * @default true
+   */
+  closeOnClick?: boolean | undefined;
 };
 
 export function DropdownMenuLinkItem({
