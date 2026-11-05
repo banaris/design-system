@@ -8,4 +8,20 @@ export {
   type ButtonSize,
   type ButtonVariant,
 } from "./components/button";
+export {
+  ErrorMessage,
+  type ErrorMessageProps,
+} from "./components/error-message";
+export {
+  Heading,
+  type HeadingLevel,
+  type HeadingProps,
+  type HeadingSize,
+} from "./components/heading";
 export { LogoMark, type LogoMarkProps } from "./components/logo-mark";
+export {
+  Text,
+  type TextElement,
+  type TextProps,
+  type TextVariant,
+} from "./components/text";
