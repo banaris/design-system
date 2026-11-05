@@ -11,8 +11,7 @@ export type TableRowProps = ComponentProps<"tr">;
 export type TableHeadProps = ComponentProps<"th">;
 export type TableCellProps = ComponentProps<"td">;
 
-/* `border-collapse` is set here because no preflight ships with the package;
- * without it the row dividers draw as gaps between cells. */
+/* A row divider is a `<tr>` border, which renders only under `border-collapse`. */
 export function Table({ className, ...rest }: TableProps) {
   return (
     <table
@@ -22,36 +21,29 @@ export function Table({ className, ...rest }: TableProps) {
   );
 }
 
-export function TableHeader(props: TableHeaderProps) {
-  return <thead {...props} />;
+export function TableHeader({ className, ...rest }: TableHeaderProps) {
+  return (
+    <thead className={cn("border-border border-b", className)} {...rest} />
+  );
 }
 
-export function TableBody({ className, ...rest }: TableBodyProps) {
-  return (
-    <tbody
-      className={cn(
-        "[&>tr]:hover:bg-surface-hover [&>tr:last-child]:border-b-0",
-        className,
-      )}
-      {...rest}
-    />
-  );
+export function TableBody(props: TableBodyProps) {
+  return <tbody {...props} />;
 }
 
 export function TableFooter({ className, ...rest }: TableFooterProps) {
   return (
-    <tfoot
-      className={cn(
-        "border-border border-t border-solid [&>tr:last-child]:border-b-0",
-        className,
-      )}
-      {...rest}
-    />
+    <tfoot className={cn("border-border border-t", className)} {...rest} />
   );
 }
 
 export function TableRow({ className, ...rest }: TableRowProps) {
-  return <tr className={cn(ROW_DIVIDER, className)} {...rest} />;
+  return (
+    <tr
+      className={cn(ROW_DIVIDER, "hover:bg-surface-hover", className)}
+      {...rest}
+    />
+  );
 }
 
 export function TableHead({ className, ...rest }: TableHeadProps) {

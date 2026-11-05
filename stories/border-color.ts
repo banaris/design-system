@@ -2,7 +2,7 @@ import { expect } from "storybook/test";
 
 const TRANSPARENT = "rgba(0, 0, 0, 0)";
 
-const resolveToken = (token: string): string => {
+export const resolveToken = (token: string): string => {
   const probe = document.createElement("span");
   probe.style.color = `var(${token})`;
   document.body.append(probe);
