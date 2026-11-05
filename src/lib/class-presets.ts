@@ -34,4 +34,7 @@ export const MENU_ITEM =
 export const MENU_POPUP =
   "border-border bg-surface shadow-overlay box-border min-w-40 rounded-md border border-solid p-1 font-sans outline-none";
 
-export const ROW_DIVIDER = "border-t border-border first:border-t-0";
+/* Dark `--color-border` sits one unit from `--color-surface-hover`, so on a
+ * hovered row the line vanishes; `border-strong` holds against it. */
+export const ROW_DIVIDER =
+  "border-t border-border first:border-t-0 dark:border-border-strong";

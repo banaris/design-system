@@ -88,6 +88,29 @@ export const Default: Story = {
   },
 };
 
+export const DarkRowDivider: Story = {
+  globals: { theme: "dark" },
+  render: () => (
+    <Table aria-label="Dark dividers">
+      <TableBody>
+        <TableRow>
+          <TableCell>Upper row</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>Lower row</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvas }) => {
+    const lower = canvas.getByRole("cell", { name: "Lower row" }).closest("tr");
+    if (!lower) throw new Error("row missing");
+    const divider = getComputedStyle(lower).borderTopColor;
+    await expect(divider).toBe(resolveToken("--color-border-strong"));
+    await expect(divider).not.toBe(resolveToken("--color-surface-hover"));
+  },
+};
+
 export const CallerClassName: Story = {
   render: () => (
     <Table aria-label="Override" className="w-1/2">
