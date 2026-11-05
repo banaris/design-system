@@ -25,3 +25,8 @@ export const CONTROL_SURFACE = `border border-solid border-control-border ${TRAN
 
 export const TEXT_ENTRY_BOX =
   "box-border rounded-md bg-transparent px-4 py-2.5 text-base text-ink placeholder:text-ink-faint";
+
+/* `data-highlighted` is Base UI's roving highlight; it follows both the pointer
+ * and the arrow keys, so hover needs no separate rule. */
+export const MENU_ITEM =
+  "box-border flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base text-ink select-none data-highlighted:bg-surface-hover data-disabled:cursor-not-allowed data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]";
