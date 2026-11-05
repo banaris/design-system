@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { MouseEventHandler } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 const meta = {
@@ -17,12 +18,21 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const menu = (props: { onSignOut?: () => void; disabledItem?: boolean }) => (
+const menu = (props: {
+  onSignOut?: () => void;
+  onExport?: () => void;
+  onLinkClick?: MouseEventHandler;
+  disabledItem?: boolean;
+}) => (
   <>
     <DropdownMenuTrigger variant="secondary">Account</DropdownMenuTrigger>
     <DropdownMenuContent>
-      <DropdownMenuLinkItem href="#account">Account page</DropdownMenuLinkItem>
-      <DropdownMenuItem disabled={props.disabledItem}>Export</DropdownMenuItem>
+      <DropdownMenuLinkItem href="#account" onClick={props.onLinkClick}>
+        Account page
+      </DropdownMenuLinkItem>
+      <DropdownMenuItem disabled={props.disabledItem} onClick={props.onExport}>
+        Export
+      </DropdownMenuItem>
       <DropdownMenuItem onClick={props.onSignOut}>Sign out</DropdownMenuItem>
     </DropdownMenuContent>
   </>
@@ -41,25 +51,44 @@ export const Open: Story = {
   },
 };
 
+const onExport = fn();
+
 export const DisabledItem: Story = {
   args: { defaultOpen: true },
   render: (args) => (
-    <DropdownMenu {...args}>{menu({ disabledItem: true })}</DropdownMenu>
+    <DropdownMenu {...args}>
+      {menu({ disabledItem: true, onExport })}
+    </DropdownMenu>
   ),
   play: async () => {
-    await expect(
-      await screen.findByRole("menuitem", { name: "Export" }),
-    ).toHaveAttribute("aria-disabled", "true");
+    const item = await screen.findByRole("menuitem", { name: "Export" });
+    await expect(item).toHaveAttribute("aria-disabled", "true");
+    await userEvent.click(item);
+    await userEvent.keyboard("{Enter}");
+    await expect(onExport).not.toHaveBeenCalled();
+    await expect(screen.getByRole("menu")).toBeVisible();
   },
 };
 
+/* Navigation is cancelled so the test iframe stays put; the menu must close
+ * even when the document does not unload. */
 export const LinkItem: Story = {
   args: { defaultOpen: true },
-  render: (args) => <DropdownMenu {...args}>{menu({})}</DropdownMenu>,
+  render: (args) => (
+    <DropdownMenu {...args}>
+      {menu({
+        onLinkClick: (event) => {
+          event.preventDefault();
+        },
+      })}
+    </DropdownMenu>
+  ),
   play: async () => {
     const link = await screen.findByRole("menuitem", { name: "Account page" });
     await expect(link.tagName).toBe("A");
     await expect(link).toHaveAttribute("href", "#account");
+    await userEvent.click(link);
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
   },
 };
 
@@ -73,13 +102,13 @@ export const Keyboard: Story = {
     await expect(trigger).toHaveAttribute("aria-haspopup", "menu");
     await expect(trigger).toHaveAttribute("aria-expanded", "false");
 
-    await userEvent.click(trigger);
+    trigger.focus();
+    await userEvent.keyboard("{Enter}");
     await expect(await screen.findByRole("menu")).toBeVisible();
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
 
     const account = screen.getByRole("menuitem", { name: "Account page" });
     const exportItem = screen.getByRole("menuitem", { name: "Export" });
-    await userEvent.keyboard("{ArrowDown}");
     await waitFor(() => expect(account).toHaveFocus());
     await userEvent.keyboard("{ArrowDown}");
     await waitFor(() => expect(exportItem).toHaveFocus());
@@ -103,10 +132,12 @@ export const OutsideClick: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    await userEvent.click(canvas.getByRole("button", { name: "Account" }));
+    const trigger = canvas.getByRole("button", { name: "Account" });
+    await userEvent.click(trigger);
     await expect(await screen.findByRole("menu")).toBeVisible();
     await userEvent.click(canvas.getByText("Elsewhere on the page"));
     await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+    await expect(trigger).toHaveFocus();
   },
 };
 

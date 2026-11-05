@@ -29,4 +29,7 @@ export const TEXT_ENTRY_BOX =
 /* `data-highlighted` is Base UI's roving highlight; it follows both the pointer
  * and the arrow keys, so hover needs no separate rule. */
 export const MENU_ITEM =
-  "box-border flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base text-ink select-none data-highlighted:bg-surface-hover data-disabled:cursor-not-allowed data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]";
+  "box-border flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base text-ink select-none data-highlighted:not-data-disabled:bg-surface-hover data-disabled:cursor-not-allowed data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]";
+
+export const MENU_POPUP =
+  "border-border bg-surface shadow-overlay box-border min-w-40 rounded-md border border-solid p-1 font-sans outline-none";

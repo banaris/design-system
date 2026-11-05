@@ -1,7 +1,7 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import type { ComponentProps } from "react";
 
-import { FOCUS_RING, MENU_ITEM } from "../lib/class-presets";
+import { FOCUS_RING, MENU_ITEM, MENU_POPUP } from "../lib/class-presets";
 import { cn } from "../lib/cn";
 import { Button, type ButtonSize, type ButtonVariant } from "./button";
 
@@ -61,13 +61,7 @@ export function DropdownMenuContent({
   return (
     <BaseMenu.Portal>
       <BaseMenu.Positioner sideOffset={4} className="z-[var(--z-dropdown)]">
-        <BaseMenu.Popup
-          className={cn(
-            "border-border bg-surface shadow-overlay box-border min-w-40 rounded-md border border-solid p-1 font-sans outline-none",
-            className,
-          )}
-          {...rest}
-        />
+        <BaseMenu.Popup className={cn(MENU_POPUP, className)} {...rest} />
       </BaseMenu.Positioner>
     </BaseMenu.Portal>
   );
@@ -98,10 +92,12 @@ export type DropdownMenuLinkItemProps = Omit<
 
 export function DropdownMenuLinkItem({
   className,
+  closeOnClick = true,
   ...rest
 }: DropdownMenuLinkItemProps) {
   return (
     <BaseMenu.LinkItem
+      closeOnClick={closeOnClick}
       className={cn(MENU_ITEM, FOCUS_RING, "no-underline", className)}
       {...rest}
     />
