@@ -73,6 +73,7 @@ export const Colour: Story = {
       <Group title="Border">
         <Swatch token="--color-border" note="Decorative" />
         <Swatch token="--color-border-strong" note="Decorative" />
+        <Swatch token="--color-divider" note="Decorative — row dividers" />
         <Swatch token="--color-control-border" note="Controls — meets 3:1" />
       </Group>
       <Group title="Status">

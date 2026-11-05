@@ -112,6 +112,11 @@
   --color-border-strong: #c8bfad;
   --color-control-border: #857868;
 
+  /* A row divider (`Table`, `List`) is drawn over rows that take
+     `surface-hover`, which dark `border` sits one unit from; dark moves it to
+     `border-strong`. */
+  --color-divider: var(--color-border);
+
   /* ── Status ─────────────────────────────────────────────────────────
      Each status has a text tone (4.5:1 on bg) and a tinted plane to sit on.
      The planes are `color-mix` against `--color-bg`, so they follow the theme
@@ -397,6 +402,7 @@
 
   --color-border: #332b22;
   --color-border-strong: #453b2f;
+  --color-divider: var(--color-border-strong);
 
   /* Status text lightens to clear 4.5:1 against the dark page. The planes and
      borders are mixes and need no restatement. */
@@ -435,6 +441,7 @@
 
     --color-border: #332b22;
     --color-border-strong: #453b2f;
+    --color-divider: var(--color-border-strong);
 
     --color-success: #6fc98a;
     --color-warning: #dda43f;
