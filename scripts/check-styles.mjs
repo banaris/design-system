@@ -100,6 +100,7 @@ const SINGLE_WORD = new Set([
 
 const errors = [];
 const referenced = new Set();
+const arbitraryProperties = new Set();
 const animations = new Set();
 
 for (const file of sourceFiles) {
@@ -112,6 +113,7 @@ for (const file of sourceFiles) {
        comments turns every `data-disabled` mentioned in an explanation into a
        missing class. */
     .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(?<=\s)type="[^"]*"/g, "")
     .split("\n")
     .filter(
       (line) =>
@@ -136,6 +138,13 @@ for (const file of sourceFiles) {
   for (const literal of literals) {
     for (const token of literal.split(/\s+/)) {
       if (token === "") continue;
+      /* `[color-scheme:dark]` is a whole utility whose variants are part of its
+         selector, so it is looked up verbatim rather than stripped to a bare
+         name that would never match. */
+      if (/^(?:[\w-]+:)*\[[a-z-]+:[^\]\s]+\]$/.test(token)) {
+        arbitraryProperties.add(token);
+        continue;
+      }
       /* Keep the bare utility: strip variant prefixes (`hover:`, `data-*:`)
          and the important suffix, since the CSS selector is generated for the
          base name and the variants become part of the selector's shape.
@@ -166,6 +175,14 @@ for (const name of referenced) {
   if (MARKERS.has(name) || present.has(name)) continue;
   errors.push(
     `\`${name}\` is referenced in src/ but has no rule in dist/styles.css.\n` +
+      `      The class reaches the DOM and nothing styles it — no error is raised at build time.`,
+  );
+}
+
+for (const token of arbitraryProperties) {
+  if (present.has(token)) continue;
+  errors.push(
+    `\`${token}\` is referenced in src/ but has no rule in dist/styles.css.\n` +
       `      The class reaches the DOM and nothing styles it — no error is raised at build time.`,
   );
 }

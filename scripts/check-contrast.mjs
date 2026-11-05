@@ -236,6 +236,20 @@ const PAIRS = [
     min: 3,
     why: "control border",
   })),
+  ...SURFACES.flatMap((bg) => [
+    {
+      fg: "--color-danger",
+      bg,
+      min: 3,
+      why: "invalid control border",
+    },
+    {
+      fg: "--color-fill",
+      bg,
+      min: 3,
+      why: "selected radio mark",
+    },
+  ]),
 ];
 
 const errors = [];
