@@ -8,6 +8,7 @@ export {
   type ButtonSize,
   type ButtonVariant,
 } from "./components/button";
+export { Card, type CardProps } from "./components/card";
 export {
   DateTimeField,
   type DateTimeFieldProps,
@@ -34,6 +35,12 @@ export {
   type HeadingProps,
   type HeadingSize,
 } from "./components/heading";
+export {
+  List,
+  ListItem,
+  type ListItemProps,
+  type ListProps,
+} from "./components/list";
 export { LogoMark, type LogoMarkProps } from "./components/logo-mark";
 export {
   Radio,
@@ -41,6 +48,22 @@ export {
   type RadioGroupProps,
   type RadioProps,
 } from "./components/radio";
+export {
+  Table,
+  TableBody,
+  type TableBodyProps,
+  TableCell,
+  type TableCellProps,
+  TableFooter,
+  type TableFooterProps,
+  TableHead,
+  TableHeader,
+  type TableHeaderProps,
+  type TableHeadProps,
+  type TableProps,
+  TableRow,
+  type TableRowProps,
+} from "./components/table";
 export {
   Text,
   type TextElement,
