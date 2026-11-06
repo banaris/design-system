@@ -7,7 +7,12 @@ const ErrorContext = createContext("");
 
 export type FieldProps = Omit<
   ComponentProps<typeof BaseField.Root>,
-  "className" | "render" | "invalid"
+  | "className"
+  | "render"
+  | "invalid"
+  | "validate"
+  | "validationMode"
+  | "validationDebounceTime"
 > & {
   className?: string;
   /** A non-empty string marks the control invalid and is what `FieldError` shows. */
@@ -74,18 +79,18 @@ export type FieldErrorProps = Omit<
   className?: string;
 };
 
-/** Shows the `Field`'s `error` (or its own children) in a live region; renders nothing without one. */
+/** Shows the `Field`'s `error` in a live region; children replace the text. Nothing renders without an `error`. */
 export function FieldError({ className, children, ...rest }: FieldErrorProps) {
   const error = use(ErrorContext);
+  const content = children ?? (error === "" ? undefined : error);
   return (
     <BaseField.Error
       match={error !== ""}
       role="alert"
       className={cn("text-small text-danger", className)}
       {...rest}
-    >
-      {children ?? error}
-    </BaseField.Error>
+      {...(content === undefined ? {} : { children: content })}
+    />
   );
 }
 

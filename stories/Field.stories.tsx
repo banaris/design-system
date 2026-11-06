@@ -98,6 +98,7 @@ export const NoHintNoError: Story = {
     const input = canvas.getByRole("textbox", { name: "Habit name" });
     await expect(canvas.queryByRole("alert")).toBeNull();
     await expect(input).not.toHaveAttribute("aria-invalid", "true");
+    await expect(input).not.toHaveAttribute("aria-describedby");
   },
 };
 
