@@ -67,10 +67,11 @@
     "check:axe-live": "node scripts/check-axe-live.mjs",
     "check:tw-merge": "node scripts/check-tw-merge.mjs",
     "check:stories": "node scripts/check-stories.mjs",
+    "check:install-sync": "node scripts/check-install-sync.mjs",
     "check:styles": "node scripts/check-styles.mjs",
     "check:package": "node scripts/check-package.mjs",
     "test": "vitest run --project=storybook --project=storybook-reduced-motion",
-    "verify": "run-s lint check:contrast check:geometry check:tw-merge check:stories build check:styles check:package",
+    "verify": "run-s lint check:contrast check:geometry check:tw-merge check:stories check:install-sync build check:styles check:package",
     "verify:full": "run-s verify test check:axe-live",
     "changeset": "changeset",
     "prepare": "lefthook install"

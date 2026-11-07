@@ -100,17 +100,18 @@ pnpm run verify        # lint, types, tokens, build, package (seconds)
 pnpm run verify:full   # the above plus axe over every story in a real browser
 ```
 
-Beyond the usual lint and type checks, seven deterministic guards cover failures that are otherwise **silent** — green build, green types, green lint, broken output:
+Beyond the usual lint and type checks, eight deterministic guards cover failures that are otherwise **silent** — green build, green types, green lint, broken output:
 
-| Check            | Catches                                                                                                                                                                            |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `check:contrast` | A token that no longer meets WCAG, in either theme. Measured, not asserted by hand — the ratios quoted in `theme.css` are kept honest by this.                                     |
-| `check:tw-merge` | A token missing from the merge config, which silently misgroups a class so two utilities annihilate each other.                                                                    |
-| `check:styles`   | A class that reaches the DOM with no CSS behind it — the classic Tailwind scanning failure, which raises no error anywhere.                                                        |
-| `check:stories`  | An exported component with no story. Absent from the catalogue means undiscoverable, which for this package means it may as well not exist.                                        |
-| `check:package`  | `exports` pointing at a file the build does not produce, and a stylesheet shipping preflight or missing tokens.                                                                    |
-| `check:geometry` | The brand mark's hexagons overlapping instead of tiling — valid SVG, passing build, visibly wrong render.                                                                          |
-| `check:axe-live` | The accessibility suite having stopped running. Seeds a violation and requires the suite to go red, because a suite that checks nothing reports the same green as one that passes. |
+| Check                | Catches                                                                                                                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `check:contrast`     | A token that no longer meets WCAG, in either theme. Measured, not asserted by hand — the ratios quoted in `theme.css` are kept honest by this.                                     |
+| `check:tw-merge`     | A token missing from the merge config, which silently misgroups a class so two utilities annihilate each other.                                                                    |
+| `check:styles`       | A class that reaches the DOM with no CSS behind it — the classic Tailwind scanning failure, which raises no error anywhere.                                                        |
+| `check:stories`      | An exported component with no story. Absent from the catalogue means undiscoverable, which for this package means it may as well not exist.                                        |
+| `check:install-sync` | The README install section and the catalogue's Getting started page drifting apart — each is edited alone, and the stale one keeps a command or import that no longer works.       |
+| `check:package`      | `exports` pointing at a file the build does not produce, and a stylesheet shipping preflight or missing tokens.                                                                    |
+| `check:geometry`     | The brand mark's hexagons overlapping instead of tiling — valid SVG, passing build, visibly wrong render.                                                                          |
+| `check:axe-live`     | The accessibility suite having stopped running. Seeds a violation and requires the suite to go red, because a suite that checks nothing reports the same green as one that passes. |
 
 They exist because each of these was possible to ship without a single tool complaining, and they have already earned it — `check:contrast` caught the accent button's label measuring 1.08:1 against its own fill in dark, and `check:styles` caught three separate cases of a class reaching the DOM with no rule behind it.
 
