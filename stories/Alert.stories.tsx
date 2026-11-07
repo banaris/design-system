@@ -44,9 +44,74 @@ export const Statuses: Story = {
     const alert = canvas.getByText("Upload failed").closest("[role=alert]");
     if (alert === null) throw new Error("danger alert missing");
     await expect(getComputedStyle(alert).borderInlineStartColor).toBe(danger);
+
+    const glyph = alert.querySelector("svg");
+    if (glyph === null) throw new Error("danger glyph missing");
+    await expect(glyph).toHaveAttribute("aria-hidden", "true");
+    await expect(getComputedStyle(glyph).stroke).toBe(danger);
+
+    const titleLine = canvas.getByText("Upload failed");
+    const glyphBox = glyph.getBoundingClientRect();
+    const titleBox = titleLine.getBoundingClientRect();
+    const lineHeight = parseFloat(getComputedStyle(titleLine).lineHeight);
+    await expect(
+      Math.abs(
+        glyphBox.top + glyphBox.height / 2 - (titleBox.top + lineHeight / 2),
+      ),
+    ).toBeLessThan(1);
   },
 };
 
 export const WithoutTitle: Story = {
   args: { status: "danger" },
+};
+
+export const WithNestedParagraph: Story = {
+  args: {
+    status: "danger",
+    children: (
+      <div>
+        <p>The file is larger than the 10 MB limit.</p>
+      </div>
+    ),
+  },
+  play: async ({ canvas }) => {
+    const paragraph = canvas.getByText(
+      "The file is larger than the 10 MB limit.",
+    );
+    const glyph = canvas.getByRole("alert").querySelector("svg");
+    if (glyph === null) throw new Error("glyph missing");
+    const glyphBox = glyph.getBoundingClientRect();
+    const lineHeight = parseFloat(getComputedStyle(paragraph).lineHeight);
+    await expect(
+      Math.abs(
+        glyphBox.top +
+          glyphBox.height / 2 -
+          (paragraph.getBoundingClientRect().top + lineHeight / 2),
+      ),
+    ).toBeLessThan(1);
+  },
+};
+
+export const WithParagraph: Story = {
+  args: {
+    status: "danger",
+    children: <p>The file is larger than the 10 MB limit.</p>,
+  },
+  play: async ({ canvas }) => {
+    const paragraph = canvas.getByText(
+      "The file is larger than the 10 MB limit.",
+    );
+    const glyph = canvas.getByRole("alert").querySelector("svg");
+    if (glyph === null) throw new Error("glyph missing");
+    const glyphBox = glyph.getBoundingClientRect();
+    const lineHeight = parseFloat(getComputedStyle(paragraph).lineHeight);
+    await expect(
+      Math.abs(
+        glyphBox.top +
+          glyphBox.height / 2 -
+          (paragraph.getBoundingClientRect().top + lineHeight / 2),
+      ),
+    ).toBeLessThan(1);
+  },
 };

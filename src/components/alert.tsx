@@ -34,14 +34,17 @@ export function Alert({
     <div
       role={status === "danger" || status === "warning" ? "alert" : "status"}
       className={cn(
-        "box-border flex gap-3 rounded-md border border-s-4 border-solid px-4 py-3 text-base",
+        "box-border flex items-baseline gap-3 rounded-md border border-s-4 border-solid px-4 py-3 text-base",
         STATUS_TONE[status],
         "border-s-(color:--status)",
         className,
       )}
       {...rest}
     >
-      <StatusIcon className="mt-1 size-4 shrink-0 text-(color:--status)" />
+      <span className="inline-flex h-lh shrink-0 items-center">
+        {"\u200b"}
+        <StatusIcon className="size-4 text-(color:--status)" />
+      </span>
       <div className="min-w-0 flex-1">
         {title !== undefined && (
           <p className="text-ink font-semibold">{title}</p>

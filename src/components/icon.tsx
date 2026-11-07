@@ -24,12 +24,13 @@ export function Icon({
   label,
   className,
 }: IconProps) {
+  const named = label !== undefined && label !== "";
   return (
     <Glyph
       className={cn("shrink-0", SIZE[size], className)}
-      role={label === undefined ? undefined : "img"}
-      aria-label={label}
-      aria-hidden={label === undefined ? true : undefined}
+      role={named ? "img" : undefined}
+      aria-label={named ? label : undefined}
+      aria-hidden={named ? undefined : true}
     />
   );
 }

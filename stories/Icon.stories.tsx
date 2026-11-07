@@ -52,9 +52,16 @@ export const InheritsColour: Story = {
     const text = canvas.getByText("Something needs attention.");
     const svg = text.querySelector("svg");
     if (svg === null) throw new Error("icon missing");
-    await expect(getComputedStyle(svg).color).toBe(
+    await expect(getComputedStyle(svg).stroke).toBe(
       getComputedStyle(text).color,
     );
+  },
+};
+
+export const EmptyLabel: Story = {
+  args: { label: "" },
+  play: async ({ canvas }) => {
+    await expect(canvas.queryByRole("img")).toBeNull();
   },
 };
 
