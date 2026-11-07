@@ -75,3 +75,62 @@ export const InField: Story = {
     await expect(textarea).toHaveFocus();
   },
 };
+
+export const ValueChange: Story = {
+  args: { onValueChange: fn() },
+  play: async ({ args, canvas }) => {
+    await userEvent.type(canvas.getByRole("textbox"), "Hi");
+    await expect(args.onValueChange).toHaveBeenLastCalledWith(
+      "Hi",
+      expect.anything(),
+    );
+  },
+};
+
+export const FieldStateWithRef: Story = {
+  args: { "aria-label": undefined, defaultValue: "Read", ref: fn() },
+  render: (args) => (
+    <Field>
+      <FieldLabel>Notes</FieldLabel>
+      <Textarea {...args} />
+    </Field>
+  ),
+  play: async ({ args, canvas }) => {
+    const textarea = canvas.getByRole("textbox", { name: "Notes" });
+    await expect(args.ref).toHaveBeenCalledWith(textarea);
+    await expect(textarea).toHaveAttribute("data-filled");
+  },
+};
+
+export const KeepsFieldAria: Story = {
+  args: {
+    "aria-label": undefined,
+    "aria-describedby": "extra-note",
+    "aria-invalid": false,
+  },
+  render: (args) => (
+    <>
+      <Field error="Write a note.">
+        <FieldLabel>Notes</FieldLabel>
+        <Textarea {...args} />
+        <FieldHint>Markdown is not rendered.</FieldHint>
+        <FieldError />
+      </Field>
+      <p id="extra-note">Shown to the whole team.</p>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    const textarea = canvas.getByRole("textbox", { name: "Notes" });
+    await expect(textarea).toHaveAttribute("aria-invalid", "true");
+    await expect(textarea).toHaveAccessibleDescription(
+      "Shown to the whole team. Markdown is not rendered. Write a note.",
+    );
+  },
+};
+
+export const SizedByRows: Story = {
+  args: { rows: 6 },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("textbox")).toHaveAttribute("rows", "6");
+  },
+};

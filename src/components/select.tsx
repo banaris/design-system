@@ -13,7 +13,7 @@ import { CheckIcon, ChevronIcon } from "../lib/control-icons";
 
 export type SelectProps = ComponentProps<typeof BaseSelect.Root>;
 
-/** Owns the value and open state; put a `SelectTrigger` and a `SelectContent` inside. */
+/** Owns the value and open state; pass `items` so the trigger shows labels, not values. */
 export const Select = BaseSelect.Root;
 
 export type SelectTriggerProps = Omit<

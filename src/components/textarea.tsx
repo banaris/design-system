@@ -6,38 +6,33 @@ import { CONTROL_SURFACE, TEXT_ENTRY_BOX } from "../lib/class-presets";
 import { cn } from "../lib/cn";
 
 export type TextareaProps = Omit<
-  ComponentProps<"textarea">,
-  "className" | "children"
-> & {
-  className?: string;
-};
+  ComponentProps<typeof Input>,
+  "className" | "render"
+> &
+  Pick<ComponentProps<"textarea">, "rows" | "cols" | "wrap"> & {
+    className?: string;
+  };
 
-/** A multi-line text input; mark it invalid with `aria-invalid`. */
+/** A multi-line `TextField`; also takes `rows`, `cols` and `wrap`. Mark it invalid with `aria-invalid`. */
 export function Textarea({
   className,
-  id,
-  name,
-  value,
-  defaultValue,
-  disabled,
-  style,
+  rows,
+  cols,
+  wrap,
   ...rest
 }: TextareaProps) {
   return (
     <Input
-      id={id}
-      name={name}
-      value={value}
-      defaultValue={defaultValue}
-      disabled={disabled}
-      style={style}
       className={cn(
         TEXT_ENTRY_BOX,
         CONTROL_SURFACE,
         "min-h-24 resize-y",
         className,
       )}
-      render={(props) => <textarea {...mergeProps<"textarea">(props, rest)} />}
+      render={(props) => (
+        <textarea {...mergeProps<"textarea">(props, { rows, cols, wrap })} />
+      )}
+      {...rest}
     />
   );
 }
