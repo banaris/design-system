@@ -1,5 +1,15 @@
 # @banaris/design-system
 
+## 0.4.0
+
+### Minor Changes
+
+- [#262](https://github.com/banaris/design-system/pull/262) [`4a17bc9`](https://github.com/banaris/design-system/commit/4a17bc9be29449dbe72a86f2898675a9433af99d) - Add `Dialog`, `Popover`, `Tooltip`, `Toaster` (with `ToastProvider` and `useToast`), `Tabs`, `Badge`, `Alert` and `Spinner`. Overlays stack at `--z-overlay` and toasts at `--z-toast`, and their motion follows `--duration-*`, so `prefers-reduced-motion` applies. `Button`'s loading state now renders the exported `Spinner`.
+
+### Patch Changes
+
+- [#267](https://github.com/banaris/design-system/pull/267) [`1d5d39b`](https://github.com/banaris/design-system/commit/1d5d39bc78701e3000d4b21b7c4bb5986aa8b75a) - Stop `Spinner`, and the `Button` loading indicator that renders it, from rotating under `prefers-reduced-motion: reduce`. The static ring stays visible and `Spinner` keeps its `status` role.
+
 ## 0.3.0
 
 ### Minor Changes
