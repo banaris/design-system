@@ -310,7 +310,7 @@
      so `duration-fast` generates nothing and the transition silently stays at
      the `0s` fallback (measured). Reference them as `duration-[var(--duration-fast)]`.
      They are still tokens — `base.css` zeroes all three under
-     `prefers-reduced-motion`, which reaches every component at once. */
+     `prefers-reduced-motion`, which reaches every component using them. */
   --duration-fast: 120ms;
   --duration-base: 180ms;
   --duration-slow: 280ms;

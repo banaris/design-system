@@ -14,35 +14,56 @@ import { defineConfig } from "vitest/config";
  * ⚠ `storybookTest` has to live inside `test.projects`. Configured at the root
  * instead, setup files are handed to the browser as absolute URLs and every
  * story fails to load its dynamic import. */
+function storybookProject(
+  name: string,
+  options: {
+    tags?: { include: string[] };
+    contextOptions?: { reducedMotion: "reduce" };
+    setupFiles?: string[];
+  } = {},
+) {
+  return {
+    extends: true as const,
+    plugins: [
+      tailwindcss(),
+      storybookTest({
+        configDir: fileURLToPath(new URL(".storybook", import.meta.url)),
+        ...(options.tags && { tags: options.tags }),
+      }),
+    ],
+    resolve: {
+      alias: {
+        "@banaris/design-system": fileURLToPath(
+          new URL("src/index.ts", import.meta.url),
+        ),
+      },
+    },
+    test: {
+      name,
+      browser: {
+        enabled: true,
+        headless: true,
+        provider: playwright(
+          options.contextOptions && { contextOptions: options.contextOptions },
+        ),
+        instances: [{ browser: "chromium" as const }],
+      },
+      setupFiles: [".storybook/vitest.setup.ts", ...(options.setupFiles ?? [])],
+    },
+  };
+}
+
+/* The second project reruns the `reduced-motion` stories with reduced motion
+ * requested; its setup file fails the run if the browser ignored that. */
 export default defineConfig({
   test: {
     projects: [
-      {
-        extends: true,
-        plugins: [
-          tailwindcss(),
-          storybookTest({
-            configDir: fileURLToPath(new URL(".storybook", import.meta.url)),
-          }),
-        ],
-        resolve: {
-          alias: {
-            "@banaris/design-system": fileURLToPath(
-              new URL("src/index.ts", import.meta.url),
-            ),
-          },
-        },
-        test: {
-          name: "storybook",
-          browser: {
-            enabled: true,
-            headless: true,
-            provider: playwright(),
-            instances: [{ browser: "chromium" }],
-          },
-          setupFiles: [".storybook/vitest.setup.ts"],
-        },
-      },
+      storybookProject("storybook"),
+      storybookProject("storybook-reduced-motion", {
+        tags: { include: ["reduced-motion"] },
+        contextOptions: { reducedMotion: "reduce" },
+        setupFiles: [".storybook/vitest.reduced-motion.setup.ts"],
+      }),
     ],
   },
 });

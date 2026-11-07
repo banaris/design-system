@@ -51,7 +51,13 @@ let output;
 try {
   output = execFileSync(
     "pnpm",
-    ["exec", "vitest", "run", "--project=storybook"],
+    [
+      "exec",
+      "vitest",
+      "run",
+      "--project=storybook",
+      "--project=storybook-reduced-motion",
+    ],
     {
       cwd: ROOT,
       encoding: "utf8",

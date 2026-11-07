@@ -14,6 +14,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  tags: ["reduced-motion"],
   play: async ({ canvas }) => {
     const spinner = canvas.getByRole("status", { name: "Loading" });
     await expect(spinner).toBeVisible();
@@ -40,6 +41,7 @@ export const Decorative: Story = {
 };
 
 export const InsideButton: Story = {
+  tags: ["reduced-motion"],
   render: () => (
     <Button loading variant="secondary">
       Saving
