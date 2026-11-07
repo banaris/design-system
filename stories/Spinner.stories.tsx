@@ -2,6 +2,8 @@ import { Button, Spinner } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
+import { expectSpinsUnlessReduced } from "./motion";
+
 const meta = {
   title: "Feedback/Spinner",
   component: Spinner,
@@ -13,7 +15,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole("status", { name: "Loading" })).toBeVisible();
+    const spinner = canvas.getByRole("status", { name: "Loading" });
+    await expect(spinner).toBeVisible();
+    await expectSpinsUnlessReduced(spinner);
   },
 };
 
@@ -44,6 +48,7 @@ export const InsideButton: Story = {
   play: async ({ canvas }) => {
     const button = canvas.getByRole("button", { name: "Saving" });
     await expect(button).toHaveAttribute("aria-busy", "true");
-    await expect(button.querySelector("[aria-hidden='true']")).not.toBeNull();
+    const spinner = button.querySelector("[aria-hidden='true']");
+    await expectSpinsUnlessReduced(spinner);
   },
 };

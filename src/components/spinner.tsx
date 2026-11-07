@@ -28,7 +28,7 @@ export function Spinner({
       aria-label={label}
       aria-hidden={label === undefined || undefined}
       className={cn(
-        "rounded-pill inline-block shrink-0 animate-[ds-spin_0.6s_linear_infinite] border-2 border-current border-t-transparent",
+        "rounded-pill inline-block shrink-0 animate-[ds-spin_0.6s_linear_infinite] border-2 border-current border-t-transparent motion-reduce:animate-none",
         SIZE[size],
         className,
       )}
