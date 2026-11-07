@@ -94,7 +94,7 @@ if (missing.length > 0) {
   console.error("check:stories failed\n");
   for (const name of missing) {
     console.error(
-      `  - ${name} is exported from src/index.ts but never rendered in stories/.\n` +
+      `  - ${name} is exported from src/index.ts but never rendered in a *.stories.ts(x) file under stories/.\n` +
         `    A component absent from the catalogue cannot be discovered by anyone using this package.\n`,
     );
   }

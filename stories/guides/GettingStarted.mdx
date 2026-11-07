@@ -23,12 +23,10 @@ The class names that appear in the DOM (`inline-flex`, `bg-accent`, …) are not
 
 ## The four CSS entry points
 
-| Entry point                             | Contents                                      | When                                                                                                              |
-| --------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt | **Default.** Everything, one import                                                                               |
-| `@banaris/design-system/theme.css`      | Design tokens only (`@theme`)                 | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup                          |
-| `@banaris/design-system/base.css`       | The minimum globals the components rely on    | With `theme.css` on the split path. Without it components lose `box-sizing` and form controls lose the brand font |
-| `@banaris/design-system/components.css` | Component CSS and keyframes only              | Rarely: only alongside `theme.css` if you are generating utilities yourself                                       |
+- `@banaris/design-system/styles.css`: Tokens, component CSS and utilities, prebuilt. **Default:** everything, one import.
+- `@banaris/design-system/theme.css`: Design tokens only (`@theme`). You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup.
+- `@banaris/design-system/base.css`: The minimum globals the components rely on. With `theme.css` on the split path. Without it components lose `box-sizing` and form controls lose the brand font.
+- `@banaris/design-system/components.css`: Component CSS and keyframes only. Rarely: only alongside `theme.css` if you are generating utilities yourself.
 
 Using Tailwind and want the tokens in your own markup? Import both. The duplicate `:root` variables are harmless.
 
@@ -53,13 +51,11 @@ The distributed CSS lives in `@layer theme, base, components, utilities`, which 
 
 ## Theming
 
-Light is the default. Dark activates in two ways:
+Light is the default. Dark activates through the `data-theme` attribute on `<html>`:
 
-| `<html>` attribute   | Result                            |
-| -------------------- | --------------------------------- |
-| `data-theme="dark"`  | Dark                              |
-| `data-theme="light"` | Light, ignoring the OS preference |
-| none                 | Follows `prefers-color-scheme`    |
+- `data-theme="dark"`: dark.
+- `data-theme="light"`: light, ignoring the OS preference.
+- No attribute: follows `prefers-color-scheme`.
 
 A product with a toggle sets `data-theme` on `<html>` and nothing else; every token follows. This catalogue has a Theme control in its toolbar.
 

@@ -8,15 +8,13 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 ## What a release may change
 
-| Release | May change                                                                                                                                       |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Patch   | Fixes to behaviour, styling and documentation that make a component do what it already claims. Props, exports and token names stay as they were. |
-| Minor   | New components and props, and also breaking changes: renamed or removed props and exports, renamed or removed tokens, changed behaviour.         |
+- **Patch**: Fixes to behaviour, styling and documentation that make a component do what it already claims. Props, exports and token names stay as they were.
+- **Minor**: New components and props, and also breaking changes: renamed or removed props and exports, renamed or removed tokens, changed behaviour.
 
 Two things are never a contract, in any release:
 
 - The class names that appear in the DOM (`inline-flex`, `bg-accent`, …). Do not hook your own CSS to them.
-- Anything not re-exported from the package's entry point. It is internal and may change without notice.
+- Anything the package does not export, from its JavaScript entry point or from one of its four CSS files. It is internal and may change without notice.
 
 ## How a change is announced
 
@@ -24,7 +22,7 @@ Every change a consumer can observe ships with a **changeset**: a short note, wr
 
 - Read `CHANGELOG.md` before you bump a minor version. A breaking change is described in its note: what changed, and what to do about it.
 - `CHANGELOG.md` is published with the package, so you can read it from `node_modules/@banaris/design-system/` as well as on GitHub.
-- Changes nobody using the package can observe (CI, tests, stories, documentation, dependency bumps) have no changeset and no changelog line.
+- Changes nobody using the package can observe (CI, tests, stories, documentation, bumps of development-only dependencies) have no changeset and no changelog line.
 
 ## Pin or range
 

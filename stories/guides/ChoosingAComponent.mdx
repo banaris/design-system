@@ -32,12 +32,12 @@ Keep a menu to secondary choices. The one action the page is for belongs on a vi
 
 - `Dialog` interrupts. It dims the page and asks for a decision or a short task, and the reader answers or dismisses it. Name it with a `DialogTitle`.
 - `Popover` stays beside what opened it. Use it for a small panel the reader can ignore: extra detail, a quick setting.
-- `Tooltip` only describes its trigger, in a few words. It must not carry anything the reader needs, because touch and keyboard users may never see it.
+- `Tooltip` only describes its trigger, in a few words. It must not carry anything the reader needs: it is brief, and a touch user has no hover to open it.
 
 ## Alert, Toast, ErrorMessage and FieldError
 
 - `Alert` stays in the page and reports something about it: a saved state, a warning, a failure. `danger` and `warning` interrupt assistive technology; the other statuses wait their turn.
-- `Toast` reports the result of something the reader just did and then goes away. Do not put the only record of a failure in a toast.
+- A toast (a `Toaster` inside a `ToastProvider`, raised with `useToast().add`) reports the result of something the reader just did and then goes away. Do not put the only record of a failure in a toast.
 - `ErrorMessage` is an inline error for something that is not a form field, such as a list that failed to load.
 - `FieldError` belongs to a `Field`: it shows the field's `error` next to the control it describes. Set `error` on `Field` rather than rendering your own message.
 
