@@ -40,8 +40,8 @@
   }
 
   /* Honour a reader who has asked for less movement. Components express
-     motion through `--duration-*`, so zeroing the tokens reaches all of them
-     at once rather than requiring each to carry its own media query. */
+     motion through `--duration-*`, so zeroing the tokens reaches them at once;
+     an animation with a literal duration needs `motion-reduce:animate-none`. */
   @media (prefers-reduced-motion: reduce) {
     :root {
       --duration-fast: 0ms;
