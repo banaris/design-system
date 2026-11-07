@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 
+import { GAP, type GapStep } from "../lib/class-presets";
 import { cn } from "../lib/cn";
-import { GAP, type GapStep } from "../lib/layout";
 
 export type StackDirection = "vertical" | "horizontal";
 

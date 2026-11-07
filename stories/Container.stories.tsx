@@ -12,20 +12,25 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const gutter = () =>
-  matchMedia("(min-width: 40rem)").matches ? "24px" : "16px";
-
 export const Default: Story = {
   play: async ({ canvas }) => {
     const style = getComputedStyle(canvas.getByText("Page content"));
     await expect(style.maxWidth).toBe("1280px");
-    await expect(style.paddingLeft).toBe(gutter());
-    await expect(style.paddingRight).toBe(gutter());
+    await expect(style.paddingLeft).toBe("16px");
+    await expect(style.paddingRight).toBe("16px");
+  },
+};
+
+export const GutterOverride: Story = {
+  args: { className: "px-0" },
+  play: async ({ canvas }) => {
+    const style = getComputedStyle(canvas.getByText("Page content"));
+    await expect(style.paddingLeft).toBe("0px");
   },
 };
 
 export const Narrow: Story = {
-  args: { size: "sm" },
+  args: { size: "narrow" },
   play: async ({ canvas }) => {
     const style = getComputedStyle(canvas.getByText("Page content"));
     await expect(style.maxWidth).toBe("768px");

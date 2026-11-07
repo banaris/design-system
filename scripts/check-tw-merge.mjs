@@ -77,6 +77,8 @@ const registered = (group) => {
 /* Names `tailwind-merge` already classifies correctly out of the box, so
    registering them would be redundant rather than protective. */
 const STOCK = new Set([
+  "3xs",
+  "2xs",
   "xs",
   "sm",
   "base",
@@ -85,6 +87,10 @@ const STOCK = new Set([
   "xl",
   "2xl",
   "3xl",
+  "4xl",
+  "5xl",
+  "6xl",
+  "7xl",
   "none",
   "full",
 ]);
@@ -94,6 +100,8 @@ for (const [cssPrefix, mergeGroup] of [
   ["radius", "radius"],
   ["shadow", "shadow"],
   ["ease", "ease"],
+  ["container", "container"],
+  ["breakpoint", "breakpoint"],
 ]) {
   const need = declared(cssPrefix).filter((n) => !STOCK.has(n));
   const have = registered(mergeGroup);

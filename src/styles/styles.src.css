@@ -25,3 +25,7 @@
 
 /* Tailwind cannot see the component sources from a CSS file, so name them. */
 @source "../";
+/* The word `container` appears in source (an import path) and would otherwise
+   generate Tailwind's `.container` rule, which now carries breakpoint
+   max-widths into consumers' own `container` classes. */
+@source not inline("container");

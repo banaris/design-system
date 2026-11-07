@@ -202,12 +202,12 @@
 
   /* ── Breakpoints and container widths ───────────────────────────────
      Declared here, with Tailwind v4's default values, rather than inherited.
-     Tailwind's defaults would apply either way; writing them down makes them
-     this package's contract, so two apps cannot lay the same component out
-     differently if Tailwind moves a default. Names stay Tailwind's own, which
-     is what `sm:` and `max-w-3xl` read, and which `tailwind-merge` already
-     classifies — nothing to register in `cn.ts`. `Container` draws its widths
-     from the `--container-*` scale. */
+     The prebuilt stylesheet imports only `tailwindcss/utilities.css`, so
+     without these there is no `max-w-3xl` or `sm:` variant at all; for a
+     consumer on full Tailwind they restate its defaults, which makes them this
+     package's contract if Tailwind moves one. The names stay Tailwind's own,
+     so `tailwind-merge` classifies them and `cn.ts` needs no entry
+     (`scripts/check-tw-merge.mjs` checks that a non-stock name gets one). */
   --breakpoint-sm: 40rem;
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
