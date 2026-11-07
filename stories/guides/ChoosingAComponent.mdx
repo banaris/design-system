@@ -1,0 +1,51 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Choosing a component" />
+
+# Choosing a component
+
+Several components can look right for the same job. Each section below names one such group and says when each member is the one to reach for. Every component has its own story in the sidebar.
+
+## Text and Heading
+
+- `Heading` names a section. Give it the `level` that matches its place in the page outline (`h1` to `h3`); use `size` only to change how it looks, never to fake a level.
+- `Text` is everything else that is read: body copy, supporting prose, a small label. It renders a `p` by default; pass `as` for a `span` inside a line or a `div` where paragraph semantics are wrong.
+
+If a line names what follows, it is a `Heading`. If it belongs to what was named, it is `Text`.
+
+## Card, List and Table
+
+- `Card` is one raised surface that holds a single thing: a summary, a form, a group of controls.
+- `List` is rows of one kind, each a single line or a short block, where only the order and the divider matter.
+- `Table` is rows that share columns. Use it when the reader compares values down a column; if there is only one value per row, use `List`.
+
+A `Card` can hold a `List` or a `Table`. Do not stack a `Card` per row.
+
+## DropdownMenu and a list of links
+
+- `DropdownMenu` collapses a set of actions or links behind one `Button` when they would crowd the page. Use `DropdownMenuItem` for an action and `DropdownMenuLinkItem` for a link.
+- A plain list of links is for navigation the reader should see without opening anything. If the destinations matter on first glance, show them.
+
+Keep a menu to secondary choices. The one action the page is for belongs on a visible `Button`.
+
+## Dialog, Popover and Tooltip
+
+- `Dialog` interrupts. It dims the page and asks for a decision or a short task, and the reader answers or dismisses it. Name it with a `DialogTitle`.
+- `Popover` stays beside what opened it. Use it for a small panel the reader can ignore: extra detail, a quick setting.
+- `Tooltip` only describes its trigger, in a few words. It must not carry anything the reader needs, because touch and keyboard users may never see it.
+
+## Alert, Toast, ErrorMessage and FieldError
+
+- `Alert` stays in the page and reports something about it: a saved state, a warning, a failure. `danger` and `warning` interrupt assistive technology; the other statuses wait their turn.
+- `Toast` reports the result of something the reader just did and then goes away. Do not put the only record of a failure in a toast.
+- `ErrorMessage` is an inline error for something that is not a form field, such as a list that failed to load.
+- `FieldError` belongs to a `Field`: it shows the field's `error` next to the control it describes. Set `error` on `Field` rather than rendering your own message.
+
+## Checkbox, Switch, RadioGroup and Select
+
+- `Checkbox` is a yes/no answer that is submitted with the form, or one of several that can all be chosen.
+- `Switch` is a setting that takes effect as soon as it is flipped. If a Save button decides it, use a `Checkbox`.
+- `RadioGroup` is one choice from a few options, all visible at once.
+- `Select` is one choice from many options, or from a few when space is tight.
+
+Put any of them inside a `Field` to get a label, a hint and an error wired to the control.

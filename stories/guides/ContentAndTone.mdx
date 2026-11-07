@@ -1,0 +1,54 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Content and tone" />
+
+# Content and tone
+
+The words in the catalogue's stories follow a few habits. Use them in your product so that every screen sounds like the same person.
+
+- English, in **sentence case**: "Track a habit", not "Track A Habit".
+- Short and plain. Say what happened and what to do, in the reader's terms.
+- The reader is "you". Never blame them.
+
+## Labels
+
+A label names the thing, or the result of pressing it.
+
+| Do                    | Don't                         |
+| --------------------- | ----------------------------- |
+| `Track a habit`       | `Click here to track`         |
+| `Delete project`      | `Yes`                         |
+| `Habit name`          | `Please enter the habit name` |
+| `Email notifications` | `Notifications?`              |
+
+- A button starts with a verb and says what it does. In a dialog that asks "Delete this project?", the confirming button says `Delete project`, not `OK`.
+- A field label is a noun phrase, with no colon and no instruction. Put the instruction in a hint.
+- A hint adds what the label cannot: a limit, a format, who sees it. "Up to 40 characters." "Shown to the whole team."
+
+## Errors
+
+An error says what is wrong and what to do about it, in that order, and is short enough to read at a glance.
+
+| Do                                        | Don't                             |
+| ----------------------------------------- | --------------------------------- |
+| `Enter a name.`                           | `Invalid input`                   |
+| `Accept the terms to continue.`           | `You failed to accept the terms!` |
+| `Could not load your entries. Try again.` | `Error 500`                       |
+
+- Put the fix first when there is one: "Pick a cadence." beats "Cadence is required."
+- Name the thing that failed, in the product's words, not the system's.
+- No exclamation marks, no "oops", no apologising for the reader's mistake.
+- Put a field's error on the field (`Field` with `error`), not in a banner above the form. Use an `Alert` when the problem is not about one field.
+
+## Empty states
+
+There is no empty-state component. When a `List`, a `Table` or a `Card` has nothing to show, say so in a line of `Text` where the content would be, and offer the next step.
+
+| Do                                                 | Don't              |
+| -------------------------------------------------- | ------------------ |
+| `No habits yet. Track a habit to see it here.`     | `No data`          |
+| `Nothing this month. Entries you add will appear.` | _(an empty table)_ |
+
+- Say what is missing in the product's words, then what makes something appear.
+- If there is a single obvious next step, put a `Button` for it under the line.
+- Do not render an empty table header with no rows; replace the whole `Table` with the message.

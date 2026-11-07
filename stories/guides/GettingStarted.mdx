@@ -1,0 +1,71 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Getting started" />
+
+# Getting started
+
+`@banaris/design-system` is design tokens and React UI primitives, built on [Base UI](https://base-ui.com/) and Tailwind CSS v4. It needs React 19 as a peer dependency.
+
+## Install
+
+```bash
+pnpm add @banaris/design-system
+```
+
+```ts
+import "@banaris/design-system/styles.css";
+import { Button } from "@banaris/design-system";
+```
+
+That one stylesheet is self-contained: tokens, component CSS and the Tailwind utilities this package uses, all generated at publish time. **You do not need Tailwind in your project**, and if you do use it, no version coupling applies.
+
+The class names that appear in the DOM (`inline-flex`, `bg-accent`, …) are not a public contract. Do not hook your own CSS to them.
+
+## The four CSS entry points
+
+| Entry point                             | Contents                                      | When                                                                                                              |
+| --------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt | **Default.** Everything, one import                                                                               |
+| `@banaris/design-system/theme.css`      | Design tokens only (`@theme`)                 | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup                          |
+| `@banaris/design-system/base.css`       | The minimum globals the components rely on    | With `theme.css` on the split path. Without it components lose `box-sizing` and form controls lose the brand font |
+| `@banaris/design-system/components.css` | Component CSS and keyframes only              | Rarely: only alongside `theme.css` if you are generating utilities yourself                                       |
+
+Using Tailwind and want the tokens in your own markup? Import both. The duplicate `:root` variables are harmless.
+
+```css
+@import "tailwindcss";
+@import "@banaris/design-system/theme.css";
+@import "@banaris/design-system/base.css";
+```
+
+```ts
+import "@banaris/design-system/styles.css";
+```
+
+Preflight is not shipped. Resetting your page's global defaults is not this package's business; you already get preflight from your own `@import "tailwindcss"` if you want it.
+
+## Overriding styles
+
+The distributed CSS lives in `@layer theme, base, components, utilities`, which means:
+
+- Passing `className` wins over the component's own variant, with no `!important`. Classes are merged with `tailwind-merge`, so conflicting utilities collapse and yours is the one that survives.
+- Any CSS of yours outside a layer beats everything here. You always have the last word.
+
+## Theming
+
+Light is the default. Dark activates in two ways:
+
+| `<html>` attribute   | Result                            |
+| -------------------- | --------------------------------- |
+| `data-theme="dark"`  | Dark                              |
+| `data-theme="light"` | Light, ignoring the OS preference |
+| none                 | Follows `prefers-color-scheme`    |
+
+A product with a toggle sets `data-theme` on `<html>` and nothing else; every token follows. This catalogue has a Theme control in its toolbar.
+
+## Next
+
+- **Foundations / Tokens** shows every token, rendered from the live cascade.
+- **Choosing a component** says which component fits which job.
+- **Content and tone** says how to write the words on them.
+- **Versioning** says what a release may change.

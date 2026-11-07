@@ -33,6 +33,19 @@ const preview: Preview = {
   parameters: {
     layout: "centered",
     controls: { expanded: true },
+    options: {
+      storySort: {
+        order: [
+          "Guides",
+          [
+            "Getting started",
+            "Choosing a component",
+            "Content and tone",
+            "Versioning",
+          ],
+        ],
+      },
+    },
     /* `error` is what makes the axe run a CI gate rather than an advisory —
        at any lower level a violation still reports but the suite stays green.
        Silence a genuine false positive in the individual story's parameters,
