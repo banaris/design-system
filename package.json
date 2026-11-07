@@ -110,6 +110,7 @@
     "globals": "^17.5.0",
     "knip": "^6.32.0",
     "lefthook": "^2.1.6",
+    "lucide-react": "^1.68.0",
     "npm-run-all2": "^9.0.0",
     "playwright": "^1.59.1",
     "prettier": "^3.8.3",

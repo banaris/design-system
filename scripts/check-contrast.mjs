@@ -189,6 +189,17 @@ const PAIRS = [
     min: 4.5,
     why: "danger label on the danger plane",
   },
+  ...[
+    "--color-success",
+    "--color-warning",
+    "--color-danger",
+    "--color-info",
+  ].map((fg) => ({
+    fg,
+    bg: `${fg}-surface`,
+    min: 3,
+    why: "status glyph on its plane",
+  })),
   /* 1.4.11: on an unchecked control the border is the only thing announcing
      that a control exists, so it is held to 3:1 on every surface it can sit on. */
   ...SURFACES.map((bg) => ({

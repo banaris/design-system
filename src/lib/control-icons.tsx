@@ -40,3 +40,39 @@ export function CloseIcon(props: ComponentProps<"svg">) {
     </svg>
   );
 }
+
+export function InfoIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg {...ICON_PROPS} aria-hidden {...props}>
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 7.5v3.5M8 5.2h.01" />
+    </svg>
+  );
+}
+
+export function SuccessIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg {...ICON_PROPS} aria-hidden {...props}>
+      <circle cx="8" cy="8" r="6" />
+      <path d="M5.5 8.2 7.2 9.9 10.5 6.2" />
+    </svg>
+  );
+}
+
+export function WarningIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg {...ICON_PROPS} aria-hidden {...props}>
+      <path d="M8 2.5 14 13H2Z" />
+      <path d="M8 6.5v3M8 11.4h.01" />
+    </svg>
+  );
+}
+
+export function DangerIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg {...ICON_PROPS} aria-hidden {...props}>
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 4.8v3.8M8 11h.01" />
+    </svg>
+  );
+}
