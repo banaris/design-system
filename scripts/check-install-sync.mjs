@@ -33,7 +33,7 @@ const SECTIONS = [
   {
     file: "stories/guides/GettingStarted.mdx",
     from: "## Install",
-    to: "## Overriding styles",
+    to: "## Theming",
   },
 ];
 
@@ -64,7 +64,9 @@ function parse(lines) {
     const fence = FENCE.exec(line);
     if (open === null) {
       if (fence) open = { lang: fence[1].trim(), body: [] };
-      else prose.push(line);
+      else if (/^[\s>]*(~~~|```)/.test(line)) {
+        throw new Error("only plain ``` fences are supported");
+      } else prose.push(line);
     } else if (fence && fence[1].trim() === "") {
       blocks.push({ lang: open.lang, body: open.body.join("\n") });
       open = null;
@@ -80,6 +82,7 @@ function parse(lines) {
       .map((m) => m[1]),
   );
   if (blocks.length === 0) throw new Error("no code block in the section");
+  if (entryPoints.size === 0) throw new Error("no entry point in the section");
   return { blocks, entryPoints };
 }
 
