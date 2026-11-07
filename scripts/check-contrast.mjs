@@ -35,8 +35,8 @@ const THEME = join(ROOT, "src", "styles", "theme.css");
  * declarations and measure colours that no longer exist. */
 const source = readFileSync(THEME, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 
-const blockAfter = (marker, from = 0) => {
-  const start = source.indexOf(marker, from);
+const blockAfter = (marker) => {
+  const start = source.indexOf(marker);
   if (start === -1) throw new Error(`theme.css no longer contains ${marker}`);
   let depth = 0;
   for (let i = source.indexOf("{", start); i < source.length; i += 1) {
@@ -60,45 +60,6 @@ const parse = (text) => {
 const light = parse(blockAfter("@theme"));
 const darkOverlay = parse(blockAfter(':root[data-theme="dark"]'));
 const dark = { ...light, ...darkOverlay };
-
-/* ---- The two dark blocks must stay identical ----
- * Dark is declared twice — once for the explicit opt-in, once for the OS
- * preference — because a product pinning `data-theme="light"` must not be
- * overridden by the OS. Nothing else compares them, so an edit to one block
- * alone ships a theme that differs by activation route AND leaves the OS-dark
- * path unmeasured by everything below. */
-/* The same selector appears inside `@custom-variant dark`, which declares no
-   tokens — anchor on the LAST occurrence, which is the overlay. Taking the
-   first found an empty block and reported every token as missing. */
-const mediaOverlay = parse(
-  blockAfter(
-    ':root:not([data-theme="light"])',
-    source.lastIndexOf("prefers-color-scheme: dark"),
-  ),
-);
-if (Object.keys(mediaOverlay).length === 0) {
-  throw new Error(
-    "the prefers-color-scheme overlay parsed as empty — this guard is anchored on the wrong block",
-  );
-}
-const blockErrors = [];
-for (const name of new Set([
-  ...Object.keys(darkOverlay),
-  ...Object.keys(mediaOverlay),
-])) {
-  const a = darkOverlay[name];
-  const b = mediaOverlay[name];
-  if (a === undefined)
-    blockErrors.push(
-      `${name} is in the media block but not [data-theme="dark"]`,
-    );
-  else if (b === undefined)
-    blockErrors.push(
-      `${name} is in [data-theme="dark"] but not the media block`,
-    );
-  else if (a !== b)
-    blockErrors.push(`${name} differs: [data-theme="dark"]=${a} vs media=${b}`);
-}
 
 /* ---- Colour maths ---- */
 const hexToRgb = (hex) => {
@@ -311,16 +272,6 @@ for (const [themeName, tokens] of [
 }
 
 console.log(rows.join("\n"));
-
-if (blockErrors.length > 0) {
-  console.error("\ncheck:contrast failed — the two dark blocks have drifted\n");
-  for (const e of blockErrors) console.error(`  - ${e}`);
-  console.error(
-    '\nThe `[data-theme="dark"]` block and the `prefers-color-scheme` block must stay\n' +
-      "identical; otherwise dark differs by how it was switched on.",
-  );
-  process.exit(1);
-}
 
 if (errors.length > 0) {
   console.error("\ncheck:contrast failed\n");

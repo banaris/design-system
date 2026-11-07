@@ -346,11 +346,12 @@
  * `--color-control-border` is absent by design: its light value already clears
  * 3:1 on every dark surface too.
  *
- * The two blocks below are identical in content and cannot be merged: one
+ * The two blocks below carry the same declarations and cannot be merged: one
  * answers the explicit opt-in, the other the OS preference, and a product that
  * pins `data-theme="light"` must not be overridden by the OS.
- * `scripts/check-contrast.mjs` asserts they stay identical — by hand they will
- * not, and a one-sided edit is invisible to every other check.
+ * `:root[data-theme="dark"]` is the only one edited by hand; the block between
+ * the BEGIN/END markers is generated from it by `scripts/sync-dark-theme.mjs`
+ * (`pnpm run fix:dark-theme`), and `check:dark-theme` fails when it is stale.
  */
 
 /* ⚠ Both activation routes, matching the token overlay below. Covering only
@@ -417,40 +418,35 @@
     0 8px 16px rgb(0 0 0 / 48%), 0 24px 48px rgb(0 0 0 / 52%);
 }
 
+/* BEGIN generated — copy of the :root[data-theme="dark"] declarations; run `pnpm run fix:dark-theme`, never edit by hand */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --color-accent-soft: #c3dd63;
     --color-accent-hover: #e2f78a;
-
     --color-shell: #4a3728;
     --color-shell-hover: #55402f;
-
     --color-bg: #171310;
     --color-bg-elevated: #1f1a15;
     --color-surface: #272019;
     --color-surface-sunken: #2f2720;
     --color-surface-hover: #332b23;
-
     --color-ink: #f2efe7;
     --color-ink-dim: #b3a898;
     --color-ink-faint: #9d9284;
-
     --color-fill: #f0ece2;
     --color-fill-hover: #e4dfd2;
     --color-on-fill: #1c1512;
-
     --color-border: #332b22;
     --color-border-strong: #453b2f;
     --color-divider: var(--color-border-strong);
-
     --color-success: #6fc98a;
     --color-warning: #dda43f;
     --color-danger: #f08163;
     --color-info: #74b4e8;
-
     --ds-shadow-soft: 0 1px 2px rgb(0 0 0 / 40%), 0 2px 8px rgb(0 0 0 / 32%);
     --ds-shadow-raised: 0 2px 4px rgb(0 0 0 / 44%), 0 8px 24px rgb(0 0 0 / 40%);
     --ds-shadow-overlay:
       0 8px 16px rgb(0 0 0 / 48%), 0 24px 48px rgb(0 0 0 / 52%);
   }
 }
+/* END generated */
