@@ -9,6 +9,7 @@ export {
   type ButtonVariant,
 } from "./components/button";
 export { Card, type CardProps } from "./components/card";
+export { Checkbox, type CheckboxProps } from "./components/checkbox";
 export {
   DateTimeField,
   type DateTimeFieldProps,
@@ -60,6 +61,17 @@ export {
   type RadioProps,
 } from "./components/radio";
 export {
+  Select,
+  SelectContent,
+  type SelectContentProps,
+  SelectItem,
+  type SelectItemProps,
+  type SelectProps,
+  SelectTrigger,
+  type SelectTriggerProps,
+} from "./components/select";
+export { Switch, type SwitchProps } from "./components/switch";
+export {
   Table,
   TableBody,
   type TableBodyProps,
@@ -82,3 +94,4 @@ export {
   type TextVariant,
 } from "./components/text";
 export { TextField, type TextFieldProps } from "./components/text-field";
+export { Textarea, type TextareaProps } from "./components/textarea";
