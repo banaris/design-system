@@ -55,7 +55,7 @@ const sourceDeclarations = (css) => {
 
   const declaration = /(--[\w-]+)\s*:\s*([^;]+);/g;
   const declarations = [...body.matchAll(declaration)].map(
-    ([, name, value]) => `${name}: ${value.trim().replace(/\s+/g, " ")};`,
+    ([, name, value]) => `${name}: ${value.trim()};`,
   );
   if (declarations.length === 0) fail("the source block declares nothing");
   if (body.replace(declaration, "").trim() !== "")
