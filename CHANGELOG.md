@@ -1,5 +1,11 @@
 # @banaris/design-system
 
+## 0.3.0
+
+### Minor Changes
+
+- [#260](https://github.com/banaris/design-system/pull/260) [`8469eb3`](https://github.com/banaris/design-system/commit/8469eb3b41ea46903e52f8a1d552c80ed77a0684) - Add `Checkbox`, `Switch`, `Select` (with `SelectTrigger`, `SelectContent` and `SelectItem`) and `Textarea`. They share `TextField`'s and `Radio`'s border, focus ring and disabled styling, mark themselves invalid with `aria-invalid`, and work inside `Field`.
+
 ## 0.2.0
 
 ### Minor Changes
