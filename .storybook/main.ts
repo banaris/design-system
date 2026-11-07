@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
-  stories: ["../stories/**/*.stories.@(ts|tsx)"],
+  stories: ["../stories/**/*.mdx", "../stories/**/*.stories.@(ts|tsx)"],
   /* `addon-a11y` is not only the inspector panel — paired with `addon-vitest`
      it is what runs axe over every story in CI. See `preview.tsx`. */
   addons: [

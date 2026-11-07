@@ -13,8 +13,10 @@
  *
  * ── What it checks ─────────────────────────────────────────────────────
  * Each value exported from `src/index.ts` that looks like a component is
- * RENDERED as JSX somewhere under `stories/`. Being imported, or appearing in
- * a type annotation, does not count — neither puts anything on screen.
+ * RENDERED as JSX somewhere in a `*.stories.ts(x)` file under `stories/`. Being
+ * imported, or appearing in a type annotation, does not count — neither puts
+ * anything on screen. Guide pages (`.mdx`) are prose: a component named in one,
+ * code fences included, is not a story.
  *
  * ── What it deliberately does not check ────────────────────────────────
  * How thorough the story is. Whether the states are covered is a judgement for
@@ -69,7 +71,7 @@ for (const [, names] of index.matchAll(/export\s*\{([^}]+)\}/g)) {
 }
 
 const files = readdirSync(STORIES, { recursive: true, withFileTypes: true })
-  .filter((e) => e.isFile() && /\.(tsx|mdx)$/.test(e.name))
+  .filter((e) => e.isFile() && /\.stories\.tsx?$/.test(e.name))
   .map((e) => join(e.parentPath, e.name));
 
 /* Comments are stripped: a `<Button>` written in an explanation would
@@ -92,7 +94,7 @@ if (missing.length > 0) {
   console.error("check:stories failed\n");
   for (const name of missing) {
     console.error(
-      `  - ${name} is exported from src/index.ts but never rendered in stories/.\n` +
+      `  - ${name} is exported from src/index.ts but never rendered in a *.stories.ts(x) file under stories/.\n` +
         `    A component absent from the catalogue cannot be discovered by anyone using this package.\n`,
     );
   }

@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Versioning" />
+
+# Versioning
+
+`@banaris/design-system` is below 1.0. Until it reaches 1.0, a **minor** release may break your code; a **patch** release never does.
+
+## What a release may change
+
+- **Patch**: Fixes to behaviour, styling and documentation that make a component do what it already claims. Props, exports and token names stay as they were.
+- **Minor**: New components and props, and also breaking changes: renamed or removed props and exports, renamed or removed tokens, changed behaviour.
+
+Two things are never a contract, in any release:
+
+- The class names that appear in the DOM (`inline-flex`, `bg-accent`, …). Do not hook your own CSS to them.
+- Anything the package does not export, from its JavaScript entry point or from one of its four CSS files. It is internal and may change without notice.
+
+## How a change is announced
+
+Every change a consumer can observe ships with a **changeset**: a short note, written for the person reading the release, that says what changed. When the release is published, each note becomes a line in `CHANGELOG.md` and in the GitHub Release for that version.
+
+- Read `CHANGELOG.md` before you bump a minor version. A breaking change is described in its note: what changed, and what to do about it.
+- `CHANGELOG.md` is published with the package, so you can read it from `node_modules/@banaris/design-system/` as well as on GitHub.
+- Changes nobody using the package can observe (CI, tests, stories, documentation, bumps of development-only dependencies) have no changeset and no changelog line.
+
+## Pin or range
+
+A caret range such as `^0.3.0` does not follow minor releases below 1.0, so a plain `pnpm update` stays on the same minor and picks up only patches. Moving to the next minor is a deliberate edit to your version range, and the right moment to read the changelog.
