@@ -2,6 +2,8 @@
  * may change without a major version — notably the `tailwind-merge` instance
  * in `lib/cn.ts`, which is configuration rather than API. */
 
+export { Alert, type AlertProps } from "./components/alert";
+export { Badge, type BadgeProps } from "./components/badge";
 export {
   Button,
   type ButtonProps,
@@ -14,6 +16,20 @@ export {
   DateTimeField,
   type DateTimeFieldProps,
 } from "./components/date-time-field";
+export {
+  Dialog,
+  DialogClose,
+  type DialogCloseProps,
+  DialogContent,
+  type DialogContentProps,
+  DialogDescription,
+  type DialogDescriptionProps,
+  type DialogProps,
+  DialogTitle,
+  type DialogTitleProps,
+  DialogTrigger,
+  type DialogTriggerProps,
+} from "./components/dialog";
 export {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +71,18 @@ export {
 } from "./components/list";
 export { LogoMark, type LogoMarkProps } from "./components/logo-mark";
 export {
+  Popover,
+  PopoverContent,
+  type PopoverContentProps,
+  PopoverDescription,
+  type PopoverDescriptionProps,
+  type PopoverProps,
+  PopoverTitle,
+  type PopoverTitleProps,
+  PopoverTrigger,
+  type PopoverTriggerProps,
+} from "./components/popover";
+export {
   Radio,
   RadioGroup,
   type RadioGroupProps,
@@ -70,6 +98,11 @@ export {
   SelectTrigger,
   type SelectTriggerProps,
 } from "./components/select";
+export {
+  Spinner,
+  type SpinnerProps,
+  type SpinnerSize,
+} from "./components/spinner";
 export { Switch, type SwitchProps } from "./components/switch";
 export {
   Table,
@@ -88,6 +121,16 @@ export {
   type TableRowProps,
 } from "./components/table";
 export {
+  Tabs,
+  TabsList,
+  type TabsListProps,
+  TabsPanel,
+  type TabsPanelProps,
+  type TabsProps,
+  TabsTab,
+  type TabsTabProps,
+} from "./components/tabs";
+export {
   Text,
   type TextElement,
   type TextProps,
@@ -95,3 +138,21 @@ export {
 } from "./components/text";
 export { TextField, type TextFieldProps } from "./components/text-field";
 export { Textarea, type TextareaProps } from "./components/textarea";
+export {
+  Toaster,
+  type ToasterProps,
+  ToastProvider,
+  type ToastProviderProps,
+  useToast,
+} from "./components/toast";
+export {
+  Tooltip,
+  TooltipContent,
+  type TooltipContentProps,
+  type TooltipProps,
+  TooltipProvider,
+  type TooltipProviderProps,
+  TooltipTrigger,
+  type TooltipTriggerProps,
+} from "./components/tooltip";
+export type { StatusTone } from "./lib/class-presets";

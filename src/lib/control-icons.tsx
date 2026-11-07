@@ -32,3 +32,11 @@ export function ChevronIcon(props: ComponentProps<"svg">) {
     </svg>
   );
 }
+
+export function CloseIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg {...ICON_PROPS} aria-hidden {...props}>
+      <path d="M4 4l8 8M12 4l-8 8" />
+    </svg>
+  );
+}

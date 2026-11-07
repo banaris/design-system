@@ -35,3 +35,20 @@ export const MENU_POPUP =
   "border-border bg-surface shadow-overlay box-border min-w-40 rounded-md border border-solid p-1 font-sans outline-none";
 
 export const ROW_DIVIDER = "border-t border-divider first:border-t-0";
+
+export type StatusTone = "success" | "warning" | "danger" | "info";
+
+export const STATUS_TONE: Record<StatusTone, string> = {
+  success: "bg-success-surface border-success-border",
+  warning: "bg-warning-surface border-warning-border",
+  danger: "bg-danger-surface border-danger-border",
+  info: "bg-info-surface border-info-border",
+};
+
+export const OVERLAY_POPUP =
+  "border-border bg-surface shadow-overlay text-ink box-border rounded-lg border border-solid font-sans outline-none";
+
+/* Enter is a keyframe and exit a transition: Base UI keeps the popup mounted
+ * until both finish, and `--duration-*` is zeroed under reduced motion. */
+export const OVERLAY_MOTION =
+  "animate-[ds-scale-in_var(--duration-base)_var(--ease-standard)] transition-opacity duration-[var(--duration-fast)] ease-standard data-ending-style:opacity-0";

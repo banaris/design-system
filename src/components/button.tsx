@@ -3,6 +3,7 @@ import type { ComponentProps, ReactNode } from "react";
 
 import { FOCUS_RING, TRANSITION_INTERACTIVE } from "../lib/class-presets";
 import { cn } from "../lib/cn";
+import { Spinner } from "./spinner";
 
 export type ButtonVariant =
   "primary" | "accent" | "secondary" | "ghost" | "danger";
@@ -69,12 +70,6 @@ const SIZE: Record<ButtonSize, string> = {
   lg: "text-lg px-6 py-3",
 };
 
-const SPINNER_SIZE: Record<ButtonSize, string> = {
-  sm: "size-3",
-  md: "size-3.5",
-  lg: "size-4",
-};
-
 /**
  * The system's action control.
  *
@@ -110,15 +105,7 @@ export function Button({
       )}
       {...rest}
     >
-      {loading && (
-        <span
-          className={cn(
-            "rounded-pill animate-[ds-spin_0.6s_linear_infinite] border-2 border-current border-t-transparent",
-            SPINNER_SIZE[size],
-          )}
-          aria-hidden="true"
-        />
-      )}
+      {loading && <Spinner size={size} />}
       {children}
     </BaseButton>
   );

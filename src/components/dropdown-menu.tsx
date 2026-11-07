@@ -3,7 +3,10 @@ import type { ComponentProps } from "react";
 
 import { FOCUS_RING, MENU_ITEM, MENU_POPUP } from "../lib/class-presets";
 import { cn } from "../lib/cn";
-import { Button, type ButtonSize, type ButtonVariant } from "./button";
+import {
+  renderTriggerButton,
+  type TriggerButtonStyle,
+} from "../lib/trigger-button";
 
 export type DropdownMenuProps = ComponentProps<typeof BaseMenu.Root>;
 
@@ -13,12 +16,8 @@ export const DropdownMenu = BaseMenu.Root;
 export type DropdownMenuTriggerProps = Omit<
   ComponentProps<typeof BaseMenu.Trigger>,
   "className" | "render"
-> & {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  pill?: boolean;
-  className?: string;
-};
+> &
+  TriggerButtonStyle;
 
 /** The `Button` that opens the menu; Base UI sets `aria-haspopup` and `aria-expanded`. */
 export function DropdownMenuTrigger({
@@ -31,17 +30,7 @@ export function DropdownMenuTrigger({
 }: DropdownMenuTriggerProps) {
   return (
     <BaseMenu.Trigger
-      render={(props) => (
-        <Button
-          {...props}
-          className={cn(props.className, className)}
-          {...(variant !== undefined && { variant })}
-          {...(size !== undefined && { size })}
-          {...(pill !== undefined && { pill })}
-        >
-          {children}
-        </Button>
-      )}
+      render={renderTriggerButton({ variant, size, pill, className }, children)}
       {...rest}
     />
   );
