@@ -8,7 +8,7 @@ export type BadgeProps = ComponentProps<"span"> & {
   status?: StatusTone;
 };
 
-export function Badge({ status, className, ...rest }: BadgeProps) {
+export function Badge({ status, className, children, ...rest }: BadgeProps) {
   return (
     <span
       className={cn(
@@ -19,6 +19,14 @@ export function Badge({ status, className, ...rest }: BadgeProps) {
         className,
       )}
       {...rest}
-    />
+    >
+      {status !== undefined && (
+        <span
+          aria-hidden
+          className="rounded-pill me-1.5 size-1.5 bg-(color:--status)"
+        />
+      )}
+      {children}
+    </span>
   );
 }

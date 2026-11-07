@@ -49,13 +49,13 @@ export function DialogContent({
   ...rest
 }: DialogContentProps) {
   return (
-    <BaseDialog.Portal>
-      <BaseDialog.Backdrop className="fixed inset-0 z-[var(--z-overlay)] animate-[ds-fade-in_var(--duration-base)_var(--ease-standard)] bg-black/40 transition-opacity duration-[var(--duration-fast)] data-ending-style:opacity-0" />
+    <BaseDialog.Portal className="relative z-[var(--z-overlay)]">
+      <BaseDialog.Backdrop className="fixed inset-0 animate-[ds-fade-in_var(--duration-base)_var(--ease-standard)] bg-black/40 transition-opacity duration-[var(--duration-fast)] data-ending-style:opacity-0" />
       <BaseDialog.Popup
         className={cn(
           OVERLAY_POPUP,
           OVERLAY_MOTION,
-          "fixed top-1/2 left-1/2 z-[var(--z-overlay)] w-[min(32rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 p-6",
+          "fixed top-1/2 left-1/2 max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto p-6",
           className,
         )}
         {...rest}

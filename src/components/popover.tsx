@@ -45,13 +45,13 @@ export type PopoverContentProps = Omit<
 /** Escape and an outside press close it; focus returns to the trigger. */
 export function PopoverContent({ className, ...rest }: PopoverContentProps) {
   return (
-    <BasePopover.Portal>
-      <BasePopover.Positioner sideOffset={8} className="z-[var(--z-overlay)]">
+    <BasePopover.Portal className="relative z-[var(--z-overlay)]">
+      <BasePopover.Positioner sideOffset={8}>
         <BasePopover.Popup
           className={cn(
             OVERLAY_POPUP,
             OVERLAY_MOTION,
-            "max-w-80 p-4",
+            "max-h-[var(--available-height)] max-w-80 overflow-y-auto p-4",
             className,
           )}
           {...rest}

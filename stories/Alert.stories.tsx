@@ -35,6 +35,15 @@ export const Statuses: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getAllByRole("alert")).toHaveLength(2);
     await expect(canvas.getAllByRole("status")).toHaveLength(2);
+
+    const probe = document.createElement("span");
+    probe.style.color = "var(--color-danger)";
+    document.body.append(probe);
+    const danger = getComputedStyle(probe).color;
+    probe.remove();
+    const alert = canvas.getByText("Upload failed").closest("[role=alert]");
+    if (alert === null) throw new Error("danger alert missing");
+    await expect(getComputedStyle(alert).borderInlineStartColor).toBe(danger);
   },
 };
 

@@ -41,10 +41,12 @@ export const KeyboardFocus: Story = {
     const trigger = canvas.getByRole("button", { name: "Save" });
     await userEvent.tab();
     await expect(trigger).toHaveFocus();
-    await expectVisible(() => screen.findByText("Save the draft (⌘S)"));
+    const tip = await expectVisible(() =>
+      screen.findByText("Save the draft (⌘S)"),
+    );
 
     await userEvent.keyboard("{Escape}");
-    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
+    await waitFor(() => expect(tip).not.toBeInTheDocument());
     await expect(trigger).toHaveFocus();
   },
 };

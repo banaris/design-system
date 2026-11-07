@@ -5,21 +5,35 @@ import {
   useToast,
 } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, screen, userEvent, waitFor } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { expectVisible } from "./visible";
 
-function Trigger({ timeout }: { timeout?: number }) {
+function Trigger({
+  timeout,
+  count = 1,
+  onUndo,
+}: {
+  timeout?: number;
+  count?: number;
+  onUndo?: () => void;
+}) {
   const { add } = useToast();
   return (
     <Button
       variant="secondary"
       onClick={() => {
-        add({
-          title: "Draft saved",
-          description: "Saved a moment ago.",
-          ...(timeout !== undefined && { timeout }),
-        });
+        for (let index = 0; index < count; index += 1) {
+          add({
+            title:
+              index === 0 ? "Draft saved" : `Draft saved ${String(index + 1)}`,
+            description: "Saved a moment ago.",
+            timeout: timeout ?? 0,
+            ...(onUndo !== undefined && {
+              actionProps: { children: "Undo", onClick: onUndo },
+            }),
+          });
+        }
       }}
     >
       Save draft
@@ -73,5 +87,40 @@ export const CloseLabel: Story = {
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));
     await expectVisible(() => screen.findByLabelText("Schließen"));
+  },
+};
+
+export const Limit: Story = {
+  render: (args) => (
+    <ToastProvider>
+      <Trigger count={4} />
+      <Toaster {...args} />
+    </ToastProvider>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));
+    await screen.findByText("Draft saved 4");
+    await waitFor(async () => {
+      const visible = screen
+        .getAllByText(/^Draft saved/)
+        .filter((title) => title.checkVisibility());
+      await expect(visible).toHaveLength(3);
+    });
+  },
+};
+
+const onUndo = fn();
+
+export const Action: Story = {
+  render: (args) => (
+    <ToastProvider>
+      <Trigger onUndo={onUndo} />
+      <Toaster {...args} />
+    </ToastProvider>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Undo" }));
+    await expect(onUndo).toHaveBeenCalledOnce();
   },
 };

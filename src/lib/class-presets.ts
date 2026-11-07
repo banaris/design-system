@@ -39,10 +39,13 @@ export const ROW_DIVIDER = "border-t border-divider first:border-t-0";
 export type StatusTone = "success" | "warning" | "danger" | "info";
 
 export const STATUS_TONE: Record<StatusTone, string> = {
-  success: "bg-success-surface border-success-border",
-  warning: "bg-warning-surface border-warning-border",
-  danger: "bg-danger-surface border-danger-border",
-  info: "bg-info-surface border-info-border",
+  success:
+    "bg-success-surface border-success-border [--status:var(--color-success)]",
+  warning:
+    "bg-warning-surface border-warning-border [--status:var(--color-warning)]",
+  danger:
+    "bg-danger-surface border-danger-border [--status:var(--color-danger)]",
+  info: "bg-info-surface border-info-border [--status:var(--color-info)]",
 };
 
 export const OVERLAY_POPUP =

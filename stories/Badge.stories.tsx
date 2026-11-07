@@ -27,5 +27,13 @@ export const Statuses: Story = {
     for (const name of ["Published", "Pending", "Failed", "New"]) {
       await expect(canvas.getByText(name)).toBeVisible();
     }
+    const probe = document.createElement("span");
+    probe.style.color = "var(--color-danger)";
+    document.body.append(probe);
+    const danger = getComputedStyle(probe).color;
+    probe.remove();
+    const dot = canvas.getByText("Failed").querySelector("span");
+    if (dot === null) throw new Error("status dot missing");
+    await expect(getComputedStyle(dot).backgroundColor).toBe(danger);
   },
 };

@@ -28,8 +28,8 @@ export type TooltipContentProps = Omit<
 
 export function TooltipContent({ className, ...rest }: TooltipContentProps) {
   return (
-    <BaseTooltip.Portal>
-      <BaseTooltip.Positioner sideOffset={6} className="z-[var(--z-overlay)]">
+    <BaseTooltip.Portal className="relative z-[var(--z-overlay)]">
+      <BaseTooltip.Positioner sideOffset={6}>
         <BaseTooltip.Popup
           className={cn(
             OVERLAY_POPUP,

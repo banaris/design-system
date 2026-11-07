@@ -35,11 +35,21 @@ export function Toaster({ closeLabel = "Dismiss", className }: ToasterProps) {
           <BaseToast.Root
             key={toast.id}
             toast={toast}
-            className={cn(OVERLAY_POPUP, OVERLAY_MOTION, "relative p-4 pe-10")}
+            className={cn(
+              OVERLAY_POPUP,
+              OVERLAY_MOTION,
+              "relative p-4 pe-10 data-limited:hidden",
+            )}
           >
             <BaseToast.Content>
               <BaseToast.Title className="text-base font-semibold" />
               <BaseToast.Description className="text-small text-ink-dim mt-1" />
+              <BaseToast.Action
+                className={cn(
+                  "text-small text-accent-soft mt-2 cursor-pointer rounded-sm font-semibold hover:underline",
+                  FOCUS_RING,
+                )}
+              />
               <BaseToast.Close
                 aria-label={closeLabel}
                 className={cn(
