@@ -1,5 +1,19 @@
 # @banaris/design-system
 
+## 0.4.0
+
+### Minor Changes
+
+- [#271](https://github.com/banaris/design-system/pull/271) [`b9214b0`](https://github.com/banaris/design-system/commit/b9214b089da3631db25bf228d703780c55015565) - Add `Icon`, which sizes a glyph (`sm`, `md`, `lg`), colours it from `currentColor` and hides it from assistive technology unless given a `label`. The package ships no icon set: `lucide-react` is the recommended one (see the Foundations/Icon story). `Alert` now shows a glyph for its `status`.
+
+- [#270](https://github.com/banaris/design-system/pull/270) [`c303026`](https://github.com/banaris/design-system/commit/c303026aaa37bcdcac565973b3d1a8da2bada680) - Add `Stack`, `Container` and `Grid`, which lay content out with the spacing scale instead of ad hoc utilities, and declare `--breakpoint-*` and `--container-*` in `theme.css` (Tailwind v4's default values, now this package's contract).
+
+- [#262](https://github.com/banaris/design-system/pull/262) [`4a17bc9`](https://github.com/banaris/design-system/commit/4a17bc9be29449dbe72a86f2898675a9433af99d) - Add `Dialog`, `Popover`, `Tooltip`, `Toaster` (with `ToastProvider` and `useToast`), `Tabs`, `Badge`, `Alert` and `Spinner`. Overlays stack at `--z-overlay` and toasts at `--z-toast`, and their motion follows `--duration-*`, so `prefers-reduced-motion` applies. `Button`'s loading state now renders the exported `Spinner`.
+
+### Patch Changes
+
+- [#267](https://github.com/banaris/design-system/pull/267) [`1d5d39b`](https://github.com/banaris/design-system/commit/1d5d39bc78701e3000d4b21b7c4bb5986aa8b75a) - Stop `Spinner`, and the `Button` loading indicator that renders it, from rotating under `prefers-reduced-motion: reduce`. The static ring stays visible and `Spinner` keeps its `status` role.
+
 ## 0.3.0
 
 ### Minor Changes
