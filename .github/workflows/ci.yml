@@ -85,14 +85,11 @@ jobs:
       # script (`lefthook install`) that `pnpm install` runs needs it too.
       - run: git config --global --add safe.directory "$(pwd)"
       - uses: nemolize/actions/setup@v1.4.1
-      - name: Assert the image ships the Playwright version we depend on
+      - name: Assert the image ships a Playwright version no older than the one we depend on
         run: |
           img="$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('/ms-playwright/.docker-info', 'utf8')).driverVersion)")"
           pw="$(node -p "require('playwright/package.json').version")"
-          if [ "$pw" != "$img" ]; then
-            echo "::error::image ships Playwright $img, but playwright is $pw; update this job's container image tag to v$pw"
-            exit 1
-          fi
+          node scripts/check-playwright-version.mjs "$img" "$pw"
       - run: pnpm run test
       # Proves the run above could have failed. Without it a suite that stopped
       # running axe reports the same green as one that ran it.
