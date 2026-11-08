@@ -69,6 +69,7 @@ export {
   type HeadingProps,
   type HeadingSize,
 } from "./components/heading";
+export { Icon, type IconProps, type IconSize } from "./components/icon";
 export {
   List,
   ListItem,
