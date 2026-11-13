@@ -2,6 +2,6 @@
   "name": "deploy",
   "private": true,
   "dependencies": {
-    "wrangler": "4.158.0"
+    "wrangler": "4.159.0"
   }
 }
