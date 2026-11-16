@@ -12,12 +12,15 @@ export default defineConfig({
      files that need it instead of the whole bundle (see `check:rsc`). */
   unbundle: true,
   /* rolldown warns on every kept directive although it keeps them; `check:rsc`
-     fails the build if one is lost, so this one warning code is dropped. */
-  inputOptions: {
+     (in `verify`) fails if one is lost, so this one warning code is dropped. */
+  inputOptions: (defaults) => ({
+    ...defaults,
     onLog(level, log, defaultHandler) {
-      if (log.code !== "MODULE_LEVEL_DIRECTIVE") defaultHandler(level, log);
+      if (log.code === "MODULE_LEVEL_DIRECTIVE") return;
+      if (defaults.onLog) defaults.onLog(level, log, defaultHandler);
+      else defaultHandler(level, log);
     },
-  },
+  }),
   /* React must be the host's instance, not a second copy — hence the peer
      dependency, and hence keeping it out of the bundle. */
   deps: { neverBundle: ["react", "react-dom", "react/jsx-runtime"] },
