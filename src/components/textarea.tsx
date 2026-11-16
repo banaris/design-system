@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@base-ui/react/input";
 import { mergeProps } from "@base-ui/react/merge-props";
 import type { ComponentProps } from "react";

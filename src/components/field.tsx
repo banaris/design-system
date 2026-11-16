@@ -1,3 +1,5 @@
+"use client";
+
 import { Field as BaseField } from "@base-ui/react/field";
 import { Children, type ComponentProps, createContext, use } from "react";
 
