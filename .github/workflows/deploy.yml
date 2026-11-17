@@ -45,9 +45,11 @@ jobs:
     needs: Build
     runs-on: ubuntu-26.04
     timeout-minutes: 10
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      url: ${{ steps.deploy.outputs.deployment-url }}
     permissions:
       contents: read
-      deployments: write
       pull-requests: write
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
 
@@ -170,7 +172,6 @@ jobs:
           WRANGLER_SEND_METRICS: "false"
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           packageManager: pnpm
           # With no wranglerVersion, the action uses the wrangler it finds from here.
           workingDirectory: deploy
