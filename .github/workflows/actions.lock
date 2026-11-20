@@ -5,7 +5,7 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/ci.yml':
         - 'actions/checkout@v7.0.1'
-        - 'nemolize/actions@v1.4.1'
+        - 'nemolize/actions@v1.5.0'
         - 'zizmorcore/zizmor-action@v0.8.1'
     '.github/workflows/deploy.yml':
         - 'actions/checkout@v7.0.1'
@@ -14,11 +14,11 @@ workflows:
         - 'actions/upload-artifact@v7.0.2'
         - 'bullfrogsec/bullfrog@v0.11.1'
         - 'cloudflare/wrangler-action@v4.1.3'
-        - 'nemolize/actions@v1.4.1'
+        - 'nemolize/actions@v1.5.0'
     '.github/workflows/release.yml':
         - 'actions/checkout@v7.0.1'
         - 'changesets/action@v2.1.2'
-        - 'nemolize/actions@v1.4.1'
+        - 'nemolize/actions@v1.5.0'
 dependencies:
     'actions/checkout@v7.0.1':
         ref: 'v7.0.1'
@@ -60,18 +60,18 @@ dependencies:
         commit: 'sha1-9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         owner_id: 9919
         repo_id: 259445878
-    'jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c':
+    'jdx/mise-action@v4.3.0':
         ref: 'v4.3.0'
         commit: 'sha1-c2a87611a18de5b3828c5652fe268e992400cb5c'
         owner_id: 216188
         repo_id: 738284564
-    'nemolize/actions@v1.4.1':
-        ref: 'v1.4.1'
-        commit: 'sha1-a78b0df6a8df72fe3a12a16e1c608d27ff490950'
+    'nemolize/actions@v1.5.0':
+        ref: 'v1.5.0'
+        commit: 'sha1-5d31663b9013a671ff8fe8b84900a88b9878f0c1'
         owner_id: 16267290
         repo_id: 1328501250
         uses:
-            - 'jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c'
+            - 'jdx/mise-action@v4.3.0'
     'zizmorcore/zizmor-action@v0.8.1':
         ref: 'v0.8.1'
         commit: 'sha1-45d7276c9ca790aabd705e31ca99c6185c3e76dd'
