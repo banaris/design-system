@@ -1,5 +1,11 @@
 # @banaris/design-system
 
+## 0.4.1
+
+### Patch Changes
+
+- [#304](https://github.com/banaris/design-system/pull/304) [`756204b`](https://github.com/banaris/design-system/commit/756204b14f68705a0f2c4855c2c30b8e31dab24f) - Fix importing the package from a React Server Component, which failed `next build` for every export. The build now emits one module per component, and only the ones that need a client boundary (`Field`, `Toaster`, `Textarea`, `Dialog`, `DropdownMenu` and `Popover`, with their parts) carry `"use client"`. The static components stay server-renderable, so `<Icon icon={Check} />` works from a server component. `pnpm run check:rsc` keeps the boundaries from drifting.
+
 ## 0.4.0
 
 ### Minor Changes
