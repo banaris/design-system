@@ -24,7 +24,8 @@ Add a Badge component
   is also `minor`.
 - The note is the changelog line, verbatim — write it for the person reading the
   release, not the reviewer.
-- A `src/` change with nothing to announce (a refactor): `pnpm run changeset --empty`.
+- A `src/` change with nothing to announce (a refactor): `pnpm run changeset --empty`,
+  or add the `skip-changeset` label to the pull request.
 
 Merging it to `main` opens or updates the `Version Packages` pull request.
 Merging that pull request publishes to npm, then creates the GitHub Release
