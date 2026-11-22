@@ -7,13 +7,21 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        default: staging
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  # Queueing production keeps a second push from cancelling a live deploy.
+  group: deploy-${{ github.event_name == 'pull_request' && 'preview' || inputs.environment || 'staging' }}-${{ github.ref }}
+  # Queueing main-branch deploys keeps a second push from cancelling a live one.
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
@@ -46,7 +54,7 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      name: ${{ github.event_name == 'pull_request' && 'preview' || inputs.environment || 'staging' }}
       url: ${{ steps.deploy.outputs.deployment-url }}
     permissions:
       contents: read
@@ -175,7 +183,10 @@ jobs:
           packageManager: pnpm
           # With no wranglerVersion, the action uses the wrangler it finds from here.
           workingDirectory: deploy
-          command: ${{ github.ref == 'refs/heads/main' && 'deploy -c ../wrangler.json' || 'versions upload -c ../wrangler.json' }}
+          command: >-
+            ${{ github.event_name == 'pull_request' && 'versions upload -c ../wrangler.json'
+            || inputs.environment == 'production' && 'deploy -c ../wrangler.json'
+            || 'deploy -c ../wrangler.json --name design-system-staging' }}
 
       - if: ${{ github.event_name == 'pull_request' && steps.deploy.outputs.deployment-url != '' }}
         name: Write the catalogue URL into the PR description
