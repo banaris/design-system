@@ -22,11 +22,9 @@
  *      `@media (any-pointer: coarse)` block. Check 1 strips variants, so a
  *      `coarse:h-11` would pass on an unrelated `.h-11` while the variant
  *      itself never reached the file.
- *   5. The shipped entry (`styles.src.css`) defines the `coarse` variant at all:
- *      it is compiled together with `COARSE_FIXTURE`, a story that uses one
- *      `coarse:` utility, and the utility must come out inside the media block.
- *      No component uses `coarse:` yet, so check 4 alone would stay silent
- *      with the variant deleted.
+ *   5. The fixture story's `coarse:h-11` is in `dist` inside that block. No
+ *      component uses `coarse:` yet, so check 4 alone would stay silent with
+ *      the variant deleted.
  *
  * Whether the published stylesheet carries tokens and stays free of preflight
  * belongs to `check:package`, which owns the shipped artefact.
@@ -38,15 +36,7 @@
  * a literal string is what makes this check possible at all.
  */
 
-import { execFileSync } from "node:child_process";
-import {
-  mkdtempSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -175,6 +165,8 @@ for (const file of sourceFiles) {
   for (const literal of literals) {
     for (const token of literal.split(/\s+/)) {
       if (token === "") continue;
+      if (token.split(":").slice(0, -1).includes("coarse"))
+        coarseReferenced.add(token);
       /* `[color-scheme:dark]` is a whole utility whose variants are part of its
          selector, so it is looked up verbatim rather than stripped to a bare
          name that would never match. */
@@ -182,8 +174,6 @@ for (const file of sourceFiles) {
         arbitraryProperties.add(token);
         continue;
       }
-      if (token.split(":").slice(0, -1).includes("coarse"))
-        coarseReferenced.add(token);
       /* Keep the bare utility: strip variant prefixes (`hover:`, `data-*:`)
          and the important suffix, since the CSS selector is generated for the
          base name and the variants become part of the selector's shape.
@@ -239,39 +229,12 @@ for (const token of coarseReferenced) {
   );
 }
 
-/* ---- 5. The shipped entry defines the variant ---- */
-const COARSE_FIXTURE = {
-  story: join(ROOT, "stories", "CoarsePointer.stories.tsx"),
-  utility: "coarse:h-11",
-};
-const scratch = mkdtempSync(join(tmpdir(), "check-styles-"));
-try {
-  const input = join(scratch, "fixture.css");
-  const output = join(scratch, "fixture.out.css");
-  writeFileSync(
-    input,
-    `@import ${JSON.stringify(join(ROOT, "src", "styles", "styles.src.css"))};\n` +
-      `@source ${JSON.stringify(COARSE_FIXTURE.story)};\n`,
-  );
-  execFileSync(
-    join(ROOT, "node_modules", ".bin", "tailwindcss"),
-    ["-i", input, "-o", output],
-    { stdio: ["ignore", "ignore", "pipe"] },
-  );
-  if (
-    !coarseSelectors(readFileSync(output, "utf8")).has(COARSE_FIXTURE.utility)
-  )
-    errors.push(
-      `\`${COARSE_FIXTURE.utility}\` (used in stories/CoarsePointer.stories.tsx) is not inside an \`@media (any-pointer: coarse)\` block\n` +
-        `      when src/styles/styles.src.css is compiled. The \`coarse\` variant is missing from src/styles/theme.css.`,
-    );
-} catch (error) {
+const COARSE_FIXTURE = "coarse:h-11";
+if (!inCoarseBlock.has(COARSE_FIXTURE))
   errors.push(
-    `could not compile the \`coarse:\` fixture: ${error instanceof Error ? error.message : error}`,
+    `\`${COARSE_FIXTURE}\` (stories/CoarsePointer.stories.tsx) is not inside an \`@media (any-pointer: coarse)\` block in dist/styles.css.\n` +
+      `      The \`coarse\` variant is missing from src/styles/theme.css, or the story is no longer a \`@source\` in src/styles/styles.src.css.`,
   );
-} finally {
-  rmSync(scratch, { recursive: true, force: true });
-}
 
 /* ---- 2. Animations resolve ---- */
 for (const name of animations) {
