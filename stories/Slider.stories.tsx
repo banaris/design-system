@@ -328,3 +328,394 @@ export const InvalidFocused: Story = {
     );
   },
 };
+
+export const WithInput: Story = {
+  args: {
+    showInput: true,
+    step: 5,
+    onValueChange: fn(),
+    onValueCommitted: fn(),
+  },
+  play: async ({ args, canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    await expect(input).toHaveValue("40");
+
+    await userEvent.clear(input);
+    await userEvent.type(input, "37");
+    await expect(thumb).toHaveValue("40");
+    await expect(args.onValueChange).not.toHaveBeenCalled();
+    await userEvent.keyboard("{Enter}");
+    await expect(thumb).toHaveValue("35");
+    await expect(input).toHaveValue("35");
+    await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+    await expect(args.onValueChange).toHaveBeenLastCalledWith(
+      35,
+      expect.anything(),
+    );
+    await expect(args.onValueCommitted).toHaveBeenCalledTimes(1);
+    await expect(args.onValueCommitted).toHaveBeenLastCalledWith(
+      35,
+      expect.anything(),
+    );
+
+    await userEvent.clear(input);
+    await userEvent.type(input, "150");
+    await userEvent.tab();
+    await expect(thumb).toHaveValue("100");
+    await expect(input).toHaveValue("100");
+
+    await userEvent.clear(input);
+    await userEvent.type(input, "-4{Enter}");
+    await expect(thumb).toHaveValue("0");
+
+    await userEvent.clear(input);
+    await userEvent.type(input, "0{Enter}");
+    await expect(args.onValueChange).toHaveBeenCalledTimes(3);
+    await expect(args.onValueCommitted).toHaveBeenCalledTimes(3);
+  },
+};
+
+export const InputRejectsText: Story = {
+  args: { showInput: true, onValueChange: fn(), onValueCommitted: fn() },
+  play: async ({ args, canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    for (const text of ["abc", "1e", "Infinity"]) {
+      await userEvent.clear(input);
+      await userEvent.type(input, `${text}{Enter}`);
+      await expect(input).toHaveValue("40");
+      await expect(thumb).toHaveValue("40");
+    }
+    await userEvent.clear(input);
+    await userEvent.tab();
+    await expect(input).toHaveValue("40");
+    await userEvent.clear(input);
+    await userEvent.type(input, "70{Escape}");
+    await expect(input).toHaveValue("40");
+    await userEvent.tab();
+    await expect(thumb).toHaveValue("40");
+    await expect(args.onValueChange).not.toHaveBeenCalled();
+    await expect(args.onValueCommitted).not.toHaveBeenCalled();
+  },
+};
+
+export const InputFollowsSlider: Story = {
+  args: { showInput: true, step: 5 },
+  play: async ({ canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    thumb.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(input).toHaveValue("45");
+    await userEvent.keyboard("{End}");
+    await expect(input).toHaveValue("100");
+  },
+};
+
+export const InputBounds: Story = {
+  args: {
+    showInput: true,
+    min: 10,
+    max: 20,
+    step: 2,
+    defaultValue: 14,
+    "aria-label": "Steps",
+    inputAriaLabel: "Steps value",
+  },
+  play: async ({ canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Steps" });
+    const input = canvas.getByRole("textbox", { name: "Steps value" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "15{Enter}");
+    await expect(thumb).toHaveValue("16");
+    await userEvent.clear(input);
+    await userEvent.type(input, "99{Enter}");
+    await expect(thumb).toHaveValue("20");
+    await userEvent.clear(input);
+    await userEvent.type(input, "1{Enter}");
+    await expect(thumb).toHaveValue("10");
+  },
+};
+
+export const InputControlled: Story = {
+  args: { showInput: true, value: 40, onValueChange: fn() },
+  play: async ({ args, canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "60{Enter}");
+    await expect(args.onValueChange).toHaveBeenLastCalledWith(
+      60,
+      expect.anything(),
+    );
+    await expect(thumb).toHaveValue("40");
+    await expect(input).toHaveValue("40");
+  },
+};
+
+export const InputReadOnly: Story = {
+  args: {
+    showInput: true,
+    inputReadOnly: true,
+    step: 5,
+    onValueChange: fn(),
+    onValueCommitted: fn(),
+  },
+  play: async ({ args, canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    await expect(input).toHaveAttribute("readonly");
+    await userEvent.type(input, "7{Enter}");
+    await expect(input).toHaveValue("40");
+    await expect(args.onValueChange).not.toHaveBeenCalled();
+    await expect(args.onValueCommitted).not.toHaveBeenCalled();
+    thumb.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(input).toHaveValue("45");
+  },
+};
+
+export const InputDisabled: Story = {
+  args: { showInput: true, disabled: true },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("textbox", { name: "Volume" }),
+    ).toBeDisabled();
+  },
+};
+
+export const InputInvalid: Story = {
+  args: { showInput: true, "aria-invalid": true },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("textbox", { name: "Volume" }),
+    ).toHaveAttribute("aria-invalid", "true");
+  },
+};
+
+export const InputWithoutShowInput: Story = {
+  args: { inputReadOnly: true, inputAriaLabel: "Unused" },
+  play: async ({ canvas }) => {
+    await expect(canvas.queryByRole("textbox")).toBeNull();
+  },
+};
+
+export const InputInField: Story = {
+  args: {
+    "aria-label": undefined,
+    showInput: true,
+    inputAriaLabel: "Brightness value",
+  },
+  render: (args) => (
+    <Field>
+      <FieldLabel>Brightness</FieldLabel>
+      <Slider {...args} />
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Brightness" });
+    const input = canvas.getByRole("textbox", { name: "Brightness value" });
+    await userEvent.click(canvas.getByText("Brightness"));
+    await expect(thumb).toHaveFocus();
+    await userEvent.clear(input);
+    await userEvent.type(input, "55{Enter}");
+    await expect(thumb).toHaveValue("55");
+  },
+};
+
+export const InputDecimalMax: Story = {
+  args: {
+    showInput: true,
+    min: 0,
+    max: 0.3,
+    step: 0.1,
+    defaultValue: 0.1,
+    "aria-label": "Ratio",
+  },
+  play: async ({ canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Ratio" });
+    const input = canvas.getByRole("textbox", { name: "Ratio" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "0.3{Enter}");
+    await expect(thumb).toHaveValue("0.3");
+    await userEvent.clear(input);
+    await userEvent.type(input, "5{Enter}");
+    await expect(thumb).toHaveValue("0.3");
+    await userEvent.clear(input);
+    await userEvent.type(input, "0.2{Enter}");
+    await expect(thumb).toHaveValue("0.2");
+  },
+};
+
+export const InputTinyStep: Story = {
+  args: {
+    showInput: true,
+    min: 0,
+    max: 0.000001,
+    step: 0.0000001,
+    defaultValue: 0,
+    "aria-label": "Tiny",
+  },
+  /* axe rejects the exponent-form `aria-valuenow` Base UI writes on the thumb. */
+  parameters: { a11y: { test: "off" } },
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("textbox", { name: "Tiny" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "0.0000005{Enter}");
+    if (!(input instanceof HTMLInputElement)) throw new Error("not an input");
+    await expect(Number(input.value)).toBe(0.0000005);
+  },
+};
+
+export const InputNamedByLabelledby: Story = {
+  args: { "aria-label": undefined, showInput: true },
+  render: (args) => (
+    <div>
+      <span id="speed-label">Speed</span>
+      <Slider {...args} aria-labelledby="speed-label" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("textbox", { name: "Speed" }),
+    ).toBeInTheDocument();
+  },
+};
+
+export const InputEscapeStaysInside: Story = {
+  args: { showInput: true },
+  render: (args) => (
+    <div data-testid="outer">
+      <Slider {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    let escapes = 0;
+    /* React handles keys at the root, so only a listener above it (as a dialog's
+     * dismiss has) shows whether the keydown stopped there. */
+    const count = (event: KeyboardEvent) => {
+      if (event.key === "Escape") escapes += 1;
+    };
+    document.addEventListener("keydown", count);
+    await userEvent.type(input, "7{Escape}");
+    await expect(input).toHaveValue("40");
+    await expect(escapes).toBe(0);
+    await userEvent.keyboard("{Escape}");
+    document.removeEventListener("keydown", count);
+    await expect(escapes).toBe(1);
+  },
+};
+
+export const InputInFormField: Story = {
+  args: {
+    "aria-label": undefined,
+    showInput: true,
+    inputAriaLabel: "Level value",
+    name: "level",
+  },
+  render: (args) => (
+    <form data-testid="form">
+      <Field name="level">
+        <FieldLabel>Level</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </form>
+  ),
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    if (!(form instanceof HTMLFormElement)) throw new Error("form missing");
+    const input = canvas.getByRole("textbox", { name: "Level value" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "65{Enter}");
+    await expect(new FormData(form).getAll("level")).toEqual(["65"]);
+    const ids = [...form.querySelectorAll("[id]")].map((el) => el.id);
+    await expect(new Set(ids).size).toBe(ids.length);
+  },
+};
+
+export const InputInDisabledField: Story = {
+  args: { "aria-label": undefined, showInput: true, inputAriaLabel: "Value" },
+  render: (args) => (
+    <Field disabled>
+      <FieldLabel>Level</FieldLabel>
+      <Slider {...args} />
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("textbox", { name: "Value" })).toBeDisabled();
+  },
+};
+
+export const InputDescribedInField: Story = {
+  args: { "aria-label": undefined, showInput: true, inputAriaLabel: "Value" },
+  render: (args) => (
+    <Field error="Pick a level above zero.">
+      <FieldLabel>Level</FieldLabel>
+      <Slider {...args} />
+      <FieldHint>Applies to every panel.</FieldHint>
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("textbox", { name: "Value" });
+    await expect(input).toHaveAccessibleDescription(
+      expect.stringContaining("Applies to every panel."),
+    );
+    await expect(input).toHaveAttribute("aria-invalid", "true");
+  },
+};
+
+export const InputIgnoresKeysDuringComposition: Story = {
+  args: { showInput: true, onValueChange: fn() },
+  play: async ({ args, canvas }) => {
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "70");
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Enter",
+        isComposing: true,
+        bubbles: true,
+      }),
+    );
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Enter",
+        keyCode: 229,
+        bubbles: true,
+      }),
+    );
+    await expect(args.onValueChange).not.toHaveBeenCalled();
+    await expect(input).toHaveValue("70");
+    await userEvent.keyboard("{Enter}");
+    await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+  },
+};
+
+export const InputCommitsOnceWhenCallbackMovesFocus: Story = {
+  args: {
+    showInput: true,
+    onValueChange: fn(),
+    onValueCommitted: fn(() => {
+      document.getElementById("next-field")?.focus();
+    }),
+  },
+  render: (args) => (
+    <div>
+      <Slider {...args} />
+      <button id="next-field" type="button">
+        Next
+      </button>
+    </div>
+  ),
+  play: async ({ args, canvas }) => {
+    const input = canvas.getByRole("textbox", { name: "Volume" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "65{Enter}");
+    await expect(canvas.getByRole("slider")).toHaveValue("65");
+    await expect(canvas.getByRole("button", { name: "Next" })).toHaveFocus();
+    await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+    await expect(args.onValueCommitted).toHaveBeenCalledTimes(1);
+  },
+};

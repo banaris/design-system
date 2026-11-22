@@ -6,6 +6,10 @@ import { Children, type ComponentProps, createContext, use } from "react";
 import { cn } from "../lib/cn";
 
 const ErrorContext = createContext("");
+const StateContext = createContext({ disabled: false, invalid: false });
+
+/** The enclosing `Field`'s state, for a control that must not register with it. */
+export const useFieldState = () => use(StateContext);
 
 export type FieldProps = Omit<
   ComponentProps<typeof BaseField.Root>,
@@ -25,11 +29,15 @@ export type FieldProps = Omit<
 export function Field({ className, error = "", ...rest }: FieldProps) {
   return (
     <ErrorContext value={error}>
-      <BaseField.Root
-        invalid={error !== ""}
-        className={cn("flex flex-col gap-1.5", className)}
-        {...rest}
-      />
+      <StateContext
+        value={{ disabled: rest.disabled === true, invalid: error !== "" }}
+      >
+        <BaseField.Root
+          invalid={error !== ""}
+          className={cn("flex flex-col gap-1.5", className)}
+          {...rest}
+        />
+      </StateContext>
     </ErrorContext>
   );
 }
