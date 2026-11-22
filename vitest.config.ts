@@ -18,7 +18,11 @@ function storybookProject(
   name: string,
   options: {
     tags?: { include: string[] };
-    contextOptions?: { reducedMotion: "reduce" };
+    contextOptions?: {
+      reducedMotion?: "reduce";
+      hasTouch?: boolean;
+      isMobile?: boolean;
+    };
     setupFiles?: string[];
   } = {},
 ) {
@@ -55,14 +59,24 @@ function storybookProject(
 
 /* The second project reruns the `reduced-motion` stories with reduced motion
  * requested; its setup file fails the run if the browser ignored that. */
+
 export default defineConfig({
   test: {
     projects: [
-      storybookProject("storybook"),
+      storybookProject("storybook", {
+        setupFiles: [".storybook/vitest.fine-pointer.setup.ts"],
+      }),
       storybookProject("storybook-reduced-motion", {
         tags: { include: ["reduced-motion"] },
         contextOptions: { reducedMotion: "reduce" },
-        setupFiles: [".storybook/vitest.reduced-motion.setup.ts"],
+        setupFiles: [
+          ".storybook/vitest.reduced-motion.setup.ts",
+          ".storybook/vitest.fine-pointer.setup.ts",
+        ],
+      }),
+      storybookProject("storybook-coarse", {
+        contextOptions: { hasTouch: true, isMobile: true },
+        setupFiles: [".storybook/vitest.coarse.setup.ts"],
       }),
     ],
   },
