@@ -47,11 +47,12 @@ export const Sizes: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    for (const size of ["xs", "sm", "md", "lg"]) {
+    const edges = { xs: 24, sm: 32, md: 40, lg: 48 };
+    for (const [size, edge] of Object.entries(edges)) {
       const { width, height } = canvas
         .getByRole("button", { name: `Reset ${size}` })
         .getBoundingClientRect();
-      await expect(width).toBe(height);
+      await expect([width, height]).toEqual([edge, edge]);
     }
   },
 };

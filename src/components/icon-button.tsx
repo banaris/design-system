@@ -9,7 +9,7 @@ export type IconButtonSize = "xs" | "sm" | "md" | "lg";
 
 export type IconButtonProps = {
   icon: IconProps["icon"];
-  /** Accessible name. Required: with no text the button would be announced as unlabelled. */
+  /** Accessible name. Required; the type cannot reject `""`, so pass a real label. */
   "aria-label": string;
   variant?: ButtonVariant;
   size?: IconButtonSize;
