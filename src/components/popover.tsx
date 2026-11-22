@@ -42,12 +42,21 @@ export type PopoverContentProps = Omit<
   "className" | "render"
 > & {
   className?: string;
+  /** Where to render the popup; set it to an open native modal `<dialog>` so the popup stays operable inside it. */
+  portalContainer?: HTMLElement | null | undefined;
 };
 
 /** Escape and an outside press close it; focus returns to the trigger. */
-export function PopoverContent({ className, ...rest }: PopoverContentProps) {
+export function PopoverContent({
+  className,
+  portalContainer,
+  ...rest
+}: PopoverContentProps) {
   return (
-    <BasePopover.Portal className="relative z-[var(--z-overlay)]">
+    <BasePopover.Portal
+      container={portalContainer ?? undefined}
+      className="relative z-[var(--z-overlay)]"
+    >
       <BasePopover.Positioner sideOffset={8}>
         <BasePopover.Popup
           className={cn(

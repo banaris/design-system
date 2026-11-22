@@ -22,6 +22,11 @@ export {
   type DateTimeFieldProps,
 } from "./components/date-time-field";
 export {
+  DateTimePicker,
+  type DateTimePickerClose,
+  type DateTimePickerProps,
+} from "./components/date-time-picker";
+export {
   Dialog,
   DialogClose,
   type DialogCloseProps,
