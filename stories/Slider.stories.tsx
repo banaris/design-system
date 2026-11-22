@@ -1,14 +1,35 @@
 import { Field, FieldHint, FieldLabel, Slider } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
-import { commands } from "vitest/browser";
 
 import { resolveToken } from "./border-color";
 
-const trackBorder = (thumb: HTMLElement) => {
+const sliderTrack = (thumb: HTMLElement) => {
   const track = thumb.closest("[data-index]")?.parentElement;
   if (!track) throw new Error("slider track not found");
-  return getComputedStyle(track).borderTopColor;
+  return track;
+};
+
+const trackBorder = (thumb: HTMLElement) =>
+  getComputedStyle(sliderTrack(thumb)).borderTopColor;
+
+const sliderControl = (thumb: HTMLElement) => {
+  const control = sliderTrack(thumb).parentElement;
+  if (!control) throw new Error("slider control not found");
+  return control;
+};
+
+/* `vitest/browser` throws when imported outside Vitest, so a plain Storybook
+ * gets no commands and the touch assertions below are skipped. */
+const touchCommands = async () => {
+  if (!matchMedia("(any-pointer: coarse)").matches) return null;
+  try {
+    return (await import("vitest/browser")).commands;
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Browser Mode"))
+      return null;
+    throw error;
+  }
 };
 
 const meta = {
@@ -52,8 +73,7 @@ export const Interacting: Story = {
     await userEvent.keyboard("{Home}");
     await expect(thumb).toHaveValue("0");
 
-    const track = thumb.closest("[data-index]")?.parentElement;
-    if (!track) throw new Error("slider track not found");
+    const track = sliderTrack(thumb);
     const { left, width, top, height } = track.getBoundingClientRect();
     await userEvent.pointer([
       {
@@ -67,23 +87,147 @@ export const Interacting: Story = {
 };
 
 export const TouchTap: Story = {
-  args: { step: 5, onValueChange: fn() },
+  args: { step: 5, onValueChange: fn(), onValueCommitted: fn() },
   play: async ({ args, canvas }) => {
     const thumb = canvas.getByRole("slider", { name: "Volume" });
-    const track = thumb.closest("[data-index]")?.parentElement;
-    const control = track?.parentElement;
-    if (!track || !control) throw new Error("slider track not found");
-    await expect(getComputedStyle(control).touchAction).toBe("pan-y");
-    if (!matchMedia("(any-pointer: coarse)").matches) return;
-    track.dataset["tapTarget"] = "";
+    const track = sliderTrack(thumb);
+    await expect(getComputedStyle(sliderControl(thumb)).touchAction).toBe(
+      "pan-y",
+    );
+    const commands = await touchCommands();
+    if (!commands) return;
+    track.dataset["touchTarget"] = "";
     const { width, height } = track.getBoundingClientRect();
-    await commands.tap("[data-tap-target]", width * 0.8, height / 2);
+    await commands.tap("[data-touch-target]", width * 0.8, height / 2);
     /* `thumbAlignment="edge"` insets the usable track by the thumb size, so the
      * value lands within one step of the tapped 80%, not exactly on it. */
     await expect(
       Math.abs(Number(thumb.getAttribute("aria-valuenow")) - 80),
     ).toBeLessThanOrEqual(5);
-    await expect(args.onValueChange).toHaveBeenCalled();
+    await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+    await expect(args.onValueCommitted).toHaveBeenCalledTimes(1);
+  },
+};
+
+export const TouchTapCancelled: Story = {
+  args: {
+    onValueChange: fn((_value: number, details: { cancel: () => void }) => {
+      details.cancel();
+    }),
+    onValueCommitted: fn(),
+  },
+  play: async ({ args, canvas }) => {
+    const commands = await touchCommands();
+    if (!commands) return;
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const track = sliderTrack(thumb);
+    track.dataset["touchTarget"] = "";
+    const { width, height } = track.getBoundingClientRect();
+    await commands.tap("[data-touch-target]", width * 0.8, height / 2);
+    await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+    await expect(thumb).toHaveValue("40");
+    await expect(args.onValueCommitted).not.toHaveBeenCalled();
+  },
+};
+
+export const TouchSwipe: Story = {
+  args: { step: 5, onValueChange: fn(), onValueCommitted: fn() },
+  decorators: [
+    (Story) => (
+      <div className="h-[200vh] w-72">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ args, canvas }) => {
+    const commands = await touchCommands();
+    if (!commands) return;
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const track = sliderTrack(thumb);
+    track.dataset["touchTarget"] = "";
+    const { width, height } = track.getBoundingClientRect();
+    const before = window.scrollY;
+    await commands.swipe(
+      "[data-touch-target]",
+      width * 0.8,
+      height / 2,
+      8,
+      -200,
+    );
+    await expect(window.scrollY).toBeGreaterThan(before);
+    await expect(thumb).toHaveValue("40");
+    await expect(args.onValueChange).not.toHaveBeenCalled();
+    await expect(args.onValueCommitted).not.toHaveBeenCalled();
+  },
+};
+
+export const TouchSwipeWithoutCancel: Story = {
+  args: { step: 5, onValueChange: fn(), onValueCommitted: fn() },
+  decorators: [
+    (Story) => (
+      <div className="w-72 touch-none">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ args, canvas }) => {
+    const commands = await touchCommands();
+    if (!commands) return;
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const track = sliderTrack(thumb);
+    track.dataset["touchTarget"] = "";
+    const { width, height } = track.getBoundingClientRect();
+    /* A `touch-none` parent stops the browser panning, so the pointer is never
+     * cancelled and the release reaches the control as a real `pointerup`. */
+    const events: string[] = [];
+    for (const type of ["pointercancel", "pointerup"]) {
+      sliderControl(thumb).addEventListener(type, () => events.push(type));
+    }
+    await commands.swipe("[data-touch-target]", width * 0.8, height / 2, 2, 40);
+    await expect(events).toEqual(["pointerup"]);
+    await expect(thumb).toHaveValue("40");
+    await expect(args.onValueChange).not.toHaveBeenCalled();
+    await expect(args.onValueCommitted).not.toHaveBeenCalled();
+  },
+};
+
+export const CancelledChange: Story = {
+  args: {
+    onValueChange: fn((_value: number, details: { cancel: () => void }) => {
+      details.cancel();
+    }),
+    onValueCommitted: fn(),
+  },
+  play: async ({ args, canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    thumb.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+    await expect(thumb).toHaveValue("40");
+    await expect(args.onValueCommitted).not.toHaveBeenCalled();
+  },
+};
+
+export const TouchDrag: Story = {
+  args: { step: 5, onValueCommitted: fn() },
+  play: async ({ args, canvas }) => {
+    const commands = await touchCommands();
+    if (!commands) return;
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const track = sliderTrack(thumb);
+    track.dataset["touchTarget"] = "";
+    const { width, height } = track.getBoundingClientRect();
+    await commands.swipe(
+      "[data-touch-target]",
+      width * 0.2,
+      height / 2,
+      100,
+      0,
+    );
+    const value = Number(thumb.getAttribute("aria-valuenow"));
+    await expect(value).toBeGreaterThanOrEqual(50);
+    await expect(value).toBeLessThanOrEqual(60);
+    await expect(args.onValueCommitted).toHaveBeenCalledTimes(1);
   },
 };
 

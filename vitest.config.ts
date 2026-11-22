@@ -3,8 +3,47 @@ import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { playwright } from "@vitest/browser-playwright";
-import type { FrameLocator } from "playwright";
 import { defineConfig } from "vitest/config";
+import type { BrowserCommand } from "vitest/node";
+
+/* Synthetic touch events from `userEvent.pointer` carry no active pointer, so
+ * Base UI's `setPointerCapture` throws; these send real touches instead. */
+const tap: BrowserCommand<[selector: string, x: number, y: number]> = (
+  { iframe },
+  selector,
+  x,
+  y,
+) => iframe.locator(selector).tap({ position: { x, y } });
+
+/* Real touch drag from `(x, y)` inside `selector` by `(dx, dy)`, sent over CDP
+ * because Playwright has no swipe; the box is in the top frame's coordinates. */
+const swipe: BrowserCommand<
+  [selector: string, x: number, y: number, dx: number, dy: number]
+> = async ({ context, iframe, page }, selector, x, y, dx, dy) => {
+  const box = await iframe.locator(selector).boundingBox();
+  if (!box) throw new Error(`swipe target not found: ${selector}`);
+  const cdp = await context.newCDPSession(page);
+  const touch = (
+    type: "touchStart" | "touchMove" | "touchEnd",
+    fx: number,
+    fy: number,
+  ) =>
+    cdp.send("Input.dispatchTouchEvent", {
+      type,
+      touchPoints: type === "touchEnd" ? [] : [{ x: fx, y: fy }],
+    });
+  const steps = 10;
+  await touch("touchStart", box.x + x, box.y + y);
+  for (let i = 1; i <= steps; i += 1) {
+    await touch(
+      "touchMove",
+      box.x + x + (dx * i) / steps,
+      box.y + y + (dy * i) / steps,
+    );
+  }
+  await touch("touchEnd", 0, 0);
+  await cdp.detach();
+};
 
 /* Renders every story in a real browser and runs axe over it (`pnpm test`).
  *
@@ -48,16 +87,7 @@ function storybookProject(
       browser: {
         enabled: true,
         headless: true,
-        commands: {
-          /* Synthetic touch events from `userEvent.pointer` carry no active
-           * pointer, so Base UI's `setPointerCapture` throws. */
-          tap: (
-            { iframe }: { iframe: FrameLocator },
-            selector: string,
-            x: number,
-            y: number,
-          ) => iframe.locator(selector).tap({ position: { x, y } }),
-        },
+        commands: { tap, swipe },
         provider: playwright(
           options.contextOptions && { contextOptions: options.contextOptions },
         ),
