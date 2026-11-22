@@ -25,6 +25,8 @@
 
 /* Tailwind cannot see the component sources from a CSS file, so name them. */
 @source "../";
+/* Names the fixture story so `check:styles` finds `coarse:h-11` in `dist`. */
+@source "../../stories/CoarsePointer.stories.tsx";
 /* The word `container` appears in source (an import path) and would otherwise
    generate Tailwind's `.container` rule, which now carries breakpoint
    max-widths into consumers' own `container` classes. */

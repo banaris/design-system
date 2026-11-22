@@ -402,6 +402,11 @@
   }
 }
 
+/* `coarse:<utility>` applies on devices whose primary or any input is a coarse
+   pointer (a finger). The mobile rules in ADR 0002 switch on this one
+   condition; components never repeat the media query. */
+@custom-variant coarse (@media (any-pointer: coarse));
+
 :root[data-theme="dark"] {
   /* On dark the stripe is readable as text (14.82:1 on bg), so `accent-soft`
      stops being a darkened olive and becomes the stripe itself, pulled back

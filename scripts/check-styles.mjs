@@ -18,6 +18,13 @@
  *   2. Every `animate-[name_…]` has a matching `@keyframes name`.
  *   3. Tailwind scanned something at all — a total scan failure would
  *      otherwise report as hundreds of per-class errors with no cause named.
+ *   4. Every `coarse:` utility in `src/` sits inside an
+ *      `@media (any-pointer: coarse)` block. Check 1 strips variants, so a
+ *      `coarse:h-11` would pass on an unrelated `.h-11` while the variant
+ *      itself never reached the file.
+ *   5. The fixture story's `coarse:h-11` is in `dist` inside that block. No
+ *      component uses `coarse:` yet, so check 4 alone would stay silent with
+ *      the variant deleted.
  *
  * Whether the published stylesheet carries tokens and stays free of preflight
  * belongs to `check:package`, which owns the shipped artefact.
@@ -60,6 +67,25 @@ for (const [, raw] of css.matchAll(/\.((?:[\w-]|\\.)+)/g)) {
   const bare = unescaped.split(":").pop();
   if (bare !== undefined) present.add(bare);
 }
+/* Class names inside `@media (any-pointer: coarse)`; rules nest in `@layer`, so walk braces. */
+const coarseSelectors = (text) => {
+  const found = new Set();
+  for (const open of text.matchAll(
+    /@media\s*\(any-pointer:\s*coarse\)\s*\{/g,
+  )) {
+    let depth = 1;
+    let i = open.index + open[0].length;
+    const start = i;
+    while (i < text.length && depth > 0) {
+      if (text[i] === "{") depth++;
+      else if (text[i] === "}") depth--;
+      i++;
+    }
+    for (const [, raw] of text.slice(start, i).matchAll(/\.((?:[\w-]|\\.)+)/g))
+      found.add(raw.replace(/\\/g, ""));
+  }
+  return found;
+};
 const keyframes = new Set(
   [...css.matchAll(/@keyframes\s+([\w-]+)/g)].map((m) => m[1]),
 );
@@ -101,6 +127,7 @@ const SINGLE_WORD = new Set([
 const errors = [];
 const referenced = new Set();
 const arbitraryProperties = new Set();
+const coarseReferenced = new Set();
 const animations = new Set();
 
 for (const file of sourceFiles) {
@@ -138,6 +165,8 @@ for (const file of sourceFiles) {
   for (const literal of literals) {
     for (const token of literal.split(/\s+/)) {
       if (token === "") continue;
+      if (token.split(":").slice(0, -1).includes("coarse"))
+        coarseReferenced.add(token);
       /* `[color-scheme:dark]` is a whole utility whose variants are part of its
          selector, so it is looked up verbatim rather than stripped to a bare
          name that would never match. */
@@ -189,6 +218,23 @@ for (const token of arbitraryProperties) {
       `      The class reaches the DOM and nothing styles it — no error is raised at build time.`,
   );
 }
+
+/* ---- 4. `coarse:` utilities sit inside the media block ---- */
+const inCoarseBlock = coarseSelectors(css);
+for (const token of coarseReferenced) {
+  if (inCoarseBlock.has(token.replace(/\\/g, ""))) continue;
+  errors.push(
+    `\`${token}\` is referenced in src/ but is not inside an \`@media (any-pointer: coarse)\` block in dist/styles.css.\n` +
+      `      Define the \`coarse\` variant once in src/styles/theme.css; components never write the query.`,
+  );
+}
+
+const COARSE_FIXTURE = "coarse:h-11";
+if (!inCoarseBlock.has(COARSE_FIXTURE))
+  errors.push(
+    `\`${COARSE_FIXTURE}\` (stories/CoarsePointer.stories.tsx) is not inside an \`@media (any-pointer: coarse)\` block in dist/styles.css.\n` +
+      `      The \`coarse\` variant is missing from src/styles/theme.css, or the story is no longer a \`@source\` in src/styles/styles.src.css.`,
+  );
 
 /* ---- 2. Animations resolve ---- */
 for (const name of animations) {
