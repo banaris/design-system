@@ -17,7 +17,7 @@ export const Default: Story = {
 
 export const Statuses: Story = {
   render: () => (
-    <div className="flex w-96 flex-col gap-3">
+    <div className="flex w-full max-w-96 flex-col gap-3">
       <Alert status="success" title="Saved">
         Your changes were saved.
       </Alert>

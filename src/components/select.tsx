@@ -67,7 +67,11 @@ export function SelectContent({ className, ...rest }: SelectContentProps) {
         className="z-[var(--z-dropdown)]"
       >
         <BaseSelect.Popup
-          className={cn(MENU_POPUP, "min-w-[var(--anchor-width)]", className)}
+          className={cn(
+            MENU_POPUP,
+            "min-w-[min(var(--anchor-width),var(--available-width))]",
+            className,
+          )}
           {...rest}
         />
       </BaseSelect.Positioner>

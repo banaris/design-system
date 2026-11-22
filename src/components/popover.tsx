@@ -62,7 +62,7 @@ export function PopoverContent({
           className={cn(
             OVERLAY_POPUP,
             OVERLAY_MOTION,
-            "max-h-[var(--available-height)] max-w-80 overflow-y-auto p-4",
+            "max-h-[var(--available-height)] max-w-[min(20rem,var(--available-width))] overflow-y-auto p-4",
             className,
           )}
           {...rest}

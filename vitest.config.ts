@@ -119,6 +119,13 @@ export default defineConfig({
         contextOptions: { hasTouch: true, isMobile: true },
         setupFiles: [".storybook/vitest.coarse.setup.ts"],
       }),
+      /* WCAG 2.2 1.4.10 Reflow: every story at 320px, asserted by `narrowViewport`. */
+      storybookProject("storybook-narrow", {
+        setupFiles: [
+          ".storybook/vitest.narrow.setup.ts",
+          ".storybook/vitest.fine-pointer.setup.ts",
+        ],
+      }),
     ],
   },
 });
