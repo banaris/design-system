@@ -161,6 +161,9 @@ for (const file of sourceFiles) {
       /* Words that merely look like utilities. Rather than maintain a list of
          English prose, require a hyphen or a known single-word utility. */
       if (!bare.includes("-") && !SINGLE_WORD.has(bare)) continue;
+      /* `aria-*` is only ever a variant prefix in Tailwind, never a utility; a
+         bare one is a quoted prop name such as `"aria-label"`. */
+      if (bare.startsWith("aria-")) continue;
       referenced.add(bare);
     }
   }
