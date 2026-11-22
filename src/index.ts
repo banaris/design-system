@@ -105,6 +105,7 @@ export {
   SelectTrigger,
   type SelectTriggerProps,
 } from "./components/select";
+export { Slider, type SliderProps } from "./components/slider";
 export {
   Spinner,
   type SpinnerProps,
