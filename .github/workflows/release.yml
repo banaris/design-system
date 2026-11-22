@@ -126,3 +126,14 @@ jobs:
           awk -v h="## $version" '$0 == h { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
           [ -s "$RUNNER_TEMP/notes.md" ] || { echo "::error::CHANGELOG.md has no notes under \"## $version\""; exit 1; }
           gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file "$RUNNER_TEMP/notes.md"
+
+  deploy-production:
+    needs: github-release
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: $/.github/workflows/deploy.yml
+    with:
+      environment: production
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

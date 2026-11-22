@@ -178,7 +178,7 @@ Publishing uses npm's **trusted publishing**: npm verifies the workflow over OID
 
 ## Publishing the catalogue
 
-Every push to `main` deploys the catalogue to Cloudflare Workers, and every pull request uploads a preview version whose URL is written into the PR description. Both need a `CLOUDFLARE_API_TOKEN` repository secret with Workers deploy permission.
+Every push to `main` deploys the catalogue to a staging Worker (`design-system-staging`). Production (`design-system`) is deployed by `release.yml` right after a release is published, i.e. when the version PR is merged. Every pull request uploads a preview version whose URL is written into the PR description. All of these need a `CLOUDFLARE_API_TOKEN` repository secret with Workers deploy permission.
 
 ## Licence
 
