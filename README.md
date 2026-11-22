@@ -76,7 +76,7 @@ Two conventions worth knowing before you reach for a colour:
 - **`border` is decorative, `control-border` is not.** On an unchecked checkbox the border is the only thing announcing the control exists, so it is held to WCAG 1.4.11's 3:1 on every surface. Dividers and card edges are deliberately softer.
 - **Focus is two rings, not one.** Controls here sit on everything from paper to the dark shell to the accent fill, and no single colour clears 3:1 across that range. A light inner ring inside a dark outer one always leaves one of the two contrasting — worst case 8.13:1 across the eight surfaces a control can sit on, in both themes.
 
-Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `text-body`, …) bakes in weight and line-height — one class produces the intended voice. The **utility** tier (`text-lg`, `text-base`, `text-sm`, `text-xs`) sets size only and leaves weight to you; use it inside controls. Sizes overlap between tiers on purpose.
+Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `text-body`, …) bakes in weight and line-height — one class produces the intended voice. The **utility** tier (`text-lg`, `text-base`, `text-sm`, `text-xs`) sets size only and leaves weight to you; use it inside controls, except `text-input` for editable fields: it is 16px on touch devices, where a smaller size makes iOS Safari zoom on focus. Sizes overlap between tiers on purpose.
 
 Every token, rendered from the live cascade, is in the catalogue under **Foundations / Tokens**.
 

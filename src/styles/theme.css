@@ -322,6 +322,11 @@
   --text-lg--line-height: 1.4;
   --text-base: 14px;
   --text-base--line-height: 1.45;
+  /* Editable fields have their own step so they can reach 16px on coarse
+     devices without moving `--text-base`: iOS Safari zooms the page on focus
+     below 16px. The `coarse` override sits beside that variant, below. */
+  --text-input: 14px;
+  --text-input--line-height: 1.45;
   --text-sm: 12px;
   --text-sm--line-height: 1.4;
   --text-xs: 11px;
@@ -406,6 +411,17 @@
    pointer (a finger). The mobile rules in ADR 0002 switch on this one
    condition; components never repeat the media query. */
 @custom-variant coarse (@media (any-pointer: coarse));
+
+/* The 16px floor for editable fields, defined once. The line box stays that of
+   `--text-base`, so a field still lines up with a Button. */
+:root {
+  @variant coarse {
+    --text-input: 16px;
+    --text-input--line-height: calc(
+      var(--text-base) * var(--text-base--line-height)
+    );
+  }
+}
 
 :root[data-theme="dark"] {
   /* On dark the stripe is readable as text (14.82:1 on bg), so `accent-soft`

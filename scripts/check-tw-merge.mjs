@@ -143,6 +143,16 @@ expect(
   "text-sm",
 );
 expect(
+  "the input step (font size) and a colour coexist",
+  twMerge("text-input text-ink"),
+  "text-input text-ink",
+);
+expect(
+  "the input step is a font size, so a stock step replaces it",
+  twMerge("text-input text-sm"),
+  "text-sm",
+);
+expect(
   "custom radius is exclusive with a stock one",
   twMerge("rounded-md rounded-shell"),
   "rounded-shell",

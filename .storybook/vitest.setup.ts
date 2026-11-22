@@ -3,11 +3,12 @@
 import * as a11yAnnotations from "@storybook/addon-a11y/preview";
 import { setProjectAnnotations } from "@storybook/react-vite";
 
+import { fieldFontSize } from "./field-font-size";
 import preview from "./preview";
 
 /* Applies the annotations stories need when Vitest renders them.
  *
- * ⚠ BOTH entries are load-bearing, and each was proved by a seeded failure.
+ * ⚠ The first two entries are load-bearing, and each was proved by a seeded failure.
  * Dropping `preview` loses the theme decorator: `data-theme` never lands, every
  * token falls back, and four stories fail on contrast. Dropping the a11y
  * annotations loses axe itself — and that one fails SILENTLY. Calling
@@ -17,4 +18,4 @@ import preview from "./preview";
  *
  * If either import is removed, re-seed a violation and confirm the suite goes
  * red before believing it. */
-setProjectAnnotations([a11yAnnotations, preview]);
+setProjectAnnotations([a11yAnnotations, preview, fieldFontSize]);
