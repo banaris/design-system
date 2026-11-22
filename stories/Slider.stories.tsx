@@ -2,6 +2,14 @@ import { Field, FieldHint, FieldLabel, Slider } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
+import { resolveToken } from "./border-color";
+
+const trackBorder = (thumb: HTMLElement) => {
+  const track = thumb.closest("[data-index]")?.parentElement;
+  if (!track) throw new Error("slider track not found");
+  return getComputedStyle(track).borderTopColor;
+};
+
 const meta = {
   title: "Forms/Slider",
   component: Slider,
@@ -43,13 +51,13 @@ export const Interacting: Story = {
     await userEvent.keyboard("{Home}");
     await expect(thumb).toHaveValue("0");
 
-    const control = thumb.closest("[data-index]")?.parentElement;
-    if (!control) throw new Error("slider control not found");
-    const { left, width, top, height } = control.getBoundingClientRect();
+    const track = thumb.closest("[data-index]")?.parentElement;
+    if (!track) throw new Error("slider track not found");
+    const { left, width, top, height } = track.getBoundingClientRect();
     await userEvent.pointer([
       {
         keys: "[MouseLeft]",
-        target: control,
+        target: track,
         coords: { clientX: left + width * 0.7, clientY: top + height / 2 },
       },
     ]);
@@ -83,6 +91,23 @@ export const Disabled: Story = {
   },
 };
 
+export const States: Story = {
+  render: (args) => (
+    <div className="flex flex-col gap-4">
+      <Slider {...args} aria-label="Default" />
+      <Slider {...args} aria-label="Disabled" disabled />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      trackBorder(canvas.getByRole("slider", { name: "Default" })),
+    ).toBe(resolveToken("--color-control-border"));
+    await expect(
+      trackBorder(canvas.getByRole("slider", { name: "Disabled" })),
+    ).toBe("rgba(0, 0, 0, 0)");
+  },
+};
+
 export const InField: Story = {
   args: { "aria-label": undefined },
   render: (args) => (
@@ -95,5 +120,45 @@ export const InField: Story = {
   play: async ({ canvas }) => {
     const thumb = canvas.getByRole("slider", { name: "Brightness" });
     await expect(thumb).toHaveAccessibleDescription("Applies to every panel.");
+    await expect(thumb).toHaveAttribute("aria-invalid", "true");
+    await expect(trackBorder(thumb)).toBe(resolveToken("--color-danger"));
+    await userEvent.click(canvas.getByText("Brightness"));
+    await expect(thumb).toHaveFocus();
+  },
+};
+
+export const DisabledInvalid: Story = {
+  args: { "aria-label": undefined },
+  render: (args) => (
+    <Field error="Pick a level above zero." disabled>
+      <FieldLabel>Brightness</FieldLabel>
+      <Slider {...args} />
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Brightness" });
+    await expect(thumb).toBeDisabled();
+    await expect(trackBorder(thumb)).toBe("rgba(0, 0, 0, 0)");
+  },
+};
+
+export const InvalidFocused: Story = {
+  args: { "aria-label": undefined },
+  render: (args) => (
+    <Field error="Pick a level above zero.">
+      <FieldLabel>Brightness</FieldLabel>
+      <Slider {...args} />
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Brightness" });
+    await userEvent.tab();
+    await expect(thumb).toHaveFocus();
+    const box = thumb.closest("[data-index]");
+    if (!box) throw new Error("slider thumb not found");
+    await new Promise((r) => setTimeout(r, 400));
+    await expect(getComputedStyle(box).boxShadow).toContain(
+      resolveToken("--color-focus-inner"),
+    );
   },
 };
