@@ -32,7 +32,7 @@ export function Slider({
       thumbAlignment="edge"
       {...rest}
     >
-      <BaseSlider.Control className="flex h-6 w-full cursor-pointer touch-none items-center select-none data-disabled:cursor-not-allowed">
+      <BaseSlider.Control className="flex h-6 w-full cursor-pointer touch-pan-y items-center select-none data-disabled:cursor-not-allowed">
         <BaseSlider.Track className="rounded-pill border-control-border bg-surface-sunken data-invalid:not-data-disabled:border-danger box-border h-1.5 w-full border border-solid data-disabled:border-transparent">
           <BaseSlider.Indicator className="rounded-pill bg-fill data-disabled:bg-ink-faint forced-colors:bg-[Highlight] data-disabled:forced-colors:bg-[GrayText]" />
           <BaseSlider.Thumb

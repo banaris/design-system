@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { playwright } from "@vitest/browser-playwright";
+import type { FrameLocator } from "playwright";
 import { defineConfig } from "vitest/config";
 
 /* Renders every story in a real browser and runs axe over it (`pnpm test`).
@@ -47,6 +48,16 @@ function storybookProject(
       browser: {
         enabled: true,
         headless: true,
+        commands: {
+          /* Synthetic touch events from `userEvent.pointer` carry no active
+           * pointer, so Base UI's `setPointerCapture` throws. */
+          tap: (
+            { iframe }: { iframe: FrameLocator },
+            selector: string,
+            x: number,
+            y: number,
+          ) => iframe.locator(selector).tap({ position: { x, y } }),
+        },
         provider: playwright(
           options.contextOptions && { contextOptions: options.contextOptions },
         ),

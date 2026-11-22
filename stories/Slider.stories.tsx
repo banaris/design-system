@@ -1,6 +1,7 @@
 import { Field, FieldHint, FieldLabel, Slider } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
+import { commands } from "vitest/browser";
 
 import { resolveToken } from "./border-color";
 
@@ -62,6 +63,27 @@ export const Interacting: Story = {
       },
     ]);
     await expect(thumb).toHaveValue("70");
+  },
+};
+
+export const TouchTap: Story = {
+  args: { step: 5, onValueChange: fn() },
+  play: async ({ args, canvas }) => {
+    const thumb = canvas.getByRole("slider", { name: "Volume" });
+    const track = thumb.closest("[data-index]")?.parentElement;
+    const control = track?.parentElement;
+    if (!track || !control) throw new Error("slider track not found");
+    await expect(getComputedStyle(control).touchAction).toBe("pan-y");
+    if (!matchMedia("(any-pointer: coarse)").matches) return;
+    track.dataset["tapTarget"] = "";
+    const { width, height } = track.getBoundingClientRect();
+    await commands.tap("[data-tap-target]", width * 0.8, height / 2);
+    /* `thumbAlignment="edge"` insets the usable track by the thumb size, so the
+     * value lands within one step of the tapped 80%, not exactly on it. */
+    await expect(
+      Math.abs(Number(thumb.getAttribute("aria-valuenow")) - 80),
+    ).toBeLessThanOrEqual(5);
+    await expect(args.onValueChange).toHaveBeenCalled();
   },
 };
 
