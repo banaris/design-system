@@ -71,6 +71,11 @@ export {
 } from "./components/heading";
 export { Icon, type IconProps, type IconSize } from "./components/icon";
 export {
+  IconButton,
+  type IconButtonProps,
+  type IconButtonSize,
+} from "./components/icon-button";
+export {
   List,
   ListItem,
   type ListItemProps,
