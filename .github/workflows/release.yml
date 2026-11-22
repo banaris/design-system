@@ -132,7 +132,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: $/.github/workflows/deploy.yml
+    uses: ./.github/workflows/deploy.yml # zizmor: ignore[self-repository] GitHub documents only the ./ form
     with:
       environment: production
     secrets:
