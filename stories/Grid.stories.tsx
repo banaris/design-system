@@ -105,3 +105,27 @@ export const JustBelowTheSmBreakpoint: Story = {
     await expect(columnCount(parentOf(canvas.getByText("One")))).toBe(1);
   },
 };
+
+export const CallerColumns: Story = {
+  args: { columns: 4, className: "grid-cols-2" },
+  play: async ({ canvas }) => {
+    await expect(columnCount(parentOf(canvas.getByText("One")))).toBe(2);
+  },
+};
+
+export const WithConsumerGridCols1: Story = {
+  args: { columns: 4 },
+  render: (args) => (
+    <>
+      <style>
+        {".grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}"}
+      </style>
+      <Grid {...args} />
+    </>
+  ),
+  play: async ({ canvas }) => {
+    await expect(columnCount(parentOf(canvas.getByText("One")))).toBe(
+      expectedColumns(4),
+    );
+  },
+};

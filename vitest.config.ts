@@ -63,6 +63,7 @@ function storybookProject(
       hasTouch?: boolean;
       isMobile?: boolean;
     };
+    annotations?: string;
     setupFiles?: string[];
   } = {},
 ) {
@@ -93,7 +94,10 @@ function storybookProject(
         ),
         instances: [{ browser: "chromium" as const }],
       },
-      setupFiles: [".storybook/vitest.setup.ts", ...(options.setupFiles ?? [])],
+      setupFiles: [
+        options.annotations ?? ".storybook/vitest.setup.ts",
+        ...(options.setupFiles ?? []),
+      ],
     },
   };
 }
@@ -121,10 +125,8 @@ export default defineConfig({
       }),
       /* WCAG 2.2 1.4.10 Reflow: every story at 320px, asserted by `narrowViewport`. */
       storybookProject("storybook-narrow", {
-        setupFiles: [
-          ".storybook/vitest.narrow.setup.ts",
-          ".storybook/vitest.fine-pointer.setup.ts",
-        ],
+        annotations: ".storybook/vitest.narrow.setup.ts",
+        setupFiles: [".storybook/vitest.fine-pointer.setup.ts"],
       }),
     ],
   },
