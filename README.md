@@ -80,6 +80,24 @@ Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `tex
 
 Every token, rendered from the live cascade, is in the catalogue under **Foundations / Tokens**.
 
+## Icons
+
+The package ships no icon set — only `Icon`, `IconButton` and the few glyphs its own components draw. For any other glyph, install [`lucide-react`](https://lucide.dev/) yourself (it is not a dependency of this package) and pass the glyph as `icon`. A reset button, for example:
+
+```tsx
+import { Icon, IconButton } from "@banaris/design-system";
+import { RotateCcw } from "lucide-react";
+
+<Icon icon={RotateCcw} label="Reset" />
+<IconButton icon={RotateCcw} aria-label="Reset" />
+```
+
+```bash
+pnpm add lucide-react
+```
+
+Any component that renders an SVG and takes SVG props works as `icon`, so your own glyph needs no library. The choice is recorded in [ADR 0001](docs/adr/0001-icon-library.md).
+
 ## Development
 
 ```bash
