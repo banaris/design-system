@@ -54,7 +54,7 @@ export function PopoverContent({
 }: PopoverContentProps) {
   return (
     <BasePopover.Portal
-      container={portalContainer}
+      container={portalContainer ?? undefined}
       className="relative z-[var(--z-overlay)]"
     >
       <BasePopover.Positioner sideOffset={8}>

@@ -1,4 +1,9 @@
-import { DateTimePicker } from "@banaris/design-system";
+import {
+  DateTimePicker,
+  Field,
+  FieldHint,
+  FieldLabel,
+} from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentProps, useState } from "react";
 import {
@@ -290,7 +295,7 @@ export const InsideAModalDialog: Story = {
   },
 };
 
-export const EscapeInsideAModalDialogClosesOnlyThePicker: Story = {
+export const EscapeInsideAModalDialogDismissesThePicker: Story = {
   render: (args) => <InsideNativeDialog {...args} />,
   play: async ({ args, canvas }) => {
     await userEvent.click(
@@ -314,6 +319,189 @@ export const EscapeInsideAModalDialogClosesOnlyThePicker: Story = {
     await expectOnce(args.onClose, {
       outcome: "dismissed",
     });
-    await expect(form).toBeVisible();
+  },
+};
+
+export const NullPortalContainerUsesTheDefaultPlacement: Story = {
+  args: { portalContainer: null },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+  },
+};
+
+export const TriggerPressDismisses: Story = {
+  play: async ({ args, canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await userEvent.click(
+      canvas.getByRole("button", { name: "2030-06-15 09:30" }),
+    );
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await expectOnce(args.onClose, { outcome: "dismissed" });
+  },
+};
+
+export const KeysBeforeMinAreRejected: Story = {
+  args: { min: "2030-06-10T10:00" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    const earlier = screen.getByRole("gridcell", {
+      name: "Sunday, June 9, 2030",
+    });
+    earlier.focus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard(" ");
+    await expect(screen.getByRole("textbox", { name: "Date" })).toHaveValue(
+      "2030-06-15",
+    );
+  },
+};
+
+export const MonthButtonKeepsFocusAfterAKeyThatDoesNotMove: Story = {
+  args: { initial: "2030-06-16T09:30" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-16 09:30");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("gridcell", { name: "Sunday, June 16, 2030" }),
+      ).toHaveFocus(),
+    );
+    await userEvent.keyboard("{Home}");
+    const next = screen.getByRole("button", { name: "Next month" });
+    await userEvent.click(next);
+    await expect(screen.getByText("July 2030")).toBeVisible();
+    await expect(next).toHaveFocus();
+  },
+};
+
+export const ClosingTheModalDialogDismisses: Story = {
+  render: (args) => <InsideNativeDialog {...args} />,
+  play: async ({ args, canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Open the form" }),
+    );
+    const form = await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Entry form" }),
+    );
+    await userEvent.click(
+      within(form).getByRole("button", { name: "2030-06-15 09:30" }),
+    );
+    await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Select date and time" }),
+    );
+    if (!(form instanceof HTMLDialogElement)) throw new Error("not a dialog");
+    form.close();
+    await waitFor(() => expect(args.onClose).toHaveBeenCalledTimes(1));
+    await expect(args.onClose).toHaveBeenCalledWith({ outcome: "dismissed" });
+  },
+};
+
+const closedWith: string[] = [];
+
+function RenamingParent({ onClose, ...props }: PickerArgs) {
+  const [dialog, setDialog] = useState<HTMLDialogElement | null>(null);
+  const [label, setLabel] = useState("first");
+  return (
+    <div>
+      <button
+        type="button"
+        className="text-ink"
+        onClick={() => {
+          dialog?.showModal();
+        }}
+      >
+        Open the form
+      </button>
+      <dialog ref={setDialog} aria-label="Entry form" className="text-ink p-6">
+        <div
+          role="presentation"
+          onKeyDown={(event) => {
+            if (event.key === "b") setLabel("second");
+          }}
+        >
+          <Harness
+            {...props}
+            portalContainer={dialog}
+            onClose={(close) => {
+              closedWith.push(label);
+              onClose(close);
+            }}
+          />
+        </div>
+      </dialog>
+    </div>
+  );
+}
+
+export const ClosingTheDialogReportsToTheLatestOnClose: Story = {
+  render: (args) => <RenamingParent {...args} />,
+  play: async ({ args, canvas }) => {
+    closedWith.length = 0;
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Open the form" }),
+    );
+    const form = await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Entry form" }),
+    );
+    await userEvent.click(
+      within(form).getByRole("button", { name: "2030-06-15 09:30" }),
+    );
+    await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Select date and time" }),
+    );
+    await userEvent.keyboard("b");
+    if (!(form instanceof HTMLDialogElement)) throw new Error("not a dialog");
+    form.close();
+    await waitFor(() => expect(args.onClose).toHaveBeenCalledTimes(1));
+    await expect(closedWith.at(-1)).toBe("second");
+  },
+};
+
+export const RequestingCloseOfTheModalDialogDismisses: Story = {
+  render: (args) => <InsideNativeDialog {...args} />,
+  play: async ({ args, canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Open the form" }),
+    );
+    const form = await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Entry form" }),
+    );
+    await userEvent.click(
+      within(form).getByRole("button", { name: "2030-06-15 09:30" }),
+    );
+    await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Select date and time" }),
+    );
+    if (!(form instanceof HTMLDialogElement)) throw new Error("not a dialog");
+    form.requestClose();
+    await waitFor(() => expect(args.onClose).toHaveBeenCalledTimes(1));
+    await expect(args.onClose).toHaveBeenCalledWith({ outcome: "dismissed" });
+    await expect(form).not.toBeVisible();
+  },
+};
+
+export const InsideAField: Story = {
+  render: (args) => (
+    <Field error="Start is required">
+      <FieldLabel>Start</FieldLabel>
+      <Harness {...args} />
+      <FieldHint>Local time</FieldHint>
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "2030-06-15 09:30" }),
+    );
+    await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Select date and time" }),
+    );
+    const inputs = ["Date", "Hour", "Minute"].map((name) =>
+      screen.getByRole("textbox", { name }),
+    );
+    for (const input of inputs) {
+      await expect(input).not.toHaveAttribute("aria-describedby");
+      await expect(input).not.toHaveAttribute("aria-invalid");
+    }
+    const ids = inputs.map((input) => input.id).filter(Boolean);
+    await expect(new Set(ids).size).toBe(ids.length);
   },
 };

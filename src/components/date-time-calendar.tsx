@@ -88,7 +88,7 @@ export function DateTimeCalendar({
 
   function goTo(day: CalendarDate | null) {
     if (day === null) return;
-    moveFocus.current = true;
+    moveFocus.current = formatDate(day) !== focusKey;
     onFocusDayChange(day);
   }
 

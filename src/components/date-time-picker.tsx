@@ -8,6 +8,8 @@ import {
   useState,
 } from "react";
 
+import { CONTROL_SURFACE, TEXT_ENTRY_BOX } from "../lib/class-presets";
+import { cn } from "../lib/cn";
 import {
   buildDateTime,
   type CalendarDate,
@@ -27,7 +29,6 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "./popover";
-import { TextField } from "./text-field";
 
 export type DateTimePickerClose =
   { outcome: "dismissed" } | { outcome: "applied"; value: string };
@@ -78,6 +79,15 @@ function openingDay(value: Draft, min: string | undefined): CalendarDate {
   return parseDate(min?.slice(0, 10) ?? "") ?? now;
 }
 
+function PopupInput({ className, ...rest }: ComponentProps<"input">) {
+  return (
+    <input
+      className={cn(TEXT_ENTRY_BOX, CONTROL_SURFACE, className)}
+      {...rest}
+    />
+  );
+}
+
 const preventEnter = (event: KeyboardEvent) => {
   if (event.key === "Enter") event.preventDefault();
 };
@@ -117,23 +127,21 @@ export function DateTimePicker({
     onClose(result);
   }
 
+  const latestFinish = useRef(finish);
+  useEffect(() => {
+    latestFinish.current = finish;
+  });
+
   useEffect(() => {
     if (!open || !(portalContainer instanceof HTMLDialogElement)) return;
     const dialog = portalContainer;
-    const keepDialogOpen = (event: Event) => {
-      event.preventDefault();
-    };
     const dismiss = () => {
-      finish({ outcome: "dismissed" });
+      latestFinish.current({ outcome: "dismissed" });
     };
-    dialog.addEventListener("cancel", keepDialogOpen);
     dialog.addEventListener("close", dismiss);
     return () => {
-      dialog.removeEventListener("cancel", keepDialogOpen);
       dialog.removeEventListener("close", dismiss);
     };
-    // `finish` only reads refs and the latest callbacks through this render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, portalContainer]);
 
   const candidate = buildDateTime(draft.date, draft.hour, draft.minute);
@@ -182,10 +190,9 @@ export function DateTimePicker({
       >
         <PopoverTitle>Select date and time</PopoverTitle>
         <div ref={body} className="mt-3 flex flex-col gap-3">
-          <TextField
+          <PopupInput
             aria-label="Date"
             placeholder="YYYY-MM-DD"
-            inputMode="numeric"
             autoComplete="off"
             value={draft.date}
             aria-invalid={dateInvalid || undefined}
@@ -202,7 +209,7 @@ export function DateTimePicker({
             onSelect={select}
           />
           <div className="flex items-center gap-2">
-            <TextField
+            <PopupInput
               aria-label="Hour"
               placeholder="HH"
               inputMode="numeric"
@@ -218,7 +225,7 @@ export function DateTimePicker({
             <span aria-hidden className="text-ink">
               :
             </span>
-            <TextField
+            <PopupInput
               aria-label="Minute"
               placeholder="mm"
               inputMode="numeric"
