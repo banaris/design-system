@@ -82,18 +82,22 @@ Every token, rendered from the live cascade, is in the catalogue under **Foundat
 
 ## Icons
 
-The package ships no icon set — only `Icon`, `IconButton` and the few glyphs its own components draw. For any other glyph, install [`lucide-react`](https://lucide.dev/) yourself (it is not a dependency of this package) and pass the glyph as `icon`. A reset button, for example:
+The package exports `Icon` and `IconButton` but no glyphs; the few its own components draw are internal. For any glyph, install [`lucide-react`](https://lucide.dev/) yourself (it is not a dependency of this package) and pass the glyph as `icon`:
+
+```bash
+pnpm add lucide-react
+```
+
+A reset button, for example:
 
 ```tsx
 import { Icon, IconButton } from "@banaris/design-system";
 import { RotateCcw } from "lucide-react";
 
-<Icon icon={RotateCcw} label="Reset" />
-<IconButton icon={RotateCcw} aria-label="Reset" />
-```
-
-```bash
-pnpm add lucide-react
+export const ResetIcon = () => <Icon icon={RotateCcw} label="Reset" />;
+export const ResetButton = () => (
+  <IconButton icon={RotateCcw} aria-label="Reset" />
+);
 ```
 
 Any component that renders an SVG and takes SVG props works as `icon`, so your own glyph needs no library. The choice is recorded in [ADR 0001](docs/adr/0001-icon-library.md).
