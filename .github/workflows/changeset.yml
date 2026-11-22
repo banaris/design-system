@@ -1,0 +1,25 @@
+name: Changeset
+
+on:
+  pull_request:
+    # Label changes must re-run this check alone, without re-running the jobs in ci.yml.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changeset:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: nemolize/actions/changeset@v1.5.0
