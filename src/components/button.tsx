@@ -38,7 +38,8 @@ export type ButtonProps = {
  * point the `:disabled` pseudo-class stops matching, which would leave the
  * button looking enabled AND responding to hover. `data-disabled` is emitted
  * for both routes, so one spelling covers them. */
-const BASE = `inline-flex items-center justify-center gap-2 border border-solid box-border font-sans cursor-pointer select-none ${TRANSITION_INTERACTIVE} ${FOCUS_RING} active:not-data-disabled:scale-[0.98] data-disabled:cursor-not-allowed data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:border-transparent data-disabled:shadow-none data-disabled:forced-colors:text-[GrayText]`;
+/* Exported for IconButton. Stay in this file: check:tw-merge and check:styles read them here. */
+export const BASE = `inline-flex items-center justify-center gap-2 border border-solid box-border font-sans cursor-pointer select-none ${TRANSITION_INTERACTIVE} ${FOCUS_RING} active:not-data-disabled:scale-[0.98] data-disabled:cursor-not-allowed data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:border-transparent data-disabled:shadow-none data-disabled:forced-colors:text-[GrayText]`;
 
 /* ⚠ Each variant sets background, text and border colour EXACTLY once, and
  * `BASE` sets none of them UNPREFIXED — its `data-disabled:` overrides are a
@@ -51,7 +52,7 @@ const BASE = `inline-flex items-center justify-center gap-2 border border-solid 
  * Note `accent` takes `text-on-accent`, not `text-ink`: the accent fill is the
  * same pale green in both themes, so a label following the page's ink would
  * invert to near-white on it in dark. */
-const VARIANT: Record<ButtonVariant, string> = {
+export const VARIANT: Record<ButtonVariant, string> = {
   primary:
     "bg-fill border-transparent text-on-fill font-semibold hover:not-data-disabled:bg-fill-hover",
   accent:
