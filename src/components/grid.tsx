@@ -10,11 +10,16 @@ export type GridProps = {
   gap?: GapStep;
 } & ComponentProps<"div">;
 
+/* The count rides a custom property so a caller's `grid-cols-*` replaces the whole
+ * rule at every width, and no `grid-cols-1` class competes with a consumer's own. */
+const REFLOW =
+  "grid-cols-[repeat(var(--ds-grid-columns),minmax(0,1fr))] [--ds-grid-columns:1]";
+
 const COLUMNS: Record<GridColumns, string> = {
   1: "grid-cols-1",
-  2: "grid-cols-2",
-  3: "grid-cols-3",
-  4: "grid-cols-4",
+  2: `${REFLOW} sm:[--ds-grid-columns:2]`,
+  3: `${REFLOW} sm:[--ds-grid-columns:3]`,
+  4: `${REFLOW} sm:[--ds-grid-columns:4]`,
 };
 
 export function Grid({ columns = 1, gap = 4, className, ...rest }: GridProps) {

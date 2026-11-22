@@ -7,7 +7,7 @@ const meta = {
   component: Tabs,
   args: { defaultValue: "overview", onValueChange: fn() },
   render: (args) => (
-    <Tabs {...args} className="w-96">
+    <Tabs {...args} className="w-full max-w-96">
       <TabsList aria-label="Project sections">
         <TabsTab value="overview">Overview</TabsTab>
         <TabsTab value="activity">Activity</TabsTab>
