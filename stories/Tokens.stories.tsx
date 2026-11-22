@@ -109,7 +109,10 @@ export const Typography: Story = {
           Utility — size only
         </h2>
         <p className="text-ink text-lg">Large — dialog titles</p>
-        <p className="text-ink text-base">Base — controls and inputs</p>
+        <p className="text-ink text-base">Base — controls</p>
+        <p className="text-ink text-input">
+          Input — editable fields, 16px on touch
+        </p>
         <p className="text-ink text-sm">Small — helper text</p>
         <p className="text-ink text-xs">Extra small — badges and metadata</p>
       </section>

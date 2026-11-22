@@ -24,7 +24,7 @@ export const TRANSITION_INTERACTIVE =
 export const CONTROL_SURFACE = `border border-solid border-control-border ${TRANSITION_INTERACTIVE} ${FOCUS_RING} aria-invalid:not-data-disabled:border-danger data-disabled:cursor-not-allowed data-disabled:border-transparent data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]`;
 
 export const TEXT_ENTRY_BOX =
-  "box-border rounded-md bg-transparent px-4 py-2.5 text-base text-ink placeholder:text-ink-faint";
+  "box-border rounded-md bg-transparent px-4 py-2.5 text-input text-ink placeholder:text-ink-faint";
 
 /* `data-highlighted` is Base UI's roving highlight; it follows both the pointer
  * and the arrow keys, so hover needs no separate rule. */

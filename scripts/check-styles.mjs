@@ -22,9 +22,9 @@
  *      `@media (any-pointer: coarse)` block. Check 1 strips variants, so a
  *      `coarse:h-11` would pass on an unrelated `.h-11` while the variant
  *      itself never reached the file.
- *   5. The fixture story's `coarse:h-11` is in `dist` inside that block. No
- *      component uses `coarse:` yet, so check 4 alone would stay silent with
- *      the variant deleted.
+ *   5. The fixture story's `coarse:h-11` is in `dist` inside that block. A
+ *      stylesheet whose `coarse` variant was deleted would pass check 4 when no
+ *      component used it.
  *
  * Whether the published stylesheet carries tokens and stays free of preflight
  * belongs to `check:package`, which owns the shipped artefact.
