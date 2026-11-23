@@ -156,3 +156,25 @@ export const ItemAction: Story = {
     await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
   },
 };
+
+export const LongItems: Story = {
+  args: { defaultOpen: true },
+  render: (args) => (
+    <DropdownMenu {...args}>
+      <DropdownMenuTrigger variant="secondary">Account</DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>
+          Export every project, comment and attachment in this workspace as one
+          archive and email me the download link when it is ready
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          averyveryveryveryveryveryveryveryveryveryveryveryverylongunbrokenword
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async () => {
+    await expect(await screen.findByRole("menu")).toBeVisible();
+    await expect(screen.getAllByRole("menuitem")).toHaveLength(2);
+  },
+};

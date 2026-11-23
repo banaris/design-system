@@ -50,3 +50,24 @@ export const KeyboardFocus: Story = {
     await expect(trigger).toHaveFocus();
   },
 };
+
+export const LongContent: Story = {
+  args: { defaultOpen: true },
+  render: (args) => (
+    <TooltipProvider>
+      <Tooltip {...args}>
+        <TooltipTrigger render={<Button variant="secondary">Save</Button>} />
+        <TooltipContent>
+          Save the draft to this device and, once you are back online, sync it
+          with every other device signed in to the same account
+          averyveryveryveryveryveryveryveryveryveryveryveryverylongunbrokenword
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  ),
+  play: async () => {
+    await expectVisible(() =>
+      screen.findByText(/Save the draft to this device/),
+    );
+  },
+};
