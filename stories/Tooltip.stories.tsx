@@ -8,6 +8,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { expectInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 const meta = {
@@ -71,3 +72,37 @@ export const LongContent: Story = {
     );
   },
 };
+
+const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
+  render: (args) => (
+    <TooltipProvider>
+      <Tooltip {...args}>
+        <TooltipTrigger
+          render={
+            <Button variant="secondary" className={`fixed top-1/2 ${edge}`}>
+              Save
+            </Button>
+          }
+        />
+        <TooltipContent>
+          Save the draft to this device and, once you are back online, sync it
+          with every other device signed in to the same account
+          averyveryveryveryveryveryveryveryveryveryveryveryverylongunbrokenword
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  ),
+  play: async () => {
+    await withInsets(async () => {
+      await userEvent.tab();
+      const tip = await expectVisible(() =>
+        screen.findByText(/Save the draft to this device/),
+      );
+      await expectInsideInsets(tip);
+    });
+  },
+});
+
+export const InsideSafeAreaAtTheLeftEdge: Story = insideSafeArea("left-0");
+
+export const InsideSafeAreaAtTheRightEdge: Story = insideSafeArea("right-0");

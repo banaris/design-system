@@ -18,6 +18,7 @@ import {
   within,
 } from "storybook/test";
 
+import { expectInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 type PickerArgs = Omit<
@@ -606,3 +607,21 @@ export const TheTimeRowStaysInsideThePopover: Story = {
     }
   },
 };
+
+const insideSafeArea = (placement: string): Story => ({
+  render: (args) => (
+    <div className={`fixed w-40 [&_button]:w-full ${placement}`}>
+      <Harness {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await withInsets(async () => {
+      await expectInsideInsets(await openPicker(canvas, "2030-06-15 09:30"));
+    });
+  },
+});
+
+export const InsideSafeAreaAtTheTopEdge: Story = insideSafeArea("top-0 left-0");
+
+export const InsideSafeAreaAtTheBottomEdge: Story =
+  insideSafeArea("right-0 bottom-0");

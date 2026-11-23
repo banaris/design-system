@@ -5,6 +5,7 @@ import type { ComponentProps } from "react";
 
 import { OVERLAY_MOTION, OVERLAY_POPUP } from "../lib/class-presets";
 import { cn } from "../lib/cn";
+import { usePopupCollisionPadding } from "../lib/safe-area";
 import {
   fieldTriggerButton,
   renderTriggerButton,
@@ -61,12 +62,16 @@ export function PopoverContent({
   portalContainer,
   ...rest
 }: PopoverContentProps) {
+  const collisionPadding = usePopupCollisionPadding();
   return (
     <BasePopover.Portal
       container={portalContainer ?? undefined}
       className="relative z-[var(--z-overlay)]"
     >
-      <BasePopover.Positioner sideOffset={8}>
+      <BasePopover.Positioner
+        sideOffset={8}
+        collisionPadding={collisionPadding}
+      >
         <BasePopover.Popup
           className={cn(
             OVERLAY_POPUP,

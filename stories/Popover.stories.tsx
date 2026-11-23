@@ -1,4 +1,5 @@
 import {
+  Button,
   Popover,
   PopoverContent,
   PopoverDescription,
@@ -8,6 +9,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { expectInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 const meta = {
@@ -63,3 +65,43 @@ export const OutsidePress: Story = {
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   },
 };
+
+const insideSafeArea = (placement: string): Story => ({
+  render: (args) => (
+    <Popover {...args}>
+      <div className={`fixed ${placement}`}>
+        <PopoverTrigger variant="secondary">Shortcuts</PopoverTrigger>
+      </div>
+      <PopoverContent>
+        <PopoverTitle>Keyboard shortcuts</PopoverTitle>
+        {Array.from({ length: 80 }, (_, index) => (
+          <PopoverDescription key={index}>
+            Shortcut {index + 1}
+          </PopoverDescription>
+        ))}
+        <Button variant="secondary">Done</Button>
+      </PopoverContent>
+    </Popover>
+  ),
+  play: async ({ canvas }) => {
+    await withInsets(async () => {
+      await userEvent.click(canvas.getByRole("button", { name: "Shortcuts" }));
+      await expectInsideInsets(
+        await expectVisible(() => screen.findByRole("dialog")),
+      );
+    });
+  },
+});
+
+export const InsideSafeAreaAtTheLeftEdge: Story =
+  insideSafeArea("top-1/2 left-0");
+
+export const InsideSafeAreaAtTheRightEdge: Story =
+  insideSafeArea("top-1/2 right-0");
+
+export const InsideSafeAreaBelowTheTrigger: Story =
+  insideSafeArea("top-1/4 left-1/2");
+
+export const InsideSafeAreaAboveTheTrigger: Story = insideSafeArea(
+  "bottom-1/4 left-1/2",
+);
