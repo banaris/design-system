@@ -68,6 +68,28 @@ const DEFAULT_LABELS: DateTimePickerLabels = {
   beforeMin: (min) => `Choose a time on or after ${min}.`,
 };
 
+function withDefaults(
+  overrides: Partial<DateTimePickerLabels> | undefined,
+): DateTimePickerLabels {
+  return {
+    title: overrides?.title ?? DEFAULT_LABELS.title,
+    date: overrides?.date ?? DEFAULT_LABELS.date,
+    hour: overrides?.hour ?? DEFAULT_LABELS.hour,
+    minute: overrides?.minute ?? DEFAULT_LABELS.minute,
+    previousMonth: overrides?.previousMonth ?? DEFAULT_LABELS.previousMonth,
+    nextMonth: overrides?.nextMonth ?? DEFAULT_LABELS.nextMonth,
+    cancel: overrides?.cancel ?? DEFAULT_LABELS.cancel,
+    apply: overrides?.apply ?? DEFAULT_LABELS.apply,
+    datePlaceholder:
+      overrides?.datePlaceholder ?? DEFAULT_LABELS.datePlaceholder,
+    hourPlaceholder:
+      overrides?.hourPlaceholder ?? DEFAULT_LABELS.hourPlaceholder,
+    minutePlaceholder:
+      overrides?.minutePlaceholder ?? DEFAULT_LABELS.minutePlaceholder,
+    beforeMin: overrides?.beforeMin ?? DEFAULT_LABELS.beforeMin,
+  };
+}
+
 export type DateTimePickerProps = {
   /** `""` or a local `YYYY-MM-DDTHH:mm`; anything else is shown as empty. */
   value: string;
@@ -77,9 +99,9 @@ export type DateTimePickerProps = {
   /** A local `YYYY-MM-DDTHH:mm` lower bound; a malformed one is ignored. */
   min?: string;
   placeholder?: string;
-  /** A BCP 47 tag for month, weekday and day names; a malformed one falls back to `"en"`. */
+  /** A BCP 47 tag for month, weekday and day names; a malformed one, or one the runtime has no data for, falls back to `"en"`. */
   locale?: string;
-  /** Overrides for the picker's accessible names and visible text; a missing key keeps its English default. */
+  /** Overrides for the popup's names and text (not the trigger's `placeholder`); a missing key keeps its English default. */
   labels?: Partial<DateTimePickerLabels>;
   /** `0` is Sunday. Defaults to the locale's first weekday, Sunday if the runtime has none. */
   firstDayOfWeek?: WeekStart;
@@ -145,9 +167,9 @@ export function DateTimePicker({
   portalContainer,
   ...triggerProps
 }: DateTimePickerProps) {
-  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
+  const labels = withDefaults(labelOverrides);
   const resolvedLocale = resolveLocale(locale);
-  const firstDay = firstDayOfWeek ?? localeFirstWeekday(resolvedLocale);
+  const weekStart = firstDayOfWeek ?? localeFirstWeekday(resolvedLocale);
   const known = splitDateTime(value);
   const bound = splitDateTime(min ?? "") === null ? undefined : min;
   const [open, setOpen] = useState(false);
@@ -271,7 +293,7 @@ export function DateTimePicker({
             min={bound}
             onSelect={select}
             locale={resolvedLocale}
-            firstDay={firstDay}
+            weekStart={weekStart}
             previousMonthLabel={labels.previousMonth}
             nextMonthLabel={labels.nextMonth}
           />

@@ -1,6 +1,7 @@
 import {
   Button,
   DateTimePicker,
+  type DateTimePickerLabels,
   Field,
   FieldError,
   FieldHint,
@@ -66,11 +67,13 @@ const expectOnce = async (mock: Mock, ...expected: unknown[]) => {
   await expect(mock).toHaveBeenCalledWith(...expected);
 };
 
-const openPicker = async (canvas: Canvas, name: string) => {
+const openPicker = async (
+  canvas: Canvas,
+  name: string,
+  dialogName = "Select date and time",
+) => {
   await userEvent.click(canvas.getByRole("button", { name }));
-  return expectVisible(() =>
-    screen.findByRole("dialog", { name: "Select date and time" }),
-  );
+  return expectVisible(() => screen.findByRole("dialog", { name: dialogName }));
 };
 
 export const Default: Story = {};
@@ -645,12 +648,7 @@ export const Japanese: Story = {
     min: "2030-06-10T00:00",
   },
   play: async ({ canvas }) => {
-    await userEvent.click(
-      canvas.getByRole("button", { name: "2030-06-15 09:30" }),
-    );
-    await expectVisible(() =>
-      screen.findByRole("dialog", { name: "日付と時刻を選択" }),
-    );
+    await openPicker(canvas, "2030-06-15 09:30", "日付と時刻を選択");
     await expect(screen.getByText("2030年6月")).toBeVisible();
     await expect(
       screen.getAllByRole("columnheader").map((header) => header.ariaLabel),
@@ -728,6 +726,143 @@ export const FirstDayOfWeekFollowsTheLocale: Story = {
     await openPicker(canvas, "2030-06-15 09:30");
     await expect(screen.getAllByRole("columnheader")[0]).toHaveAccessibleName(
       "Monday",
+    );
+  },
+};
+
+const headerTexts = () =>
+  screen.getAllByRole("columnheader").map((header) => header.textContent);
+
+export const EnglishHeadersAreTwoLetterAbbreviations: Story = {
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(headerTexts()).toEqual([
+      "Su",
+      "Mo",
+      "Tu",
+      "We",
+      "Th",
+      "Fr",
+      "Sa",
+    ]);
+  },
+};
+
+export const HeadersStayDistinctWhenShortNamesShareAPrefix: Story = {
+  args: { locale: "pt" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(new Set(headerTexts()).size).toBe(7);
+  },
+};
+
+export const NamesFollowTheGregorianGridInACalendarOfAnotherLocale: Story = {
+  args: { locale: "fa" },
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "2030-06-15 09:30" }),
+    );
+    const cell = await screen.findByRole("gridcell", {
+      name: new Intl.DateTimeFormat("fa", {
+        dateStyle: "full",
+        calendar: "gregory",
+        numberingSystem: "latn",
+        timeZone: "UTC",
+      }).format(new Date(Date.UTC(2030, 5, 15))),
+    });
+    await expect(cell).toHaveAttribute("aria-selected", "true");
+  },
+};
+
+export const AnUnsupportedLocaleFallsBackToEnglish: Story = {
+  args: { locale: "xx" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(screen.getByText("June 2030")).toBeVisible();
+    await expect(screen.getAllByRole("columnheader")[0]).toHaveAccessibleName(
+      "Sunday",
+    );
+  },
+};
+
+const withMissingTranslation = () => {
+  const labels: Partial<DateTimePickerLabels> = {};
+  Reflect.set(labels, "apply", undefined);
+  Reflect.set(labels, "beforeMin", undefined);
+  return labels;
+};
+
+export const AnUndefinedLabelKeepsItsEnglishDefault: Story = {
+  args: { labels: withMissingTranslation(), min: "2030-06-10T00:00" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(screen.getByRole("button", { name: "Apply" })).toBeVisible();
+    await userEvent.clear(screen.getByRole("textbox", { name: "Date" }));
+    await userEvent.type(
+      screen.getByRole("textbox", { name: "Date" }),
+      "2030-06-01",
+    );
+    await expect(
+      screen.getByText("Choose a time on or after 2030-06-10 00:00."),
+    ).toBeVisible();
+  },
+};
+
+export const CellNamesCarryTheVisibleDayInTheLocalesOtherDigits: Story = {
+  args: { locale: "fa" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    for (const cell of screen.getAllByRole("gridcell")) {
+      const visible = cell.textContent;
+      if (visible) await expect(cell.ariaLabel).toContain(visible);
+    }
+  },
+};
+
+export const WeekdayHeadersFitTheirColumns: Story = {
+  args: { locale: "lv" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    for (const header of screen.getAllByRole("columnheader")) {
+      await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+    }
+  },
+};
+
+export const AHeaderWithNoShortFormThatSeparatesTheDaysStillFits: Story = {
+  args: { locale: "sw" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    for (const header of screen.getAllByRole("columnheader")) {
+      await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+    }
+  },
+};
+
+export const AWrappedHeaderNeverWidensTheGridPastThePopup: Story = {
+  args: { locale: "sw" },
+  play: async ({ canvas }) => {
+    const dialog = await openPicker(canvas, "2030-06-15 09:30");
+    const grid = screen.getByRole("grid");
+    await expect(grid.getBoundingClientRect().right).toBeLessThanOrEqual(
+      dialog.getBoundingClientRect().right,
+    );
+  },
+};
+
+export const NarrowFormsSeparateTheDaysWhenPrefixesCannot: Story = {
+  args: { locale: "he" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    const narrow = new Intl.DateTimeFormat("he", {
+      weekday: "narrow",
+      calendar: "gregory",
+      timeZone: "UTC",
+    });
+    await expect(headerTexts()).toEqual(
+      [1, 2, 3, 4, 5, 6, 7].map((day) =>
+        narrow.format(new Date(Date.UTC(2023, 0, day))),
+      ),
     );
   },
 };

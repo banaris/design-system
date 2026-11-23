@@ -20,25 +20,48 @@ import {
   isDayBeforeMin,
   monthWeeks,
   toUtc,
-  weekday,
+  weekColumn,
   type WeekStart,
 } from "../lib/date-time";
 import { IconButton } from "./icon-button";
 
+const A_SUNDAY: CalendarDate = { year: 2023, month: 1, day: 1 };
+
 function createNames(locale: string) {
   const format = (options: Intl.DateTimeFormatOptions) =>
-    new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" });
+    new Intl.DateTimeFormat(locale, {
+      ...options,
+      calendar: "gregory",
+      numberingSystem: "latn",
+      timeZone: "UTC",
+    });
   const month = format({ month: "long", year: "numeric" });
   const day = format({ dateStyle: "full" });
   const long = format({ weekday: "long" });
   const short = format({ weekday: "short" });
+  const sundayFirst = Array.from({ length: 7 }, (_, sundayBased) =>
+    toUtc({ ...A_SUNDAY, day: A_SUNDAY.day + sundayBased }),
+  );
+  const shorts = sundayFirst.map((date) => short.format(date));
+  const segmenter = new Intl.Segmenter(locale);
+  const graphemes = shorts.map((text) =>
+    Array.from(segmenter.segment(text), ({ segment }) => segment),
+  );
+  const prefixes = [2, 3, 4].map((length) =>
+    graphemes.map((parts) => parts.slice(0, length).join("")),
+  );
+  const narrowNames = format({ weekday: "narrow" });
+  const narrows = sundayFirst.map((date) => narrowNames.format(date));
+  const labels =
+    [...prefixes, narrows].find((candidate) => new Set(candidate).size === 7) ??
+    shorts;
   return {
     month: (date: Date) => month.format(date),
     day: (date: Date) => day.format(date),
-    weekday: (index: number) => {
-      const date = toUtc({ year: 2023, month: 1, day: 1 + index });
-      return { long: long.format(date), short: short.format(date) };
-    },
+    weekday: (sundayBased: number) => ({
+      long: long.format(sundayFirst[sundayBased]),
+      label: labels[sundayBased],
+    }),
   };
 }
 
@@ -61,7 +84,7 @@ export interface DateTimeCalendarProps {
   min: string | undefined;
   onSelect: (day: CalendarDate) => void;
   locale: string;
-  firstDay: WeekStart;
+  weekStart: WeekStart;
   previousMonthLabel: string;
   nextMonthLabel: string;
 }
@@ -73,13 +96,13 @@ export function DateTimeCalendar({
   min,
   onSelect,
   locale,
-  firstDay,
+  weekStart,
   previousMonthLabel,
   nextMonthLabel,
 }: DateTimeCalendarProps) {
   const names = useMemo(() => createNames(locale), [locale]);
   const weekdays = Array.from({ length: 7 }, (_, column) =>
-    names.weekday((firstDay + column) % 7),
+    names.weekday((weekStart + column) % 7),
   );
   const gridRef = useRef<HTMLDivElement>(null);
   const moveFocus = useRef(false);
@@ -101,7 +124,7 @@ export function DateTimeCalendar({
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>, day: CalendarDate) {
-    const column = weekday(day, firstDay);
+    const column = weekColumn(day, weekStart);
     const target = {
       ArrowLeft: () => addDays(day, -1),
       ArrowRight: () => addDays(day, 1),
@@ -168,13 +191,13 @@ export function DateTimeCalendar({
               key={name.long}
               role="columnheader"
               aria-label={name.long}
-              className="text-ink-dim py-1 text-center text-sm"
+              className="text-ink-dim w-0 min-w-full py-1 text-center text-sm [overflow-wrap:anywhere]"
             >
-              {Array.from(name.short).slice(0, 2).join("")}
+              {name.label}
             </div>
           ))}
         </div>
-        {monthWeeks(focusDay.year, focusDay.month, firstDay).map(
+        {monthWeeks(focusDay.year, focusDay.month, weekStart).map(
           (week, row) => (
             <div key={row} role="row" className="grid grid-cols-7">
               {week.map((day, column) => {
