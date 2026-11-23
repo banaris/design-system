@@ -211,6 +211,7 @@ export function DateTimePicker({
           <div className="flex items-center gap-2">
             <PopupInput
               aria-label="Hour"
+              className="w-16 text-center"
               placeholder="HH"
               inputMode="numeric"
               autoComplete="off"
@@ -227,6 +228,7 @@ export function DateTimePicker({
             </span>
             <PopupInput
               aria-label="Minute"
+              className="w-16 text-center"
               placeholder="mm"
               inputMode="numeric"
               autoComplete="off"
