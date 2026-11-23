@@ -5,6 +5,7 @@ import type { ComponentProps } from "react";
 
 import { FOCUS_RING, MENU_ITEM, MENU_POPUP } from "../lib/class-presets";
 import { cn } from "../lib/cn";
+import { usePopupCollisionPadding } from "../lib/safe-area";
 import {
   renderTriggerButton,
   type TriggerButtonStyle,
@@ -49,9 +50,14 @@ export function DropdownMenuContent({
   className,
   ...rest
 }: DropdownMenuContentProps) {
+  const collisionPadding = usePopupCollisionPadding();
   return (
     <BaseMenu.Portal>
-      <BaseMenu.Positioner sideOffset={4} className="z-[var(--z-dropdown)]">
+      <BaseMenu.Positioner
+        sideOffset={4}
+        collisionPadding={collisionPadding}
+        className="z-[var(--z-dropdown)]"
+      >
         <BaseMenu.Popup className={cn(MENU_POPUP, className)} {...rest} />
       </BaseMenu.Positioner>
     </BaseMenu.Portal>

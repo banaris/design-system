@@ -11,6 +11,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { expectStateBorders } from "./border-color";
+import { expectInsideInsets, withInsets } from "./safe-area";
 
 const ITEMS = [
   { value: "daily", label: "Daily" },
@@ -164,3 +165,30 @@ export const InField: Story = {
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
   },
 };
+
+const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
+  render: (args) => (
+    <Select {...args}>
+      <SelectTrigger
+        aria-label="Repeat"
+        placeholder="Choose a cadence"
+        className={`fixed top-1/2 ${edge}`}
+      />
+      <SelectContent>
+        <SelectItem value="long">
+          averyveryveryveryveryveryveryveryveryveryveryveryverylongunbrokenword
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  ),
+  play: async ({ canvas }) => {
+    await withInsets(async () => {
+      await userEvent.click(canvas.getByRole("combobox"));
+      await expectInsideInsets(await screen.findByRole("listbox"));
+    });
+  },
+});
+
+export const InsideSafeAreaAtTheLeftEdge: Story = insideSafeArea("left-0");
+
+export const InsideSafeAreaAtTheRightEdge: Story = insideSafeArea("right-0");

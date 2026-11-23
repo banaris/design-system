@@ -1,3 +1,5 @@
+"use client";
+
 import { Select as BaseSelect } from "@base-ui/react/select";
 import type { ComponentProps } from "react";
 
@@ -10,6 +12,7 @@ import {
 } from "../lib/class-presets";
 import { cn } from "../lib/cn";
 import { CheckIcon, ChevronIcon } from "../lib/control-icons";
+import { usePopupCollisionPadding } from "../lib/safe-area";
 
 export type SelectProps = ComponentProps<typeof BaseSelect.Root>;
 
@@ -59,10 +62,12 @@ export type SelectContentProps = Omit<
 };
 
 export function SelectContent({ className, ...rest }: SelectContentProps) {
+  const collisionPadding = usePopupCollisionPadding();
   return (
     <BaseSelect.Portal>
       <BaseSelect.Positioner
         sideOffset={4}
+        collisionPadding={collisionPadding}
         alignItemWithTrigger={false}
         className="z-[var(--z-dropdown)]"
       >

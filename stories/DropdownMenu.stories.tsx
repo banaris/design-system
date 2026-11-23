@@ -9,6 +9,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { MouseEventHandler } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { expectInsideInsets, withInsets } from "./safe-area";
+
 const meta = {
   title: "Actions/DropdownMenu",
   component: DropdownMenu,
@@ -178,3 +180,28 @@ export const LongItems: Story = {
     await expect(screen.getAllByRole("menuitem")).toHaveLength(2);
   },
 };
+
+const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
+  render: (args) => (
+    <DropdownMenu {...args}>
+      <div className={`fixed top-1/2 ${edge}`}>
+        <DropdownMenuTrigger variant="secondary">Account</DropdownMenuTrigger>
+      </div>
+      <DropdownMenuContent>
+        <DropdownMenuItem>
+          averyveryveryveryveryveryveryveryveryveryveryveryverylongunbrokenword
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async ({ canvas }) => {
+    await withInsets(async () => {
+      await userEvent.click(canvas.getByRole("button", { name: "Account" }));
+      await expectInsideInsets(await screen.findByRole("menu"));
+    });
+  },
+});
+
+export const InsideSafeAreaAtTheLeftEdge: Story = insideSafeArea("left-0");
+
+export const InsideSafeAreaAtTheRightEdge: Story = insideSafeArea("right-0");

@@ -8,6 +8,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { expectInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 const meta = {
@@ -68,6 +69,57 @@ export const LongContent: Story = {
   play: async () => {
     await expectVisible(() =>
       screen.findByText(/Save the draft to this device/),
+    );
+  },
+};
+
+const renderAt =
+  (edge: "left-0" | "right-0"): NonNullable<Story["render"]> =>
+  (args) => (
+    <TooltipProvider>
+      <Tooltip {...args}>
+        <TooltipTrigger
+          render={
+            <Button variant="secondary" className={`fixed top-1/2 ${edge}`}>
+              Save
+            </Button>
+          }
+        />
+        <TooltipContent>
+          Save the draft to this device and, once you are back online, sync it
+          with every other device signed in to the same account
+          averyveryveryveryveryveryveryveryveryveryveryveryverylongunbrokenword
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
+const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
+  render: renderAt(edge),
+  play: async () => {
+    await withInsets(async () => {
+      await userEvent.tab();
+      const tip = await expectVisible(() =>
+        screen.findByText(/Save the draft to this device/),
+      );
+      await expectInsideInsets(tip);
+    });
+  },
+});
+
+export const InsideSafeAreaAtTheLeftEdge: Story = insideSafeArea("left-0");
+
+export const InsideSafeAreaAtTheRightEdge: Story = insideSafeArea("right-0");
+
+export const FiveFromTheEdgeWithoutInsets: Story = {
+  render: renderAt("left-0"),
+  play: async () => {
+    await userEvent.tab();
+    const tip = await expectVisible(() =>
+      screen.findByText(/Save the draft to this device/),
+    );
+    await waitFor(() =>
+      expect(tip.getBoundingClientRect().left).toBeCloseTo(5, 0),
     );
   },
 };

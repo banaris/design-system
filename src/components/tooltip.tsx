@@ -1,8 +1,11 @@
+"use client";
+
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import type { ComponentProps } from "react";
 
 import { OVERLAY_MOTION, OVERLAY_POPUP } from "../lib/class-presets";
 import { cn } from "../lib/cn";
+import { usePopupCollisionPadding } from "../lib/safe-area";
 
 export type TooltipProviderProps = ComponentProps<typeof BaseTooltip.Provider>;
 
@@ -27,9 +30,13 @@ export type TooltipContentProps = Omit<
 };
 
 export function TooltipContent({ className, ...rest }: TooltipContentProps) {
+  const collisionPadding = usePopupCollisionPadding();
   return (
     <BaseTooltip.Portal className="relative z-[var(--z-overlay)]">
-      <BaseTooltip.Positioner sideOffset={6}>
+      <BaseTooltip.Positioner
+        sideOffset={6}
+        collisionPadding={collisionPadding}
+      >
         <BaseTooltip.Popup
           className={cn(
             OVERLAY_POPUP,
