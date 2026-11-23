@@ -13,13 +13,17 @@ import { cn } from "../lib/cn";
 import {
   buildDateTime,
   type CalendarDate,
+  DEFAULT_LOCALE,
   formatDate,
   isBeforeMin,
   isDayBeforeMin,
+  localeFirstWeekday,
   parseDate,
   parseHour,
   parseMinute,
+  resolveLocale,
   splitDateTime,
+  type WeekStart,
 } from "../lib/date-time";
 import { Button } from "./button";
 import { DateTimeCalendar } from "./date-time-calendar";
@@ -33,6 +37,37 @@ import {
 export type DateTimePickerClose =
   { outcome: "dismissed" } | { outcome: "applied"; value: string };
 
+export interface DateTimePickerLabels {
+  title: string;
+  date: string;
+  hour: string;
+  minute: string;
+  previousMonth: string;
+  nextMonth: string;
+  cancel: string;
+  apply: string;
+  datePlaceholder: string;
+  hourPlaceholder: string;
+  minutePlaceholder: string;
+  /** The message shown when the typed time is before `min`; gets `min` as `YYYY-MM-DD HH:mm`. */
+  beforeMin: (min: string) => string;
+}
+
+const DEFAULT_LABELS: DateTimePickerLabels = {
+  title: "Select date and time",
+  date: "Date",
+  hour: "Hour",
+  minute: "Minute",
+  previousMonth: "Previous month",
+  nextMonth: "Next month",
+  cancel: "Cancel",
+  apply: "Apply",
+  datePlaceholder: "YYYY-MM-DD",
+  hourPlaceholder: "HH",
+  minutePlaceholder: "mm",
+  beforeMin: (min) => `Choose a time on or after ${min}.`,
+};
+
 export type DateTimePickerProps = {
   /** `""` or a local `YYYY-MM-DDTHH:mm`; anything else is shown as empty. */
   value: string;
@@ -42,6 +77,12 @@ export type DateTimePickerProps = {
   /** A local `YYYY-MM-DDTHH:mm` lower bound; a malformed one is ignored. */
   min?: string;
   placeholder?: string;
+  /** A BCP 47 tag for month, weekday and day names; a malformed one falls back to `"en"`. */
+  locale?: string;
+  /** Overrides for the picker's accessible names and visible text; a missing key keeps its English default. */
+  labels?: Partial<DateTimePickerLabels>;
+  /** `0` is Sunday. Defaults to the locale's first weekday, Sunday if the runtime has none. */
+  firstDayOfWeek?: WeekStart;
   portalContainer?: HTMLElement | null | undefined;
 } & Pick<
   ComponentProps<"button">,
@@ -98,9 +139,15 @@ export function DateTimePicker({
   onClose,
   min,
   placeholder = "Select date and time",
+  locale = DEFAULT_LOCALE,
+  labels: labelOverrides,
+  firstDayOfWeek,
   portalContainer,
   ...triggerProps
 }: DateTimePickerProps) {
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
+  const resolvedLocale = resolveLocale(locale);
+  const firstDay = firstDayOfWeek ?? localeFirstWeekday(resolvedLocale);
   const known = splitDateTime(value);
   const bound = splitDateTime(min ?? "") === null ? undefined : min;
   const [open, setOpen] = useState(false);
@@ -204,11 +251,11 @@ export function DateTimePicker({
           ) ?? true
         }
       >
-        <PopoverTitle>Select date and time</PopoverTitle>
+        <PopoverTitle>{labels.title}</PopoverTitle>
         <div ref={body} className="mt-3 flex flex-col gap-3">
           <PopupInput
-            aria-label="Date"
-            placeholder="YYYY-MM-DD"
+            aria-label={labels.date}
+            placeholder={labels.datePlaceholder}
             autoComplete="off"
             value={draft.date}
             aria-invalid={dateInvalid || undefined}
@@ -223,12 +270,16 @@ export function DateTimePicker({
             selected={parseDate(draft.date) === null ? "" : draft.date}
             min={bound}
             onSelect={select}
+            locale={resolvedLocale}
+            firstDay={firstDay}
+            previousMonthLabel={labels.previousMonth}
+            nextMonthLabel={labels.nextMonth}
           />
           <div className="flex items-center gap-2">
             <PopupInput
-              aria-label="Hour"
+              aria-label={labels.hour}
               className="w-16 text-center"
-              placeholder="HH"
+              placeholder={labels.hourPlaceholder}
               inputMode="numeric"
               autoComplete="off"
               maxLength={2}
@@ -243,9 +294,9 @@ export function DateTimePicker({
               :
             </span>
             <PopupInput
-              aria-label="Minute"
+              aria-label={labels.minute}
               className="w-16 text-center"
-              placeholder="mm"
+              placeholder={labels.minutePlaceholder}
               inputMode="numeric"
               autoComplete="off"
               maxLength={2}
@@ -259,7 +310,7 @@ export function DateTimePicker({
           </div>
           {beforeMin && (
             <p role="alert" className="text-small text-danger">
-              Choose a time on or after {bound?.replace("T", " ")}.
+              {labels.beforeMin((bound ?? "").replace("T", " "))}
             </p>
           )}
           <div className="flex justify-end gap-2">
@@ -269,7 +320,7 @@ export function DateTimePicker({
                 finish({ outcome: "dismissed" });
               }}
             >
-              Cancel
+              {labels.cancel}
             </Button>
             <Button
               disabled={!canApply}
@@ -279,7 +330,7 @@ export function DateTimePicker({
                 }
               }}
             >
-              Apply
+              {labels.apply}
             </Button>
           </div>
         </div>

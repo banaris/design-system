@@ -5,6 +5,7 @@ import {
   type KeyboardEvent,
   useEffect,
   useId,
+  useMemo,
   useRef,
 } from "react";
 
@@ -20,31 +21,26 @@ import {
   monthWeeks,
   toUtc,
   weekday,
+  type WeekStart,
 } from "../lib/date-time";
 import { IconButton } from "./icon-button";
 
-const MONTH_LABEL = new Intl.DateTimeFormat("en", {
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
-const DAY_LABEL = new Intl.DateTimeFormat("en", {
-  dateStyle: "full",
-  timeZone: "UTC",
-});
-const WEEKDAY_LONG = new Intl.DateTimeFormat("en", {
-  weekday: "long",
-  timeZone: "UTC",
-});
-const WEEKDAY_SHORT = new Intl.DateTimeFormat("en", {
-  weekday: "short",
-  timeZone: "UTC",
-});
-
-const WEEKDAYS = Array.from({ length: 7 }, (_, index) => {
-  const date = toUtc({ year: 2023, month: 1, day: 1 + index });
-  return { long: WEEKDAY_LONG.format(date), short: WEEKDAY_SHORT.format(date) };
-});
+function createNames(locale: string) {
+  const format = (options: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" });
+  const month = format({ month: "long", year: "numeric" });
+  const day = format({ dateStyle: "full" });
+  const long = format({ weekday: "long" });
+  const short = format({ weekday: "short" });
+  return {
+    month: (date: Date) => month.format(date),
+    day: (date: Date) => day.format(date),
+    weekday: (index: number) => {
+      const date = toUtc({ year: 2023, month: 1, day: 1 + index });
+      return { long: long.format(date), short: short.format(date) };
+    },
+  };
+}
 
 function PreviousIcon(props: ComponentProps<"svg">) {
   return (
@@ -64,6 +60,10 @@ export interface DateTimeCalendarProps {
   selected: string;
   min: string | undefined;
   onSelect: (day: CalendarDate) => void;
+  locale: string;
+  firstDay: WeekStart;
+  previousMonthLabel: string;
+  nextMonthLabel: string;
 }
 
 export function DateTimeCalendar({
@@ -72,7 +72,15 @@ export function DateTimeCalendar({
   selected,
   min,
   onSelect,
+  locale,
+  firstDay,
+  previousMonthLabel,
+  nextMonthLabel,
 }: DateTimeCalendarProps) {
+  const names = useMemo(() => createNames(locale), [locale]);
+  const weekdays = Array.from({ length: 7 }, (_, column) =>
+    names.weekday((firstDay + column) % 7),
+  );
   const gridRef = useRef<HTMLDivElement>(null);
   const moveFocus = useRef(false);
   const headingId = `${useId()}-heading`;
@@ -93,7 +101,7 @@ export function DateTimeCalendar({
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>, day: CalendarDate) {
-    const column = weekday(day);
+    const column = weekday(day, firstDay);
     const target = {
       ArrowLeft: () => addDays(day, -1),
       ArrowRight: () => addDays(day, 1),
@@ -125,7 +133,7 @@ export function DateTimeCalendar({
           icon={PreviousIcon}
           variant="ghost"
           size="sm"
-          aria-label="Previous month"
+          aria-label={previousMonthLabel}
           onClick={() => {
             shiftMonth(-1);
           }}
@@ -136,13 +144,13 @@ export function DateTimeCalendar({
           aria-atomic
           className="text-ink text-base font-semibold"
         >
-          {MONTH_LABEL.format(toUtc(focusDay))}
+          {names.month(toUtc(focusDay))}
         </div>
         <IconButton
           icon={NextIcon}
           variant="ghost"
           size="sm"
-          aria-label="Next month"
+          aria-label={nextMonthLabel}
           onClick={() => {
             shiftMonth(1);
           }}
@@ -155,56 +163,58 @@ export function DateTimeCalendar({
         className="coarse:min-w-max"
       >
         <div role="row" className="grid grid-cols-7">
-          {WEEKDAYS.map((name) => (
+          {weekdays.map((name) => (
             <div
               key={name.long}
               role="columnheader"
               aria-label={name.long}
               className="text-ink-dim py-1 text-center text-sm"
             >
-              {name.short.slice(0, 2)}
+              {Array.from(name.short).slice(0, 2).join("")}
             </div>
           ))}
         </div>
-        {monthWeeks(focusDay.year, focusDay.month).map((week, row) => (
-          <div key={row} role="row" className="grid grid-cols-7">
-            {week.map((day, column) => {
-              if (day === null) {
-                return <div key={column} role="gridcell" aria-hidden />;
-              }
-              const key = formatDate(day);
-              const unavailable = isDayBeforeMin(day, min);
-              return (
-                <div
-                  key={column}
-                  role="gridcell"
-                  tabIndex={key === focusKey ? 0 : -1}
-                  data-date={key}
-                  aria-label={DAY_LABEL.format(toUtc(day))}
-                  aria-selected={key === selected}
-                  aria-disabled={unavailable || undefined}
-                  className={cn(
-                    "text-ink touch-target box-border flex size-9 cursor-pointer items-center justify-center rounded-md text-base select-none",
-                    TRANSITION_INTERACTIVE,
-                    FOCUS_RING,
-                    "hover:not-aria-disabled:bg-surface-hover",
-                    "aria-selected:bg-fill aria-selected:text-on-fill aria-selected:hover:not-aria-disabled:bg-fill-hover",
-                    "aria-disabled:text-ink-faint aria-disabled:cursor-not-allowed aria-disabled:forced-colors:text-[GrayText]",
-                  )}
-                  onClick={() => {
-                    if (!unavailable) onSelect(day);
-                    onFocusDayChange(day);
-                  }}
-                  onKeyDown={(event) => {
-                    onKeyDown(event, day);
-                  }}
-                >
-                  {day.day}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+        {monthWeeks(focusDay.year, focusDay.month, firstDay).map(
+          (week, row) => (
+            <div key={row} role="row" className="grid grid-cols-7">
+              {week.map((day, column) => {
+                if (day === null) {
+                  return <div key={column} role="gridcell" aria-hidden />;
+                }
+                const key = formatDate(day);
+                const unavailable = isDayBeforeMin(day, min);
+                return (
+                  <div
+                    key={column}
+                    role="gridcell"
+                    tabIndex={key === focusKey ? 0 : -1}
+                    data-date={key}
+                    aria-label={names.day(toUtc(day))}
+                    aria-selected={key === selected}
+                    aria-disabled={unavailable || undefined}
+                    className={cn(
+                      "text-ink touch-target box-border flex size-9 cursor-pointer items-center justify-center rounded-md text-base select-none",
+                      TRANSITION_INTERACTIVE,
+                      FOCUS_RING,
+                      "hover:not-aria-disabled:bg-surface-hover",
+                      "aria-selected:bg-fill aria-selected:text-on-fill aria-selected:hover:not-aria-disabled:bg-fill-hover",
+                      "aria-disabled:text-ink-faint aria-disabled:cursor-not-allowed aria-disabled:forced-colors:text-[GrayText]",
+                    )}
+                    onClick={() => {
+                      if (!unavailable) onSelect(day);
+                      onFocusDayChange(day);
+                    }}
+                    onKeyDown={(event) => {
+                      onKeyDown(event, day);
+                    }}
+                  >
+                    {day.day}
+                  </div>
+                );
+              })}
+            </div>
+          ),
+        )}
       </div>
     </div>
   );
