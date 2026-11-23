@@ -505,3 +505,26 @@ export const InsideAField: Story = {
     await expect(new Set(ids).size).toBe(ids.length);
   },
 };
+
+export const TheTimeRowStaysInsideThePopover: Story = {
+  play: async ({ canvas }) => {
+    const popup = await openPicker(canvas, "2030-06-15 09:30");
+    const hour = screen.getByRole("textbox", { name: "Hour" });
+    const minute = screen.getByRole("textbox", { name: "Minute" });
+    await userEvent.clear(hour);
+    await userEvent.type(hour, "88");
+    await userEvent.clear(minute);
+    await userEvent.type(minute, "88");
+    const row = hour.parentElement;
+    if (row === null) throw new Error("the time row is missing");
+    const inside = popup.getBoundingClientRect();
+    const rowBox = row.getBoundingClientRect();
+    await expect(rowBox.left).toBeGreaterThanOrEqual(inside.left);
+    await expect(rowBox.right).toBeLessThanOrEqual(inside.right);
+    for (const input of [hour, minute]) {
+      const box = input.getBoundingClientRect();
+      await expect(box.right).toBeLessThanOrEqual(inside.right);
+      await expect(input.scrollWidth).toBeLessThanOrEqual(input.clientWidth);
+    }
+  },
+};
