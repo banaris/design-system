@@ -47,8 +47,10 @@ export const Sizes: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
+    const floor = matchMedia("(any-pointer: coarse)").matches ? 44 : 0;
     const edges = { xs: 24, sm: 32, md: 40, lg: 48 };
-    for (const [size, edge] of Object.entries(edges)) {
+    for (const [size, drawn] of Object.entries(edges)) {
+      const edge = Math.max(drawn, floor);
       const { width, height } = canvas
         .getByRole("button", { name: `Reset ${size}` })
         .getBoundingClientRect();

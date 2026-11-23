@@ -2,7 +2,7 @@ import { Radio, RadioGroup } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { expectStateBorders } from "./border-color";
+import { drawnBox, expectStateBorders } from "./border-color";
 
 const meta = {
   title: "Forms/Radio",
@@ -50,12 +50,26 @@ export const Selection: Story = {
   },
 };
 
+export const DrawnSize: Story = {
+  render: (args) => <RadioGroup {...args}>{options()}</RadioGroup>,
+  play: async ({ canvas }) => {
+    const radio = canvas.getByRole("radio", { name: "daily" });
+    const circle = drawnBox(radio);
+    const box = circle.getBoundingClientRect();
+    await expect([box.width, box.height]).toEqual([20, 20]);
+    const dot = circle.firstElementChild?.getBoundingClientRect();
+    await expect([dot?.width, dot?.height]).toEqual([10, 10]);
+  },
+};
+
 export const States: Story = {
   play: async ({ canvas }) => {
     const first = (group: string) =>
-      within(canvas.getByRole("radiogroup", { name: group })).getByRole(
-        "radio",
-        { name: "daily" },
+      drawnBox(
+        within(canvas.getByRole("radiogroup", { name: group })).getByRole(
+          "radio",
+          { name: "daily" },
+        ),
       );
     await expectStateBorders({
       resting: first("Default"),

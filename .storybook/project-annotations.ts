@@ -5,6 +5,7 @@ import type { ProjectAnnotations, Renderer } from "storybook/internal/types";
 
 import { fieldFontSize } from "./field-font-size";
 import { narrowViewport } from "./narrow-viewport";
+import { pointerTargets } from "./pointer-targets";
 import preview from "./preview";
 
 /* The annotations stories need when Vitest renders them.
@@ -24,4 +25,5 @@ export const projectAnnotations: ProjectAnnotations<Renderer>[] = [
   preview,
   fieldFontSize,
   narrowViewport,
+  pointerTargets,
 ];

@@ -190,7 +190,7 @@ export function Slider({
       {...rest}
     >
       <BaseSlider.Control
-        className="flex h-6 w-full cursor-pointer touch-pan-y items-center select-none data-disabled:cursor-not-allowed"
+        className="touch-target flex h-6 w-full cursor-pointer touch-pan-y items-center select-none data-disabled:cursor-not-allowed"
         onPointerDown={(event) => {
           gesture.current =
             event.pointerType === "touch" || event.pointerType === "pen"

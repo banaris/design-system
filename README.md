@@ -24,12 +24,12 @@ That one stylesheet is self-contained — tokens, component CSS, and the Tailwin
 
 ### The four CSS entry points
 
-| Entry point                             | Contents                                      | When                                                                                                               |
-| --------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt | **Default.** Everything, one import                                                                                |
-| `@banaris/design-system/theme.css`      | Design tokens only (`@theme`)                 | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup                           |
-| `@banaris/design-system/base.css`       | The minimum globals the components rely on    | With `theme.css` on the split path — without it components lose `box-sizing` and form controls lose the brand font |
-| `@banaris/design-system/components.css` | Component CSS and keyframes only              | Rarely — only alongside `theme.css` if you are generating utilities yourself                                       |
+| Entry point                             | Contents                                                           | When                                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt                      | **Default.** Everything, one import                                                                                |
+| `@banaris/design-system/theme.css`      | Design tokens, the `coarse` variant and the `touch-target` utility | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup                           |
+| `@banaris/design-system/base.css`       | The minimum globals the components rely on                         | With `theme.css` on the split path — without it components lose `box-sizing` and form controls lose the brand font |
+| `@banaris/design-system/components.css` | Component CSS and keyframes only                                   | Rarely — only alongside `theme.css` if you are generating utilities yourself                                       |
 
 Using Tailwind and want the tokens in your own markup? Import both. The duplicate `:root` variables are harmless.
 
@@ -76,7 +76,7 @@ Two conventions worth knowing before you reach for a colour:
 - **`border` is decorative, `control-border` is not.** On an unchecked checkbox the border is the only thing announcing the control exists, so it is held to WCAG 1.4.11's 3:1 on every surface. Dividers and card edges are deliberately softer.
 - **Focus is two rings, not one.** Controls here sit on everything from paper to the dark shell to the accent fill, and no single colour clears 3:1 across that range. A light inner ring inside a dark outer one always leaves one of the two contrasting — worst case 8.13:1 across the eight surfaces a control can sit on, in both themes.
 
-Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `text-body`, …) bakes in weight and line-height — one class produces the intended voice. The **utility** tier (`text-lg`, `text-base`, `text-sm`, `text-xs`) sets size only and leaves weight to you; use it inside controls, except `text-input` for editable fields: it is 16px on touch devices, where a smaller size makes iOS Safari zoom on focus. Sizes overlap between tiers on purpose.
+Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `text-body`, …) bakes in weight and line-height — one class produces the intended voice. The **utility** tier (`text-lg`, `text-base`, `text-sm`, `text-xs`) sets size only and leaves weight to you; use it inside controls, except `text-input` for editable fields: it is 16px on touch devices, where a smaller size makes iOS Safari zoom on focus. Likewise, `touch-target` makes an element at least 44×44px on touch devices; put it on your own interactive elements. Sizes overlap between tiers on purpose.
 
 Every token, rendered from the live cascade, is in the catalogue under **Foundations / Tokens**.
 

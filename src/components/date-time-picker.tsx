@@ -196,6 +196,7 @@ export function DateTimePicker({
           : `${known.date} ${known.hour}:${known.minute}`}
       </PopoverTrigger>
       <PopoverContent
+        className="coarse:max-w-[min(22rem,var(--available-width))]"
         portalContainer={portalContainer}
         initialFocus={() =>
           body.current?.querySelector<HTMLElement>(

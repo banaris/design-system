@@ -43,7 +43,8 @@ The switch is `any-pointer: coarse`, not width and not a size variant the caller
 ## Consequences
 
 - `any-pointer: coarse` can misjudge a device (a phone with a mouse attached, a touch laptop). A misjudgement makes controls larger than needed; it never removes the ability to operate them. A size variant the caller picks stays possible later.
-- `Checkbox`, `Radio` and the slider thumb grow on coarse devices; the 44px rule applies to the target, not the drawn glyph.
+- `Checkbox`, `Radio`, `Switch` and the `Slider` control grow on coarse devices; the 44px rule applies to the target, not the drawn glyph.
+- Calendar days in `DateTimePicker` touch each other: seven 44px days are 308px wide, so the 8px gap is waived between them; on a screen narrower than that the popover scrolls sideways.
 - Not measured yet: iOS focus zoom at 14px, real tap areas, and whether `pan-y` on the Base UI slider stops a vertical scroll from changing the value. Each implementation issue carries a real-device check.
 - Review when WCAG 3.0 becomes a W3C Recommendation, or when Material Web resumes feature work.
 - `DateTimePicker` (#302) takes the touch-target, reflow and safe-area rules as acceptance criteria.

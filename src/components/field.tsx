@@ -104,5 +104,5 @@ export function FieldError({ className, children, ...rest }: FieldErrorProps) {
   );
 }
 
-/** A native `<input>` wired to the surrounding `Field`; Base UI controls such as `TextField` already are. */
+/** A native `<input>` wired to the surrounding `Field`; Base UI controls such as `TextField` already are. Add `touch-target` for the 44px floor. */
 export const FieldControl = BaseField.Control;

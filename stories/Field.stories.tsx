@@ -107,7 +107,7 @@ export const NativeInput: Story = {
   render: (args) => (
     <Field {...args}>
       <FieldLabel>Habit name</FieldLabel>
-      <FieldControl />
+      <FieldControl className="touch-target" />
       <FieldHint>Up to 40 characters.</FieldHint>
       <FieldError />
     </Field>

@@ -1,4 +1,4 @@
-import { Icon } from "@banaris/design-system";
+import { Button, Icon } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Check, Info, TriangleAlert } from "lucide-react";
 import { expect } from "storybook/test";
@@ -67,10 +67,10 @@ export const EmptyLabel: Story = {
 
 export const Hidden: Story = {
   render: () => (
-    <button type="button" className="text-ink flex items-center gap-2">
+    <Button variant="secondary">
       <Icon icon={Check} />
       Save
-    </button>
+    </Button>
   ),
   play: async ({ canvas }) => {
     const svg = canvas

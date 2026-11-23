@@ -2,7 +2,7 @@ import { Field, FieldHint, FieldLabel, Switch } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
-import { expectStateBorders } from "./border-color";
+import { drawnBox, expectStateBorders } from "./border-color";
 
 const meta = {
   title: "Forms/Switch",
@@ -37,15 +37,36 @@ export const Toggling: Story = {
   },
 };
 
+export const DrawnSize: Story = {
+  play: async ({ canvas }) => {
+    const track = drawnBox(canvas.getByRole("switch"));
+    const box = track.getBoundingClientRect();
+    await expect([box.width, box.height]).toEqual([44, 24]);
+    const thumb = track.firstElementChild?.getBoundingClientRect();
+    await expect([thumb?.width, thumb?.height]).toEqual([16, 16]);
+    await expect(thumb?.left).toBe(box.left + 5);
+  },
+};
+
+export const CheckedThumbPosition: Story = {
+  args: { defaultChecked: true },
+  play: async ({ canvas }) => {
+    const track = drawnBox(canvas.getByRole("switch"));
+    const box = track.getBoundingClientRect();
+    const thumb = track.firstElementChild?.getBoundingClientRect();
+    await expect(box.right - (thumb?.right ?? 0)).toBe(5);
+  },
+};
+
 export const States: Story = {
   play: async ({ canvas }) => {
     await expectStateBorders({
-      resting: canvas.getByRole("switch", { name: "Default" }),
-      invalid: canvas.getByRole("switch", { name: "Invalid" }),
-      disabled: canvas.getByRole("switch", { name: "Disabled" }),
-      disabledInvalid: canvas.getByRole("switch", {
-        name: "Disabled and invalid",
-      }),
+      resting: drawnBox(canvas.getByRole("switch", { name: "Default" })),
+      invalid: drawnBox(canvas.getByRole("switch", { name: "Invalid" })),
+      disabled: drawnBox(canvas.getByRole("switch", { name: "Disabled" })),
+      disabledInvalid: drawnBox(
+        canvas.getByRole("switch", { name: "Disabled and invalid" }),
+      ),
     });
   },
   render: (args) => (

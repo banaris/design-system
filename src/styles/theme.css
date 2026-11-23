@@ -412,6 +412,17 @@
    condition; components never repeat the media query. */
 @custom-variant coarse (@media (any-pointer: coarse));
 
+/* The ADR 0002 pointer-target floor, defined once: on a coarse pointer an
+   element that receives the press is at least 44×44 CSS px. It is a minimum,
+   so a larger control keeps its size and a desktop pointer sees no change.
+   Components add this class; none restates the number. */
+@utility touch-target {
+  @variant coarse {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 /* The 16px floor for editable fields, defined once. The line box stays that of
    `--text-base`, so a field still lines up with a Button. */
 :root {
