@@ -1,6 +1,7 @@
 import {
   Button,
   DateTimePicker,
+  type DateTimePickerLabels,
   Field,
   FieldError,
   FieldHint,
@@ -66,11 +67,13 @@ const expectOnce = async (mock: Mock, ...expected: unknown[]) => {
   await expect(mock).toHaveBeenCalledWith(...expected);
 };
 
-const openPicker = async (canvas: Canvas, name: string) => {
+const openPicker = async (
+  canvas: Canvas,
+  name: string,
+  dialogName = "Select date and time",
+) => {
   await userEvent.click(canvas.getByRole("button", { name }));
-  return expectVisible(() =>
-    screen.findByRole("dialog", { name: "Select date and time" }),
-  );
+  return expectVisible(() => screen.findByRole("dialog", { name: dialogName }));
 };
 
 export const Default: Story = {};
@@ -625,3 +628,241 @@ export const InsideSafeAreaAtTheTopEdge: Story = insideSafeArea("top-0 left-0");
 
 export const InsideSafeAreaAtTheBottomEdge: Story =
   insideSafeArea("right-0 bottom-0");
+
+const JAPANESE_LABELS = {
+  title: "日付と時刻を選択",
+  date: "日付",
+  hour: "時",
+  minute: "分",
+  previousMonth: "前の月",
+  nextMonth: "次の月",
+  cancel: "キャンセル",
+  apply: "適用",
+  beforeMin: (min: string) => `${min} 以降の日時を選んでください。`,
+};
+
+export const Japanese: Story = {
+  args: {
+    locale: "ja",
+    labels: JAPANESE_LABELS,
+    min: "2030-06-10T00:00",
+  },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30", "日付と時刻を選択");
+    await expect(screen.getByText("2030年6月")).toBeVisible();
+    await expect(
+      screen.getAllByRole("columnheader").map((header) => header.ariaLabel),
+    ).toEqual([
+      "日曜日",
+      "月曜日",
+      "火曜日",
+      "水曜日",
+      "木曜日",
+      "金曜日",
+      "土曜日",
+    ]);
+    await expect(
+      screen.getByRole("gridcell", { name: "2030年6月15日土曜日" }),
+    ).toHaveAttribute("aria-selected", "true");
+    await expect(screen.getByRole("textbox", { name: "日付" })).toBeVisible();
+    await expect(screen.getByRole("textbox", { name: "時" })).toBeVisible();
+    await expect(screen.getByRole("textbox", { name: "分" })).toBeVisible();
+    await expect(screen.getByRole("button", { name: "前の月" })).toBeVisible();
+    await expect(screen.getByRole("button", { name: "次の月" })).toBeVisible();
+    await expect(
+      screen.getByRole("button", { name: "キャンセル" }),
+    ).toBeVisible();
+    await expect(screen.getByRole("button", { name: "適用" })).toBeEnabled();
+    await userEvent.clear(screen.getByRole("textbox", { name: "日付" }));
+    await userEvent.type(
+      screen.getByRole("textbox", { name: "日付" }),
+      "2030-06-01",
+    );
+    await expect(
+      screen.getByText("2030-06-10 00:00 以降の日時を選んでください。"),
+    ).toBeVisible();
+  },
+};
+
+export const OmittedLabelsKeepTheirEnglishDefaults: Story = {
+  args: { locale: "ja", labels: { apply: "適用" } },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(screen.getByRole("button", { name: "適用" })).toBeVisible();
+    await expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
+  },
+};
+
+export const AMalformedLocaleFallsBackToEnglish: Story = {
+  args: { locale: "not a tag!" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(screen.getByText("June 2030")).toBeVisible();
+    await expect(
+      screen.getByRole("gridcell", { name: "Saturday, June 15, 2030" }),
+    ).toBeVisible();
+  },
+};
+
+export const FirstDayOfWeekIsSettable: Story = {
+  args: { firstDayOfWeek: 1 },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    const headers = screen.getAllByRole("columnheader");
+    await expect(headers[0]).toHaveAccessibleName("Monday");
+    await expect(headers[6]).toHaveAccessibleName("Sunday");
+    const cell = (name: string) => screen.getByRole("gridcell", { name });
+    await waitFor(() => expect(cell("Saturday, June 15, 2030")).toHaveFocus());
+    await userEvent.keyboard("{Home}");
+    await expect(cell("Monday, June 10, 2030")).toHaveFocus();
+    await userEvent.keyboard("{End}");
+    await expect(cell("Sunday, June 16, 2030")).toHaveFocus();
+  },
+};
+
+export const FirstDayOfWeekFollowsTheLocale: Story = {
+  args: { locale: "en-GB" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(screen.getAllByRole("columnheader")[0]).toHaveAccessibleName(
+      "Monday",
+    );
+  },
+};
+
+const headerTexts = () =>
+  screen.getAllByRole("columnheader").map((header) => header.textContent);
+
+export const EnglishHeadersAreTwoLetterAbbreviations: Story = {
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(headerTexts()).toEqual([
+      "Su",
+      "Mo",
+      "Tu",
+      "We",
+      "Th",
+      "Fr",
+      "Sa",
+    ]);
+  },
+};
+
+export const HeadersStayDistinctWhenShortNamesShareAPrefix: Story = {
+  args: { locale: "pt" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(new Set(headerTexts()).size).toBe(7);
+  },
+};
+
+export const NamesFollowTheGregorianGridInACalendarOfAnotherLocale: Story = {
+  args: { locale: "fa" },
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "2030-06-15 09:30" }),
+    );
+    const cell = await screen.findByRole("gridcell", {
+      name: new Intl.DateTimeFormat("fa", {
+        dateStyle: "full",
+        calendar: "gregory",
+        numberingSystem: "latn",
+        timeZone: "UTC",
+      }).format(new Date(Date.UTC(2030, 5, 15))),
+    });
+    await expect(cell).toHaveAttribute("aria-selected", "true");
+  },
+};
+
+export const AnUnsupportedLocaleFallsBackToEnglish: Story = {
+  args: { locale: "xx" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(screen.getByText("June 2030")).toBeVisible();
+    await expect(screen.getAllByRole("columnheader")[0]).toHaveAccessibleName(
+      "Sunday",
+    );
+  },
+};
+
+const withMissingTranslation = () => {
+  const labels: Partial<DateTimePickerLabels> = {};
+  Reflect.set(labels, "apply", undefined);
+  Reflect.set(labels, "beforeMin", undefined);
+  return labels;
+};
+
+export const AnUndefinedLabelKeepsItsEnglishDefault: Story = {
+  args: { labels: withMissingTranslation(), min: "2030-06-10T00:00" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    await expect(screen.getByRole("button", { name: "Apply" })).toBeVisible();
+    await userEvent.clear(screen.getByRole("textbox", { name: "Date" }));
+    await userEvent.type(
+      screen.getByRole("textbox", { name: "Date" }),
+      "2030-06-01",
+    );
+    await expect(
+      screen.getByText("Choose a time on or after 2030-06-10 00:00."),
+    ).toBeVisible();
+  },
+};
+
+export const CellNamesCarryTheVisibleDayInTheLocalesOtherDigits: Story = {
+  args: { locale: "fa" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    for (const cell of screen.getAllByRole("gridcell")) {
+      const visible = cell.textContent;
+      if (visible) await expect(cell.ariaLabel).toContain(visible);
+    }
+  },
+};
+
+export const WeekdayHeadersFitTheirColumns: Story = {
+  args: { locale: "lv" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    for (const header of screen.getAllByRole("columnheader")) {
+      await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+    }
+  },
+};
+
+export const AHeaderWithNoShortFormThatSeparatesTheDaysStillFits: Story = {
+  args: { locale: "sw" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    for (const header of screen.getAllByRole("columnheader")) {
+      await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+    }
+  },
+};
+
+export const AWrappedHeaderNeverWidensTheGridPastThePopup: Story = {
+  args: { locale: "sw" },
+  play: async ({ canvas }) => {
+    const dialog = await openPicker(canvas, "2030-06-15 09:30");
+    const grid = screen.getByRole("grid");
+    await expect(grid.getBoundingClientRect().right).toBeLessThanOrEqual(
+      dialog.getBoundingClientRect().right,
+    );
+  },
+};
+
+export const NarrowFormsSeparateTheDaysWhenPrefixesCannot: Story = {
+  args: { locale: "he" },
+  play: async ({ canvas }) => {
+    await openPicker(canvas, "2030-06-15 09:30");
+    const narrow = new Intl.DateTimeFormat("he", {
+      weekday: "narrow",
+      calendar: "gregory",
+      timeZone: "UTC",
+    });
+    await expect(headerTexts()).toEqual(
+      [1, 2, 3, 4, 5, 6, 7].map((day) =>
+        narrow.format(new Date(Date.UTC(2023, 0, day))),
+      ),
+    );
+  },
+};

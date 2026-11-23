@@ -110,16 +110,57 @@ export function addMonths(
   return { year, month, day: Math.min(date.day, daysInMonth(year, month)) };
 }
 
-export function weekday(date: CalendarDate): number {
-  return toUtc(date).getUTCDay();
+export type WeekStart = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export const DEFAULT_LOCALE = "en";
+
+export function resolveLocale(tag: string): string {
+  try {
+    const [canonical = DEFAULT_LOCALE] = Intl.getCanonicalLocales(tag);
+    return Intl.DateTimeFormat.supportedLocalesOf(canonical).length === 0
+      ? DEFAULT_LOCALE
+      : canonical;
+  } catch (error) {
+    if (error instanceof RangeError) return DEFAULT_LOCALE;
+    throw error;
+  }
+}
+
+const WEEK_STARTS: readonly WeekStart[] = [0, 1, 2, 3, 4, 5, 6];
+
+function readFirstDay(locale: Intl.Locale): unknown {
+  /* `getWeekInfo()` is not in TypeScript's `lib` yet; older runtimes expose
+   * the `weekInfo` getter instead. */
+  for (const key of ["getWeekInfo", "weekInfo"]) {
+    const member: unknown = Reflect.get(locale, key);
+    const info: unknown =
+      typeof member === "function" ? Reflect.apply(member, locale, []) : member;
+    const firstDay: unknown =
+      typeof info === "object" && info !== null
+        ? Reflect.get(info, "firstDay")
+        : undefined;
+    if (firstDay !== undefined) return firstDay;
+  }
+  return undefined;
+}
+
+export function localeFirstWeekday(locale: string): WeekStart {
+  const firstDay = readFirstDay(new Intl.Locale(locale));
+  /* Week data numbers Sunday as 7. */
+  return WEEK_STARTS.find((day) => day === Number(firstDay) % 7) ?? 0;
+}
+
+export function weekColumn(date: CalendarDate, weekStart: WeekStart): number {
+  return (toUtc(date).getUTCDay() - weekStart + 7) % 7;
 }
 
 export function monthWeeks(
   year: number,
   month: number,
+  weekStart: WeekStart,
 ): (CalendarDate | null)[][] {
   const cells: (CalendarDate | null)[] = Array.from(
-    { length: weekday({ year, month, day: 1 }) },
+    { length: weekColumn({ year, month, day: 1 }, weekStart) },
     () => null,
   );
   for (let day = 1; day <= daysInMonth(year, month); day += 1) {

@@ -24,6 +24,7 @@ export {
 export {
   DateTimePicker,
   type DateTimePickerClose,
+  type DateTimePickerLabels,
   type DateTimePickerProps,
 } from "./components/date-time-picker";
 export {
