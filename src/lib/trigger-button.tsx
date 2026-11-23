@@ -1,3 +1,5 @@
+"use client";
+
 import type { ComponentProps, ReactNode } from "react";
 
 import {
@@ -5,6 +7,7 @@ import {
   type ButtonSize,
   type ButtonVariant,
 } from "../components/button";
+import { FieldControl } from "../components/field";
 import { cn } from "./cn";
 
 export interface TriggerButtonStyle {
@@ -29,5 +32,27 @@ export function renderTriggerButton(
     >
       {children}
     </Button>
+  );
+}
+
+export function fieldTriggerButton(
+  style: TriggerButtonStyle,
+  children: ReactNode,
+) {
+  return (
+    <FieldControl
+      render={(controlProps: ComponentProps<"button">) => {
+        const { id, "aria-labelledby": labelledBy } = controlProps;
+        const valueId = id === undefined ? undefined : `${id}-value`;
+        const named = labelledBy !== undefined && valueId !== undefined;
+        return renderTriggerButton(
+          style,
+          <span id={valueId}>{children}</span>,
+        )({
+          ...controlProps,
+          ...(named && { "aria-labelledby": `${labelledBy} ${valueId}` }),
+        });
+      }}
+    />
   );
 }

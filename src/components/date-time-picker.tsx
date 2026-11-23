@@ -108,6 +108,7 @@ export function DateTimePicker({
   const [focusDay, setFocusDay] = useState<CalendarDate>(today);
   const settled = useRef(true);
   const body = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
 
   function begin() {
     const next = known ?? EMPTY;
@@ -170,12 +171,26 @@ export function DateTimePicker({
   return (
     <Popover
       open={open}
-      onOpenChange={(next) => {
+      onOpenChange={(next, details) => {
+        if (!next && details.reason.startsWith("outside")) {
+          const target = details.event.target;
+          const label =
+            target instanceof Element ? target.closest("label") : null;
+          if (label !== null && label.control === trigger.current) {
+            details.cancel();
+            return;
+          }
+        }
         if (next) begin();
         else finish({ outcome: "dismissed" });
       }}
     >
-      <PopoverTrigger variant="secondary" {...triggerProps}>
+      <PopoverTrigger
+        ref={trigger}
+        variant="secondary"
+        inField
+        {...triggerProps}
+      >
         {known === null
           ? placeholder
           : `${known.date} ${known.hour}:${known.minute}`}
