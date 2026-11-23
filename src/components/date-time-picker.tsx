@@ -175,7 +175,7 @@ export function DateTimePicker({
         else finish({ outcome: "dismissed" });
       }}
     >
-      <PopoverTrigger variant="secondary" {...triggerProps}>
+      <PopoverTrigger variant="secondary" inField {...triggerProps}>
         {known === null
           ? placeholder
           : `${known.date} ${known.hour}:${known.minute}`}

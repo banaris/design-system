@@ -6,6 +6,7 @@ import type { ComponentProps } from "react";
 import { OVERLAY_MOTION, OVERLAY_POPUP } from "../lib/class-presets";
 import { cn } from "../lib/cn";
 import {
+  fieldTriggerButton,
   renderTriggerButton,
   type TriggerButtonStyle,
 } from "../lib/trigger-button";
@@ -19,7 +20,9 @@ export type PopoverTriggerProps = Omit<
   ComponentProps<typeof BasePopover.Trigger>,
   "className" | "render"
 > &
-  TriggerButtonStyle;
+  TriggerButtonStyle & {
+    inField?: boolean;
+  };
 
 export function PopoverTrigger({
   variant,
@@ -27,11 +30,17 @@ export function PopoverTrigger({
   pill,
   className,
   children,
+  inField = false,
   ...rest
 }: PopoverTriggerProps) {
+  const style = { variant, size, pill, className };
   return (
     <BasePopover.Trigger
-      render={renderTriggerButton({ variant, size, pill, className }, children)}
+      render={
+        inField
+          ? fieldTriggerButton(style, children)
+          : renderTriggerButton(style, children)
+      }
       {...rest}
     />
   );

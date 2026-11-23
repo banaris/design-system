@@ -1,6 +1,7 @@
 import {
   DateTimePicker,
   Field,
+  FieldError,
   FieldHint,
   FieldLabel,
 } from "@banaris/design-system";
@@ -479,18 +480,25 @@ export const RequestingCloseOfTheModalDialogDismisses: Story = {
   },
 };
 
+const FieldHarness = ({ disabled = false, ...args }: PickerArgs) => (
+  <Field disabled={disabled} error="Start is required">
+    <FieldLabel>Start</FieldLabel>
+    <Harness {...args} />
+    <FieldHint>Local time</FieldHint>
+    <FieldError />
+  </Field>
+);
+
 export const InsideAField: Story = {
-  render: (args) => (
-    <Field error="Start is required">
-      <FieldLabel>Start</FieldLabel>
-      <Harness {...args} />
-      <FieldHint>Local time</FieldHint>
-    </Field>
-  ),
+  render: (args) => <FieldHarness {...args} />,
   play: async ({ canvas }) => {
-    await userEvent.click(
-      canvas.getByRole("button", { name: "2030-06-15 09:30" }),
-    );
+    const trigger = canvas.getByRole("button", {
+      name: "Start 2030-06-15 09:30",
+    });
+    await expect(trigger).toHaveAttribute("aria-invalid", "true");
+    await expect(trigger).toHaveAccessibleDescription(/Local time/);
+    await expect(trigger).toHaveAccessibleDescription(/Start is required/);
+    await userEvent.click(trigger);
     await expectVisible(() =>
       screen.findByRole("dialog", { name: "Select date and time" }),
     );
@@ -503,6 +511,32 @@ export const InsideAField: Story = {
     }
     const ids = inputs.map((input) => input.id).filter(Boolean);
     await expect(new Set(ids).size).toBe(ids.length);
+  },
+};
+
+export const AFieldLabelActivatesTheTrigger: Story = {
+  render: (args) => <FieldHarness {...args} />,
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("button", {
+      name: "Start 2030-06-15 09:30",
+    });
+    await userEvent.click(canvas.getByText("Start"));
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Select date and time" }),
+    );
+  },
+};
+
+export const ADisabledFieldDisablesTheTrigger: Story = {
+  render: (args) => <FieldHarness {...args} disabled />,
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("button", {
+      name: "Start 2030-06-15 09:30",
+    });
+    await expect(trigger).toBeDisabled();
+    await userEvent.click(trigger);
+    await expect(screen.queryByRole("dialog")).toBeNull();
   },
 };
 
