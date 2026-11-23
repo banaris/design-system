@@ -26,6 +26,10 @@
  *      stylesheet whose `coarse` variant was deleted would pass check 4 when no
  *      component used it.
  *
+ *   6. The safe-area inset tokens (`env(safe-area-inset-`) are in `dist`.
+ *      Dialog and Toast read them through `--ds-edge-*`; without the `env()`
+ *      reads the insets silently stay 0 and no other check notices.
+ *
  * Whether the published stylesheet carries tokens and stays free of preflight
  * belongs to `check:package`, which owns the shipped artefact.
  *
@@ -256,6 +260,12 @@ if (!present.has("inline-flex")) {
       "`@source` directives in src/styles/styles.src.css.",
   );
 }
+
+/* ---- 6. Safe-area insets are read ---- */
+if (!css.includes("env(safe-area-inset-"))
+  errors.push(
+    "dist/styles.css has no `env(safe-area-inset-`. Dialog and Toast keep clear of the device insets through `--ds-safe-*` in src/styles/theme.css.",
+  );
 
 if (errors.length > 0) {
   console.error("check:styles failed\n");

@@ -59,6 +59,21 @@ Light is the default. Dark activates through the `data-theme` attribute on `<htm
 
 A product with a toggle sets `data-theme` on `<html>` and nothing else; every token follows. This catalogue has a Theme control in its toolbar.
 
+## Phones with a notch or home indicator
+
+`Dialog` and `Toast` keep clear of the device's safe-area insets, so they stay out from under the notch, the home indicator and a landscape cutout. The browser reports non-zero insets only when your page opts in:
+
+```html
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, viewport-fit=cover"
+/>
+```
+
+The package does not set this for you; the page head is yours. Without it the insets are zero and nothing moves.
+
+`--ds-edge-top`, `--ds-edge-right`, `--ds-edge-bottom` and `--ds-edge-left` hold the gap `Dialog` and `Toast` keep from each edge (1rem, or the inset when that is larger); your own fixed-position UI can reuse them.
+
 ## Next
 
 - **Foundations / Tokens** shows every token, rendered from the live cascade.

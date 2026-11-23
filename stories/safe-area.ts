@@ -1,0 +1,25 @@
+/* Mimics a phone's notch and home indicator by overriding the `--ds-safe-*`
+ * variables that `theme.css` fills from `env(safe-area-inset-*)`. The values are
+ * above the 1rem (16px) floor so each one decides its edge. */
+const INSETS = { top: 47, right: 24, bottom: 34, left: 44 } as const;
+
+export async function withInsets(run: () => Promise<void>) {
+  const root = document.documentElement;
+  for (const [side, px] of Object.entries(INSETS))
+    root.style.setProperty(`--ds-safe-${side}`, `${String(px)}px`);
+  try {
+    await run();
+  } finally {
+    for (const side of Object.keys(INSETS))
+      root.style.removeProperty(`--ds-safe-${side}`);
+  }
+}
+
+export function slackInsideInsets(box: DOMRect) {
+  return {
+    top: box.top - INSETS.top,
+    right: window.innerWidth - INSETS.right - box.right,
+    bottom: window.innerHeight - INSETS.bottom - box.bottom,
+    left: box.left - INSETS.left,
+  };
+}
