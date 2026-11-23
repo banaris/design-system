@@ -18,20 +18,20 @@ import "@banaris/design-system/styles.css";
 import { Button } from "@banaris/design-system";
 ```
 
-That one stylesheet is self-contained — tokens, component CSS, and the Tailwind utilities this package uses, all generated at publish time. **You do not need Tailwind in your project**, and if you do use it, no version coupling applies.
+That one stylesheet is self-contained — tokens, component CSS, and the Tailwind utilities this package uses, all generated at publish time. **You do not need Tailwind in your project**, and if you do use it, your Tailwind version does not matter: the package declares the few names it shares with Tailwind (spacing, breakpoints, container widths, font weights) with Tailwind's own values, and your `rounded-md`, `text-sm` and `font-sans` are never touched.
 
 > The class names that appear in the DOM (`inline-flex`, `bg-accent`, …) are not a public contract. Do not hook your own CSS to them.
 
 ### The four CSS entry points
 
-| Entry point                             | Contents                                                           | When                                                                                                               |
-| --------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt                      | **Default.** Everything, one import                                                                                |
-| `@banaris/design-system/theme.css`      | Design tokens, the `coarse` variant and the `touch-target` utility | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup                           |
-| `@banaris/design-system/base.css`       | The minimum globals the components rely on                         | With `theme.css` on the split path — without it components lose `box-sizing` and form controls lose the brand font |
-| `@banaris/design-system/components.css` | Component CSS and keyframes only                                   | Rarely — only alongside `theme.css` if you are generating utilities yourself                                       |
+| Entry point                             | Contents                                                                                                                                 | When                                                                                                               |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `@banaris/design-system/styles.css`     | Tokens, component CSS and utilities, prebuilt                                                                                            | **Default.** Everything, one import                                                                                |
+| `@banaris/design-system/theme.css`      | Design tokens, the `coarse` variant, the `touch-target` utility and the package's radii, type sizes and fonts under Tailwind's own names | You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup                           |
+| `@banaris/design-system/base.css`       | The minimum globals the components rely on                                                                                               | With `theme.css` on the split path — without it components lose `box-sizing` and form controls lose the brand font |
+| `@banaris/design-system/components.css` | Component CSS and keyframes only                                                                                                         | Rarely — only alongside `theme.css` if you are generating utilities yourself                                       |
 
-Using Tailwind and want the tokens in your own markup? Import both. The duplicate `:root` variables are harmless.
+Using Tailwind and want the tokens in your own markup? Import `theme.css` as below. It also re-declares Tailwind's `rounded-*`, `text-*` and `font-*` names with the package's values, so your own `rounded-md`, `text-sm` and `font-sans` change; `styles.css` never does that.
 
 ```css
 @import "tailwindcss";
@@ -47,10 +47,36 @@ import "@banaris/design-system/styles.css";
 
 ### Overriding styles
 
-The distributed CSS lives in `@layer theme, base, components, utilities`, which means:
+The distributed CSS declares `@layer theme, base, components, utilities`; its tokens, base rules, component CSS and utilities each sit in one of them (only `@keyframes` and `@property` rules sit outside, and Tailwind adds a `properties` layer). The design tokens are in `theme.ds`, a sublayer of `theme`. This means:
 
 - Passing `className` wins over the component's own variant — no `!important`. Classes are merged with `tailwind-merge`, so conflicting utilities collapse and yours is the one that survives.
 - Any CSS of yours outside a layer beats everything here. You always have the last word.
+- Your own Tailwind theme beats our tokens, whichever stylesheet you import first, so `@theme { --color-accent: … }` rebrands the whole package. Your `rounded-md`, `text-sm` and `font-sans` keep your values, and the package's components keep theirs: they use package-owned names (`rounded-ds-md`, `text-ds-sm`, `font-ds-sans`) that Tailwind does not define.
+
+To override a token, set it with Tailwind's `@theme`, or on `:root` in plain CSS (inside `@layer theme` or outside any layer):
+
+```css
+@import "tailwindcss";
+@import "@banaris/design-system/styles.css";
+
+@theme {
+  --color-accent: #3b82f6;
+}
+```
+
+That value applies in both themes. A colour that has a separate dark value (`--color-bg`, `--color-ink`, `--color-accent-soft`, …) needs its dark value set too, on both routes dark activates by:
+
+```css
+:root[data-theme="dark"] {
+  --color-accent-soft: #93c5fd;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-accent-soft: #93c5fd;
+  }
+}
+```
 
 ## Theming
 
@@ -76,7 +102,7 @@ Two conventions worth knowing before you reach for a colour:
 - **`border` is decorative, `control-border` is not.** On an unchecked checkbox the border is the only thing announcing the control exists, so it is held to WCAG 1.4.11's 3:1 on every surface. Dividers and card edges are deliberately softer.
 - **Focus is two rings, not one.** Controls here sit on everything from paper to the dark shell to the accent fill, and no single colour clears 3:1 across that range. A light inner ring inside a dark outer one always leaves one of the two contrasting — worst case 8.13:1 across the eight surfaces a control can sit on, in both themes.
 
-Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `text-body`, …) bakes in weight and line-height — one class produces the intended voice. The **utility** tier (`text-lg`, `text-base`, `text-sm`, `text-xs`) sets size only and leaves weight to you; use it inside controls, except `text-input` for editable fields: it is 16px on touch devices, where a smaller size makes iOS Safari zoom on focus. Likewise, `touch-target` makes an element at least 44×44px on touch devices; put it on your own interactive elements. Sizes overlap between tiers on purpose.
+Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `text-body`, …) bakes in weight and line-height — one class produces the intended voice. The **utility** tier (`text-lg`, `text-base`, `text-sm`, `text-xs` through `theme.css`; the package's own components use `text-ds-lg` … `text-ds-xs`) sets size only and leaves weight to you; use it inside controls, except `text-input` for editable fields: it is 16px on touch devices, where a smaller size makes iOS Safari zoom on focus. Likewise, `touch-target` makes an element at least 44×44px on touch devices; put it on your own interactive elements. Sizes overlap between tiers on purpose.
 
 Every token, rendered from the live cascade, is in the catalogue under **Foundations / Tokens**.
 
@@ -124,18 +150,19 @@ pnpm run verify:full   # the above plus axe over every story in a real browser
 
 Beyond the usual lint and type checks, these deterministic guards cover failures that are otherwise **silent** — green build, green types, green lint, broken output:
 
-| Check                 | Catches                                                                                                                                                                                                                                                           |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `check:contrast`      | A token that no longer meets WCAG, in either theme. Measured, not asserted by hand — the ratios quoted in `theme.css` are kept honest by this.                                                                                                                    |
-| `check:dark-theme`    | The two dark overlays in `theme.css` drifting apart — the OS-preference block is generated from `:root[data-theme="dark"]`, so a one-sided edit would ship a theme that differs by how it was switched on. Edit the source block, then `pnpm run fix:dark-theme`. |
-| `check:tw-merge`      | A token missing from the merge config, which silently misgroups a class so two utilities annihilate each other.                                                                                                                                                   |
-| `check:class-presets` | The box of Checkbox, Radio and Switch drifting from the other form controls: its state styling repeats `CONTROL_SURFACE`'s, so a one-sided edit to either string goes unnoticed.                                                                                  |
-| `check:styles`        | A class that reaches the DOM with no CSS behind it — the classic Tailwind scanning failure, which raises no error anywhere.                                                                                                                                       |
-| `check:stories`       | An exported component with no story. Absent from the catalogue means undiscoverable, which for this package means it may as well not exist.                                                                                                                       |
-| `check:install-sync`  | The README install section and the catalogue's Getting started page drifting apart — each is edited alone, and the stale one keeps a command or import that no longer works.                                                                                      |
-| `check:package`       | `exports` pointing at a file the build does not produce, and a stylesheet shipping preflight or missing tokens.                                                                                                                                                   |
-| `check:geometry`      | The brand mark's hexagons overlapping instead of tiling — valid SVG, passing build, visibly wrong render.                                                                                                                                                         |
-| `check:axe-live`      | The accessibility suite having stopped running. Seeds a violation and requires the suite to go red, because a suite that checks nothing reports the same green as one that passes.                                                                                |
+| Check                 | Catches                                                                                                                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `check:contrast`      | A token that no longer meets WCAG, in either theme. Measured, not asserted by hand — the ratios quoted in `tokens.css` are kept honest by this.                                                                                                                    |
+| `check:dark-theme`    | The two dark overlays in `tokens.css` drifting apart — the OS-preference block is generated from `:root[data-theme="dark"]`, so a one-sided edit would ship a theme that differs by how it was switched on. Edit the source block, then `pnpm run fix:dark-theme`. |
+| `check:tw-merge`      | A token missing from the merge config, which silently misgroups a class so two utilities annihilate each other.                                                                                                                                                    |
+| `check:class-presets` | The box of Checkbox, Radio and Switch drifting from the other form controls: its state styling repeats `CONTROL_SURFACE`'s, so a one-sided edit to either string goes unnoticed.                                                                                   |
+| `check:styles`        | A class that reaches the DOM with no CSS behind it — the classic Tailwind scanning failure, which raises no error anywhere.                                                                                                                                        |
+| `check:stories`       | An exported component with no story. Absent from the catalogue means undiscoverable, which for this package means it may as well not exist.                                                                                                                        |
+| `check:install-sync`  | The README install section and the catalogue's Getting started page drifting apart — each is edited alone, and the stale one keeps a command or import that no longer works.                                                                                       |
+| `check:package`       | `exports` pointing at a file the build does not produce, a stylesheet shipping preflight or missing tokens, a token outside every `@layer`, and an undeclared reuse of a Tailwind stock name.                                                                      |
+| `check:consumer`      | A consumer's own Tailwind theme (`--radius-md`, `--color-accent`) losing to ours, with `styles.css` imported before or after Tailwind.                                                                                                                             |
+| `check:geometry`      | The brand mark's hexagons overlapping instead of tiling — valid SVG, passing build, visibly wrong render.                                                                                                                                                          |
+| `check:axe-live`      | The accessibility suite having stopped running. Seeds a violation and requires the suite to go red, because a suite that checks nothing reports the same green as one that passes.                                                                                 |
 
 They exist because each of these was possible to ship without a single tool complaining, and they have already earned it — `check:contrast` caught the accent button's label measuring 1.08:1 against its own fill in dark, and `check:styles` caught three separate cases of a class reaching the DOM with no rule behind it.
 

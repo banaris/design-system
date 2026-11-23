@@ -17,7 +17,10 @@ const OPTIONS = ["daily", "weekly", "monthly"] as const;
 
 const options = (props: { disabled?: boolean; invalid?: boolean } = {}) =>
   OPTIONS.map((value) => (
-    <label key={value} className="text-ink flex items-center gap-2 text-base">
+    <label
+      key={value}
+      className="text-ink text-ds-base flex items-center gap-2"
+    >
       <Radio
         value={value}
         disabled={props.disabled}

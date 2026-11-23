@@ -165,7 +165,7 @@ export function DateTimeCalendar({
           id={headingId}
           aria-live="polite"
           aria-atomic
-          className="text-ink text-base font-semibold"
+          className="text-ink text-ds-base font-semibold"
         >
           {names.month(toUtc(focusDay))}
         </div>
@@ -191,7 +191,7 @@ export function DateTimeCalendar({
               key={name.long}
               role="columnheader"
               aria-label={name.long}
-              className="text-ink-dim w-0 min-w-full py-1 text-center text-sm [overflow-wrap:anywhere]"
+              className="text-ink-dim text-ds-sm w-0 min-w-full py-1 text-center [overflow-wrap:anywhere]"
             >
               {name.label}
             </div>
@@ -216,7 +216,7 @@ export function DateTimeCalendar({
                     aria-selected={key === selected}
                     aria-disabled={unavailable || undefined}
                     className={cn(
-                      "text-ink touch-target box-border flex size-9 cursor-pointer items-center justify-center rounded-md text-base select-none",
+                      "text-ink touch-target rounded-ds-md text-ds-base box-border flex size-9 cursor-pointer items-center justify-center select-none",
                       TRANSITION_INTERACTIVE,
                       FOCUS_RING,
                       "hover:not-aria-disabled:bg-surface-hover",

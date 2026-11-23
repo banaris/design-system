@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Keeps the OS-preference dark overlay in `theme.css` generated from the
+/* Keeps the OS-preference dark overlay in `tokens.css` generated from the
  * explicit one, so a dark token is edited in exactly one place.
  *
  * ── Why two blocks exist at all ────────────────────────────────────────
@@ -30,7 +30,7 @@ import { fileURLToPath } from "node:url";
 import { format, resolveConfig } from "prettier";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const THEME = join(ROOT, "src", "styles", "theme.css");
+const TOKENS = join(ROOT, "src", "styles", "tokens.css");
 
 const BEGIN =
   '/* BEGIN generated — copy of the :root[data-theme="dark"] declarations; run `pnpm run fix:dark-theme`, never edit by hand */';
@@ -76,7 +76,7 @@ const generatedBlock = (declarations) =>
     END,
   ].join("\n");
 
-const current = readFileSync(THEME, "utf8");
+const current = readFileSync(TOKENS, "utf8");
 if (occurrences(current, BEGIN) !== 1 || occurrences(current, END) !== 1)
   fail("expected exactly one BEGIN and one END marker");
 const begin = current.indexOf(BEGIN);
@@ -88,8 +88,8 @@ const replaced =
   generatedBlock(sourceDeclarations(current)) +
   current.slice(end);
 
-const options = (await resolveConfig(THEME)) ?? {};
-const next = await format(replaced, { ...options, filepath: THEME });
+const options = (await resolveConfig(TOKENS)) ?? {};
+const next = await format(replaced, { ...options, filepath: TOKENS });
 
 if (process.argv.includes("--check")) {
   if (next !== current)
@@ -101,6 +101,6 @@ if (process.argv.includes("--check")) {
 } else if (next === current) {
   console.log("sync-dark-theme: nothing to change");
 } else {
-  writeFileSync(THEME, next);
+  writeFileSync(TOKENS, next);
   console.log("sync-dark-theme: rewrote the generated dark block");
 }

@@ -34,7 +34,7 @@ export function Alert({
     <div
       role={status === "danger" || status === "warning" ? "alert" : "status"}
       className={cn(
-        "box-border flex items-baseline gap-3 rounded-md border border-s-4 border-solid px-4 py-3 text-base",
+        "rounded-ds-md text-ds-base box-border flex items-baseline gap-3 border border-s-4 border-solid px-4 py-3",
         STATUS_TONE[status],
         "border-s-(color:--status)",
         className,

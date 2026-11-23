@@ -24,7 +24,7 @@ export const TRANSITION_INTERACTIVE =
 export const CONTROL_SURFACE = `border border-solid border-control-border ${TRANSITION_INTERACTIVE} ${FOCUS_RING} aria-invalid:not-data-disabled:border-danger data-disabled:cursor-not-allowed data-disabled:border-transparent data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]`;
 
 export const TEXT_ENTRY_BOX =
-  "touch-target box-border rounded-md bg-transparent px-4 py-2.5 text-input text-ink placeholder:text-ink-faint";
+  "touch-target box-border rounded-ds-md bg-transparent px-4 py-2.5 text-input text-ink placeholder:text-ink-faint";
 
 /* The root is the pointer target; a child draws the box and reads root state via group `control`. */
 export const BOXED_CONTROL_TARGET =
@@ -35,10 +35,10 @@ export const BOXED_CONTROL_BOX = `box-border inline-flex shrink-0 items-center b
 /* `data-highlighted` is Base UI's roving highlight; it follows both the pointer
  * and the arrow keys, so hover needs no separate rule. */
 export const MENU_ITEM =
-  "touch-target box-border flex w-full cursor-pointer wrap-anywhere items-center gap-2 rounded-sm px-3 py-2 text-base text-ink select-none data-highlighted:not-data-disabled:bg-surface-hover data-disabled:cursor-not-allowed data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]";
+  "touch-target box-border flex w-full cursor-pointer wrap-anywhere items-center gap-2 rounded-ds-sm px-3 py-2 text-ds-base text-ink select-none data-highlighted:not-data-disabled:bg-surface-hover data-disabled:cursor-not-allowed data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]";
 
 export const MENU_POPUP =
-  "border-border bg-surface shadow-overlay coarse:flex coarse:flex-col coarse:gap-2 box-border max-w-[var(--available-width)] min-w-40 rounded-md border border-solid p-1 font-sans outline-none";
+  "border-border bg-surface shadow-overlay coarse:flex coarse:flex-col coarse:gap-2 box-border max-w-[var(--available-width)] min-w-40 rounded-ds-md border border-solid p-1 font-ds-sans outline-none";
 
 export const ROW_DIVIDER = "border-t border-divider first:border-t-0";
 
@@ -55,7 +55,7 @@ export const STATUS_TONE: Record<StatusTone, string> = {
 };
 
 export const OVERLAY_POPUP =
-  "border-border bg-surface shadow-overlay text-ink box-border rounded-lg border border-solid font-sans outline-none";
+  "border-border bg-surface shadow-overlay text-ink box-border rounded-ds-lg border border-solid font-ds-sans outline-none";
 
 /* Enter is a keyframe and exit a transition: Base UI keeps the popup mounted
  * until both finish, and `--duration-*` is zeroed under reduced motion. */

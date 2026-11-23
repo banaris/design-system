@@ -17,18 +17,18 @@ import "@banaris/design-system/styles.css";
 import { Button } from "@banaris/design-system";
 ```
 
-That one stylesheet is self-contained: tokens, component CSS and the Tailwind utilities this package uses, all generated at publish time. **You do not need Tailwind in your project**, and if you do use it, no version coupling applies.
+That one stylesheet is self-contained: tokens, component CSS and the Tailwind utilities this package uses, all generated at publish time. **You do not need Tailwind in your project**, and if you do use it, your Tailwind version does not matter: the package declares the few names it shares with Tailwind (spacing, breakpoints, container widths, font weights) with Tailwind's own values, and your `rounded-md`, `text-sm` and `font-sans` are never touched.
 
 The class names that appear in the DOM (`inline-flex`, `bg-accent`, …) are not a public contract. Do not hook your own CSS to them.
 
 ## The four CSS entry points
 
 - `@banaris/design-system/styles.css`: Tokens, component CSS and utilities, prebuilt. **Default:** everything, one import.
-- `@banaris/design-system/theme.css`: Design tokens only (`@theme`). You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup.
+- `@banaris/design-system/theme.css`: Design tokens (`@theme`), plus the package's radii, type sizes and fonts under Tailwind's own names. You use Tailwind and want DS tokens (`bg-accent`, `text-ink-dim`) in **your own** markup.
 - `@banaris/design-system/base.css`: The minimum globals the components rely on. With `theme.css` on the split path. Without it components lose `box-sizing` and form controls lose the brand font.
 - `@banaris/design-system/components.css`: Component CSS and keyframes only. Rarely: only alongside `theme.css` if you are generating utilities yourself.
 
-Using Tailwind and want the tokens in your own markup? Import both. The duplicate `:root` variables are harmless.
+Using Tailwind and want the tokens in your own markup? Import `theme.css` as below. It also re-declares Tailwind's `rounded-*`, `text-*` and `font-*` names with the package's values, so your own `rounded-md`, `text-sm` and `font-sans` change; `styles.css` never does that.
 
 ```css
 @import "tailwindcss";
@@ -44,10 +44,36 @@ Preflight is not shipped. Resetting your page's global defaults is not this pack
 
 ## Overriding styles
 
-The distributed CSS lives in `@layer theme, base, components, utilities`, which means:
+The distributed CSS declares `@layer theme, base, components, utilities`; its tokens, base rules, component CSS and utilities each sit in one of them (only `@keyframes` and `@property` rules sit outside, and Tailwind adds a `properties` layer). The design tokens are in `theme.ds`, a sublayer of `theme`. This means:
 
-- Passing `className` wins over the component's own variant, with no `!important`. Classes are merged with `tailwind-merge`, so conflicting utilities collapse and yours is the one that survives.
+- Passing `className` wins over the component's own variant — no `!important`. Classes are merged with `tailwind-merge`, so conflicting utilities collapse and yours is the one that survives.
 - Any CSS of yours outside a layer beats everything here. You always have the last word.
+- Your own Tailwind theme beats our tokens, whichever stylesheet you import first, so `@theme { --color-accent: … }` rebrands the whole package. Your `rounded-md`, `text-sm` and `font-sans` keep your values, and the package's components keep theirs: they use package-owned names (`rounded-ds-md`, `text-ds-sm`, `font-ds-sans`) that Tailwind does not define.
+
+To override a token, set it with Tailwind's `@theme`, or on `:root` in plain CSS (inside `@layer theme` or outside any layer):
+
+```css
+@import "tailwindcss";
+@import "@banaris/design-system/styles.css";
+
+@theme {
+  --color-accent: #3b82f6;
+}
+```
+
+That value applies in both themes. A colour that has a separate dark value (`--color-bg`, `--color-ink`, `--color-accent-soft`, …) needs its dark value set too, on both routes dark activates by:
+
+```css
+:root[data-theme="dark"] {
+  --color-accent-soft: #93c5fd;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-accent-soft: #93c5fd;
+  }
+}
+```
 
 ## Theming
 

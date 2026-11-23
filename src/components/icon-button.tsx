@@ -49,7 +49,7 @@ export function IconButton({
       type={type}
       className={cn(
         BASE,
-        pill ? "rounded-pill" : "rounded-md",
+        pill ? "rounded-pill" : "rounded-ds-md",
         VARIANT[variant],
         "p-0",
         SIZE[size],

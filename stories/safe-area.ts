@@ -1,7 +1,7 @@
 import { expect, waitFor } from "storybook/test";
 
 /* Mimics a phone's notch and home indicator by overriding the `--ds-safe-*`
- * variables that `theme.css` fills from `env(safe-area-inset-*)`. The values are
+ * variables that `tokens.css` fills from `env(safe-area-inset-*)`. The values are
  * above the 1rem (16px) floor so each one decides its edge. */
 const INSETS = { top: 47, right: 24, bottom: 34, left: 44 } as const;
 

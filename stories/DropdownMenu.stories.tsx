@@ -130,7 +130,7 @@ export const OutsideClick: Story = {
   render: (args) => (
     <div className="flex flex-col items-start gap-8">
       <DropdownMenu {...args}>{menu({})}</DropdownMenu>
-      <p className="text-ink text-base">Elsewhere on the page</p>
+      <p className="text-ink text-ds-base">Elsewhere on the page</p>
     </div>
   ),
   play: async ({ canvas }) => {

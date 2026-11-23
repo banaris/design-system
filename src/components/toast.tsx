@@ -44,18 +44,18 @@ export function Toaster({ closeLabel = "Dismiss", className }: ToasterProps) {
             )}
           >
             <BaseToast.Content>
-              <BaseToast.Title className="text-base font-semibold" />
+              <BaseToast.Title className="text-ds-base font-semibold" />
               <BaseToast.Description className="text-small text-ink-dim mt-1" />
               <BaseToast.Action
                 className={cn(
-                  "touch-target text-small text-accent-soft mt-2 inline-flex cursor-pointer items-center rounded-sm font-semibold hover:underline",
+                  "touch-target text-small text-accent-soft rounded-ds-sm mt-2 inline-flex cursor-pointer items-center font-semibold hover:underline",
                   FOCUS_RING,
                 )}
               />
               <BaseToast.Close
                 aria-label={closeLabel}
                 className={cn(
-                  "touch-target text-ink-dim hover:bg-surface-hover absolute end-2 top-2 inline-flex cursor-pointer items-center justify-center rounded-sm p-1",
+                  "touch-target text-ink-dim hover:bg-surface-hover rounded-ds-sm absolute end-2 top-2 inline-flex cursor-pointer items-center justify-center p-1",
                   FOCUS_RING,
                 )}
               >

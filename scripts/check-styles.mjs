@@ -100,7 +100,9 @@ const sourceFiles = readdirSync(join(ROOT, "src"), {
   withFileTypes: true,
 })
   .filter((e) => e.isFile() && /\.tsx?$/.test(e.name))
-  .map((e) => join(e.parentPath, e.name));
+  .map((e) => join(e.parentPath, e.name))
+  /* cn.ts lists token names for `tailwind-merge` (`"ds-sm"`), which read as classes. */
+  .filter((file) => file !== join(ROOT, "src", "lib", "cn.ts"));
 
 /* Single-word Tailwind utilities the components actually use. Anything else
    without a hyphen is treated as prose, erring towards silence over noise. */
@@ -229,7 +231,7 @@ for (const token of coarseReferenced) {
   if (inCoarseBlock.has(token.replace(/\\/g, ""))) continue;
   errors.push(
     `\`${token}\` is referenced in src/ but is not inside an \`@media (any-pointer: coarse)\` block in dist/styles.css.\n` +
-      `      Define the \`coarse\` variant once in src/styles/theme.css; components never write the query.`,
+      `      Define the \`coarse\` variant once in src/styles/variants.css; components never write the query.`,
   );
 }
 
@@ -237,7 +239,7 @@ const COARSE_FIXTURE = "coarse:h-11";
 if (!inCoarseBlock.has(COARSE_FIXTURE))
   errors.push(
     `\`${COARSE_FIXTURE}\` (stories/CoarsePointer.stories.tsx) is not inside an \`@media (any-pointer: coarse)\` block in dist/styles.css.\n` +
-      `      The \`coarse\` variant is missing from src/styles/theme.css, or the story is no longer a \`@source\` in src/styles/styles.src.css.`,
+      `      The \`coarse\` variant is missing from src/styles/variants.css, or the story is no longer a \`@source\` in src/styles/styles.src.css.`,
   );
 
 /* ---- 2. Animations resolve ---- */
@@ -264,7 +266,7 @@ if (!present.has("inline-flex")) {
 /* ---- 6. Safe-area insets are read ---- */
 if (!css.includes("env(safe-area-inset-"))
   errors.push(
-    "dist/styles.css has no `env(safe-area-inset-`. Dialog, Toast and the popups keep clear of the device insets through `--ds-safe-*` in src/styles/theme.css.",
+    "dist/styles.css has no `env(safe-area-inset-`. Dialog, Toast and the popups keep clear of the device insets through `--ds-safe-*` in src/styles/tokens.css.",
   );
 
 if (errors.length > 0) {

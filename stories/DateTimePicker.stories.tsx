@@ -42,7 +42,7 @@ function Harness({ initial, onValueChange, ...rest }: PickerArgs) {
           onValueChange(next);
         }}
       />
-      <p className="text-ink text-base">Elsewhere on the page</p>
+      <p className="text-ink text-ds-base">Elsewhere on the page</p>
     </div>
   );
 }

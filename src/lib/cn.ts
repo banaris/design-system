@@ -28,9 +28,9 @@ import { extendTailwindMerge } from "tailwind-merge";
  * start annihilating `text-accent-soft`. Registering them under `text` fixes it.
  *
  * The same shape applies to radius, shadow and easing: without registration
- * `rounded-shell` and `rounded-md` are not mutually exclusive and both survive.
+ * `rounded-shell` and `rounded-ds-md` are not mutually exclusive and both survive.
  *
- * ⚠ Every addition to `theme.css` needs a matching entry here.
+ * ⚠ Every addition to `tokens.css` needs a matching entry here.
  * `scripts/check-tw-merge.mjs` diffs the two and measures the resulting
  * classification, because a misgrouping is invisible to the type checker, the
  * build and the linter alike — it surfaces only as a consumer's broken layout.
@@ -42,10 +42,21 @@ import { extendTailwindMerge } from "tailwind-merge";
 export const twMerge = extendTailwindMerge({
   extend: {
     theme: {
-      // Semantic type steps. Omitting these misfiles them as colours.
-      text: ["display", "h1", "h2", "h3", "body", "small", "label", "input"],
-      // `xs`/`sm`/`md`/`lg` are stock t-shirt sizes; `shell` and `pill` are not.
-      radius: ["shell", "pill"],
+      text: [
+        "display",
+        "h1",
+        "h2",
+        "h3",
+        "body",
+        "small",
+        "label",
+        "input",
+        "ds-xs",
+        "ds-sm",
+        "ds-base",
+        "ds-lg",
+      ],
+      radius: ["shell", "pill", "ds-xs", "ds-sm", "ds-md", "ds-lg"],
       shadow: ["soft", "raised", "overlay", "focus"],
       ease: ["spring", "standard"],
     },

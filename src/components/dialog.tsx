@@ -78,7 +78,7 @@ export type DialogTitleProps = Omit<
 export function DialogTitle({ className, ...rest }: DialogTitleProps) {
   return (
     <BaseDialog.Title
-      className={cn("text-h3 text-ink font-sans", className)}
+      className={cn("text-h3 text-ink font-ds-sans", className)}
       {...rest}
     />
   );
