@@ -122,7 +122,7 @@ pnpm run verify        # lint, types, tokens, build, package (seconds)
 pnpm run verify:full   # the above plus axe over every story in a real browser
 ```
 
-Beyond the usual lint and type checks, nine deterministic guards cover failures that are otherwise **silent** — green build, green types, green lint, broken output:
+Beyond the usual lint and type checks, these deterministic guards cover failures that are otherwise **silent** — green build, green types, green lint, broken output:
 
 | Check                 | Catches                                                                                                                                                                                                                                                           |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

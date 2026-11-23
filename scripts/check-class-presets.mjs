@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /* `BOXED_CONTROL_BOX` repeats the state styling `CONTROL_SURFACE` defines, in
- * `group-…/control:` form, because the box is a child of the control root and
- * reads root state through the group. The two strings are literal so Tailwind
- * can scan them, which rules out generating one from the other — so this
- * check is what keeps them in step.
+ * `group-…/control:` form because the box reads state from the control root.
+ * Both strings stay literal so Tailwind can scan them, which rules out
+ * generating one from the other — this check keeps them in step.
  *
- * Every state token (`data-disabled:`, `aria-invalid:`, `focus-visible:`) of
- * `CONTROL_SURFACE` must reappear either mapped into the box or unchanged on
- * `BOXED_CONTROL_TARGET` (the root owns the cursor and focus stacking), and
- * every state token of the box must map back to one in `CONTROL_SURFACE`. */
+ * Every variant token of `CONTROL_SURFACE` must reappear mapped in the box, or
+ * unchanged on `BOXED_CONTROL_TARGET` (the root owns the cursor and focus
+ * stacking). Every variant token of the box must come from such a mapping. A
+ * variant the table below does not know fails the check, so a new state added
+ * to one side cannot slip through. */
 
 import {
   BOXED_CONTROL_BOX,
@@ -16,33 +16,30 @@ import {
   CONTROL_SURFACE,
 } from "../src/lib/class-presets.ts";
 
-const GROUP = "group-";
-const INVALID = "aria-invalid:not-data-disabled:";
-const INVALID_GROUP =
-  "group-[[aria-invalid=true]:not([data-disabled])]/control:";
-
-const tokens = (classes) => classes.split(/\s+/).filter(Boolean);
-const isState = (token) =>
-  /^(data-disabled|aria-invalid|focus-visible):/.test(token);
-
-const toBoxed = (token) => {
-  if (token.startsWith(INVALID))
-    return INVALID_GROUP + token.slice(INVALID.length);
-  const [, variant, rest] = /^(data-disabled|focus-visible):(.*)$/.exec(token);
-  return `${GROUP}${variant}/control:${rest}`;
+const BOXED_PREFIX = {
+  "aria-invalid:not-data-disabled:":
+    "group-[[aria-invalid=true]:not([data-disabled])]/control:",
+  "data-disabled:": "group-data-disabled/control:",
+  "focus-visible:": "group-focus-visible/control:",
 };
 
-const surface = tokens(CONTROL_SURFACE).filter(isState);
-const target = new Set(tokens(BOXED_CONTROL_TARGET));
-const box = new Set(
-  tokens(BOXED_CONTROL_BOX).filter((t) => t.startsWith(GROUP)),
-);
+const tokens = (classes) => classes.split(/\s+/).filter(Boolean);
+const hasVariant = (token) => token.includes(":");
 
 const errors = [];
 const mirrored = new Set();
+const box = new Set(tokens(BOXED_CONTROL_BOX).filter(hasVariant));
+const target = new Set(tokens(BOXED_CONTROL_TARGET));
 
-for (const token of surface) {
-  const boxed = toBoxed(token);
+for (const token of tokens(CONTROL_SURFACE).filter(hasVariant)) {
+  const prefix = Object.keys(BOXED_PREFIX).find((p) => token.startsWith(p));
+  if (prefix === undefined) {
+    errors.push(
+      `CONTROL_SURFACE has \`${token}\`, a variant this check cannot map; add it to BOXED_PREFIX.`,
+    );
+    continue;
+  }
+  const boxed = BOXED_PREFIX[prefix] + token.slice(prefix.length);
   if (box.has(boxed)) mirrored.add(boxed);
   else if (!target.has(token))
     errors.push(
@@ -53,7 +50,7 @@ for (const token of surface) {
 for (const token of box) {
   if (!mirrored.has(token))
     errors.push(
-      `BOXED_CONTROL_BOX has \`${token}\` with no matching state token in CONTROL_SURFACE.`,
+      `BOXED_CONTROL_BOX has \`${token}\` with no matching variant token in CONTROL_SURFACE.`,
     );
 }
 
