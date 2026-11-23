@@ -539,6 +539,24 @@ export const AFieldLabelClickedWhileOpenClosesThePicker: Story = {
   },
 };
 
+export const ATriggerInsideItsLabelStillClosesOnItsOwnClick: Story = {
+  render: (args) => (
+    // eslint-disable-next-line jsx-a11y/label-has-associated-control -- the control is Harness's trigger
+    <label>
+      Start <Harness {...args} />
+    </label>
+  ),
+  play: async ({ args, canvas }) => {
+    await userEvent.click(canvas.getByRole("button"));
+    await expectVisible(() =>
+      screen.findByRole("dialog", { name: "Select date and time" }),
+    );
+    await userEvent.click(canvas.getByRole("button"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await expectOnce(args.onClose, { outcome: "dismissed" });
+  },
+};
+
 export const AFieldLabelActivatesTheTrigger: Story = {
   render: (args) => <FieldHarness {...args} />,
   play: async ({ canvas }) => {

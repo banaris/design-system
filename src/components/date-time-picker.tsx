@@ -172,7 +172,7 @@ export function DateTimePicker({
     <Popover
       open={open}
       onOpenChange={(next, details) => {
-        if (!next) {
+        if (!next && details.reason.startsWith("outside")) {
           const target = details.event.target;
           const label =
             target instanceof Element ? target.closest("label") : null;
