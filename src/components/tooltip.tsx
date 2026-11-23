@@ -34,7 +34,7 @@ export function TooltipContent({ className, ...rest }: TooltipContentProps) {
           className={cn(
             OVERLAY_POPUP,
             OVERLAY_MOTION,
-            "text-small rounded-md px-2.5 py-1.5",
+            "text-small max-w-[var(--available-width)] rounded-md px-2.5 py-1.5 wrap-anywhere",
             className,
           )}
           {...rest}
