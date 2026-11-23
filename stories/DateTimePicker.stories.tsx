@@ -514,6 +514,31 @@ export const InsideAField: Story = {
   },
 };
 
+export const AnExplicitLabelledByKeepsTheValueInTheName: Story = {
+  render: (args) => (
+    <>
+      <span id="start-label">Start</span>
+      <Harness {...args} aria-labelledby="start-label" />
+    </>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("button", { name: "Start 2030-06-15 09:30" }),
+    ).toBeVisible();
+  },
+};
+
+export const AFieldLabelClickedWhileOpenClosesThePicker: Story = {
+  render: (args) => <FieldHarness {...args} />,
+  play: async ({ args, canvas }) => {
+    await openPicker(canvas, "Start 2030-06-15 09:30");
+    await userEvent.type(screen.getByRole("textbox", { name: "Hour" }), "1");
+    await userEvent.click(canvas.getByText("Start"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await expectOnce(args.onClose, { outcome: "dismissed" });
+  },
+};
+
 export const AFieldLabelActivatesTheTrigger: Story = {
   render: (args) => <FieldHarness {...args} />,
   play: async ({ canvas }) => {
