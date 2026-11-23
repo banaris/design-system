@@ -141,6 +141,10 @@ They exist because each of these was possible to ship without a single tool comp
 
 **A guard is only worth what it catches, so test it by breaking things.** Delete a rule from `dist/styles.css`, misspell a token, reformat a variant map — then confirm the guard fails. Mutating the guard's own assertions proves nothing; mutating the code it watches is the only evidence it has coverage. Three guards passed their first review clean and were still blind: the preflight regex could never match, template-literal classes were never scanned, and fractional utilities like `size-3.5` were silently skipped.
 
+### Real-device checks
+
+Emulation in CI cannot show iOS focus zoom, real tap areas, touch scroll against drag or safe areas. [Real-device checks](docs/real-device-checks.md) lists what to try on a phone for each mobile rule, and how to say in a PR that you only tested in emulation.
+
 ### Writing a component
 
 Three rules the guards enforce, worth knowing before they fail on you:
