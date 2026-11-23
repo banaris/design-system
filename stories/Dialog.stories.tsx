@@ -13,6 +13,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { slackInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 const meta = {
@@ -133,19 +134,21 @@ export const SelectInside: Story = {
   },
 };
 
+const renderTerms: Story["render"] = (args) => (
+  <Dialog {...args}>
+    <DialogTrigger variant="secondary">Terms</DialogTrigger>
+    <DialogContent>
+      <DialogTitle>Terms</DialogTitle>
+      {Array.from({ length: 60 }, (_, index) => (
+        <DialogDescription key={index}>Clause {index + 1}</DialogDescription>
+      ))}
+      <DialogClose>Close</DialogClose>
+    </DialogContent>
+  </Dialog>
+);
+
 export const TallContent: Story = {
-  render: (args) => (
-    <Dialog {...args}>
-      <DialogTrigger variant="secondary">Terms</DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Terms</DialogTitle>
-        {Array.from({ length: 60 }, (_, index) => (
-          <DialogDescription key={index}>Clause {index + 1}</DialogDescription>
-        ))}
-        <DialogClose>Close</DialogClose>
-      </DialogContent>
-    </Dialog>
-  ),
+  render: renderTerms,
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Terms" }));
     const dialog = await expectVisible(() => screen.findByRole("dialog"));
@@ -155,5 +158,34 @@ export const TallContent: Story = {
       ),
     );
     await expect(dialog.scrollHeight).toBeGreaterThan(dialog.clientHeight);
+  },
+};
+
+export const InsideSafeArea: Story = {
+  render: renderTerms,
+  play: async ({ canvas }) => {
+    await withInsets(async () => {
+      await userEvent.click(canvas.getByRole("button", { name: "Terms" }));
+      const dialog = await expectVisible(() => screen.findByRole("dialog"));
+      await waitFor(async () => {
+        const slack = slackInsideInsets(dialog.getBoundingClientRect());
+        for (const side of Object.values(slack))
+          await expect(side).toBeGreaterThanOrEqual(-0.5);
+      });
+    });
+  },
+};
+
+export const OneRemFromTheEdgesWithoutInsets: Story = {
+  render: renderTerms,
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Terms" }));
+    const dialog = await expectVisible(() => screen.findByRole("dialog"));
+    await waitFor(async () => {
+      const box = dialog.getBoundingClientRect();
+      await expect(box.top).toBeCloseTo(16, 0);
+      await expect(window.innerHeight - box.bottom).toBeCloseTo(16, 0);
+      await expect(box.left).toBeCloseTo(window.innerWidth - box.right, 0);
+    });
   },
 };

@@ -29,7 +29,7 @@ export function Toaster({ closeLabel = "Dismiss", className }: ToasterProps) {
     <BaseToast.Portal>
       <BaseToast.Viewport
         className={cn(
-          "fixed right-4 bottom-4 z-[var(--z-toast)] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-2",
+          "fixed right-[var(--ds-edge-right)] bottom-[var(--ds-edge-bottom)] z-[var(--z-toast)] flex w-[min(24rem,calc(100vw-var(--ds-edge-left)-var(--ds-edge-right)))] flex-col gap-2",
           className,
         )}
       >

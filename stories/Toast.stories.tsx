@@ -7,6 +7,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { slackInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 function Trigger({
@@ -133,5 +134,35 @@ export const Action: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));
     await userEvent.click(await screen.findByRole("button", { name: "Undo" }));
     await expect(onUndo).toHaveBeenCalledOnce();
+  },
+};
+
+export const InsideSafeArea: Story = {
+  play: async ({ canvas }) => {
+    await withInsets(async () => {
+      await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));
+      const title = await expectVisible(() => screen.findByText("Draft saved"));
+      const toast = title.closest<HTMLElement>('[role="dialog"]');
+      if (toast === null) throw new Error("toast root not found");
+      await waitFor(async () => {
+        const slack = slackInsideInsets(toast.getBoundingClientRect());
+        for (const side of Object.values(slack))
+          await expect(side).toBeGreaterThanOrEqual(-0.5);
+      });
+    });
+  },
+};
+
+export const OneRemFromTheEdgeWithoutInsets: Story = {
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));
+    const title = await expectVisible(() => screen.findByText("Draft saved"));
+    const toast = title.closest<HTMLElement>('[role="dialog"]');
+    if (toast === null) throw new Error("toast root not found");
+    await waitFor(async () => {
+      const box = toast.getBoundingClientRect();
+      await expect(window.innerWidth - box.right).toBeCloseTo(16, 0);
+      await expect(window.innerHeight - box.bottom).toBeCloseTo(16, 0);
+    });
   },
 };

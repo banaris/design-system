@@ -57,7 +57,7 @@ export function DialogContent({
         className={cn(
           OVERLAY_POPUP,
           OVERLAY_MOTION,
-          "fixed top-1/2 left-1/2 max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto p-6",
+          "fixed top-[calc(50%+(var(--ds-edge-top)-var(--ds-edge-bottom))/2)] left-[calc(50%+(var(--ds-edge-left)-var(--ds-edge-right))/2)] max-h-[calc(100dvh-var(--ds-edge-top)-var(--ds-edge-bottom))] w-[min(32rem,calc(100vw-var(--ds-edge-left)-var(--ds-edge-right)))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto p-6",
           className,
         )}
         {...rest}
