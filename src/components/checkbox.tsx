@@ -19,7 +19,9 @@ export function Checkbox({ className, ...rest }: CheckboxProps) {
       className={cn("size-5", BOXED_CONTROL_TARGET, className)}
       {...rest}
     >
-      <span className={cn("size-5 rounded-sm", BOXED_CONTROL_BOX)}>
+      <span
+        className={cn("size-5 justify-center rounded-sm", BOXED_CONTROL_BOX)}
+      >
         <BaseCheckbox.Indicator className="text-fill data-disabled:text-ink-faint flex forced-colors:text-[CanvasText] data-disabled:forced-colors:text-[GrayText]">
           <CheckIcon className="size-4 in-data-indeterminate:hidden" />
           <DashIcon className="hidden size-4 in-data-indeterminate:block" />

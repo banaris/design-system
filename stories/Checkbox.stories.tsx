@@ -2,7 +2,7 @@ import { Checkbox, Field, FieldHint, FieldLabel } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
-import { drawnBox, expectStateBorders } from "./border-color";
+import { drawnBox, expectStateBorders, resolveToken } from "./border-color";
 
 const meta = {
   title: "Forms/Checkbox",
@@ -49,6 +49,20 @@ export const DrawnSize: Story = {
     const box = drawnBox(canvas.getByRole("checkbox"));
     await expect(box.getBoundingClientRect().width).toBe(20);
     await expect(box.getBoundingClientRect().height).toBe(20);
+  },
+};
+
+export const InsideDisabledGroup: Story = {
+  render: (args) => (
+    <div className="group" data-disabled="">
+      <Checkbox {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const box = drawnBox(canvas.getByRole("checkbox"));
+    await expect(getComputedStyle(box).borderTopColor).toBe(
+      resolveToken("--color-control-border"),
+    );
   },
 };
 

@@ -26,11 +26,11 @@ export const CONTROL_SURFACE = `border border-solid border-control-border ${TRAN
 export const TEXT_ENTRY_BOX =
   "touch-target box-border rounded-md bg-transparent px-4 py-2.5 text-input text-ink placeholder:text-ink-faint";
 
-/* Checkbox, Radio and Switch: the root is the target, a child draws the box and reads root state via `group`. */
+/* The root is the pointer target; a child draws the box and reads root state via group `control`. */
 export const BOXED_CONTROL_TARGET =
-  "group touch-target inline-flex shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent p-0 outline-none focus-visible:outline-hidden data-disabled:cursor-not-allowed";
+  "group/control touch-target inline-flex shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent p-0 outline-none focus-visible:z-10 focus-visible:outline-hidden data-disabled:cursor-not-allowed";
 
-export const BOXED_CONTROL_BOX = `box-border inline-flex shrink-0 items-center justify-center border border-solid border-control-border ${TRANSITION_INTERACTIVE} group-focus-visible:shadow-focus group-[[aria-invalid=true]:not([data-disabled])]:border-danger group-data-disabled:border-transparent group-data-disabled:bg-surface-sunken group-data-disabled:text-ink-faint group-data-disabled:forced-colors:text-[GrayText]`;
+export const BOXED_CONTROL_BOX = `box-border inline-flex shrink-0 items-center border border-solid border-control-border ${TRANSITION_INTERACTIVE} group-focus-visible/control:shadow-focus group-[[aria-invalid=true]:not([data-disabled])]/control:border-danger group-data-disabled/control:border-transparent group-data-disabled/control:bg-surface-sunken group-data-disabled/control:text-ink-faint group-data-disabled/control:forced-colors:text-[GrayText]`;
 
 /* `data-highlighted` is Base UI's roving highlight; it follows both the pointer
  * and the arrow keys, so hover needs no separate rule. */

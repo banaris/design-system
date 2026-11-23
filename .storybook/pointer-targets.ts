@@ -6,6 +6,8 @@ const FLOOR_PX = 44;
 const GAP_PX = 8;
 const TOLERANCE_PX = 0.01;
 
+const SLIDER_CONTROL = '[class~="touch-pan-y"]';
+
 /* Inline links in running text are exempt (WCAG 2.5.8). */
 const TARGETS = [
   "button",
@@ -19,7 +21,7 @@ const TARGETS = [
   '[role="gridcell"][tabindex]',
   'input:not([type="hidden"], [type="range"], [type="checkbox"], [type="radio"])',
   "textarea",
-  '[class~="touch-pan-y"]',
+  SLIDER_CONTROL,
 ].join(",");
 
 const isRendered = (el: Element) => {
@@ -55,18 +57,21 @@ export const pointerTargets: ProjectAnnotations<Renderer> = {
         FLOOR_PX - TOLERANCE_PX,
       );
     }
-    for (const el of targets) {
-      const next = el.nextElementSibling;
-      if (next === null || !targets.includes(next)) continue;
-      if (el.getAttribute("role") === "gridcell") continue;
+    const unitOf = (el: Element) => el.closest("label") ?? el;
+    const units = new Set(targets.map(unitOf));
+    for (const unit of units) {
+      const next = unit.nextElementSibling;
+      if (next === null || !units.has(next)) continue;
       const gap = gapBetween(
-        el.getBoundingClientRect(),
+        unit.getBoundingClientRect(),
         next.getBoundingClientRect(),
       );
+      /* Calendar days touch (ADR 0002 records the exception) but never overlap. */
+      const floor = unit.getAttribute("role") === "gridcell" ? 0 : GAP_PX;
       await expect(
         gap,
-        `${describe(el)} is ${gap.toFixed(1)}px from ${describe(next)}`,
-      ).toBeGreaterThanOrEqual(GAP_PX - TOLERANCE_PX);
+        `${describe(unit)} is ${gap.toFixed(1)}px from ${describe(next)}`,
+      ).toBeGreaterThanOrEqual(floor - TOLERANCE_PX);
     }
   },
 };

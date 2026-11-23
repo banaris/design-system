@@ -57,6 +57,17 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+export const CloseClearsTheText: Story = {
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));
+    const close = await screen.findByLabelText("Dismiss");
+    const title = await screen.findByText("Draft saved");
+    await expect(title.getBoundingClientRect().right).toBeLessThanOrEqual(
+      close.getBoundingClientRect().left,
+    );
+  },
+};
+
 export const Dismiss: Story = {
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Save draft" }));

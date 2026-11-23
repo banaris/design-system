@@ -44,6 +44,17 @@ export const DrawnSize: Story = {
     await expect([box.width, box.height]).toEqual([44, 24]);
     const thumb = track.firstElementChild?.getBoundingClientRect();
     await expect([thumb?.width, thumb?.height]).toEqual([16, 16]);
+    await expect(thumb?.left).toBe(box.left + 5);
+  },
+};
+
+export const CheckedThumbPosition: Story = {
+  args: { defaultChecked: true },
+  play: async ({ canvas }) => {
+    const track = drawnBox(canvas.getByRole("switch"));
+    const box = track.getBoundingClientRect();
+    const thumb = track.firstElementChild?.getBoundingClientRect();
+    await expect(box.right - (thumb?.right ?? 0)).toBe(5);
   },
 };
 

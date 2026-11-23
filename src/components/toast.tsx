@@ -40,7 +40,7 @@ export function Toaster({ closeLabel = "Dismiss", className }: ToasterProps) {
             className={cn(
               OVERLAY_POPUP,
               OVERLAY_MOTION,
-              "relative p-4 pe-10 data-limited:hidden",
+              "coarse:pe-14 relative p-4 pe-10 data-limited:hidden",
             )}
           >
             <BaseToast.Content>

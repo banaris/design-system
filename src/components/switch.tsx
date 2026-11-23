@@ -20,7 +20,7 @@ export function Switch({ className, ...rest }: SwitchProps) {
     >
       <span
         className={cn(
-          "rounded-pill group-[[data-checked]:not([data-disabled])]:bg-fill h-6 w-11 justify-start forced-colors:group-[[data-checked]:not([data-disabled])]:bg-[Highlight]",
+          "rounded-pill group-[[data-checked]:not([data-disabled])]/control:bg-fill h-6 w-11 forced-colors:group-[[data-checked]:not([data-disabled])]/control:bg-[Highlight]",
           BOXED_CONTROL_BOX,
         )}
       >

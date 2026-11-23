@@ -38,7 +38,7 @@ export function Radio({ className, ...rest }: RadioProps) {
     >
       <span
         className={cn(
-          "rounded-pill in-[[role=radiogroup][aria-invalid=true]]:group-[:not([data-disabled])]:border-danger size-5",
+          "rounded-pill in-[[role=radiogroup][aria-invalid=true]]:group-[:not([data-disabled])]/control:border-danger size-5 justify-center",
           BOXED_CONTROL_BOX,
         )}
       >

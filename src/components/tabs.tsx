@@ -43,7 +43,7 @@ export function TabsTab({ className, ...rest }: TabsTabProps) {
   return (
     <BaseTabs.Tab
       className={cn(
-        "touch-target text-ink-dim hover:not-data-disabled:text-ink data-active:text-ink data-disabled:text-ink-faint cursor-pointer rounded-sm px-4 py-2.5 text-base font-semibold data-disabled:cursor-not-allowed data-disabled:forced-colors:text-[GrayText]",
+        "touch-target text-ink-dim hover:not-data-disabled:text-ink data-active:text-ink data-disabled:text-ink-faint coarse:px-3 cursor-pointer rounded-sm px-4 py-2.5 text-base font-semibold data-disabled:cursor-not-allowed data-disabled:forced-colors:text-[GrayText]",
         TRANSITION_INTERACTIVE,
         FOCUS_RING,
         className,

@@ -148,7 +148,12 @@ export function DateTimeCalendar({
           }}
         />
       </div>
-      <div ref={gridRef} role="grid" aria-labelledby={headingId}>
+      <div
+        ref={gridRef}
+        role="grid"
+        aria-labelledby={headingId}
+        className="coarse:min-w-max"
+      >
         <div role="row" className="grid grid-cols-7">
           {WEEKDAYS.map((name) => (
             <div
