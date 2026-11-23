@@ -179,7 +179,7 @@ export function DateTimeCalendar({
                   aria-selected={key === selected}
                   aria-disabled={unavailable || undefined}
                   className={cn(
-                    "text-ink box-border flex size-9 cursor-pointer items-center justify-center rounded-md text-base select-none",
+                    "text-ink touch-target box-border flex size-9 cursor-pointer items-center justify-center rounded-md text-base select-none",
                     TRANSITION_INTERACTIVE,
                     FOCUS_RING,
                     "hover:not-aria-disabled:bg-surface-hover",

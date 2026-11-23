@@ -2,7 +2,7 @@ import { Radio as BaseRadio } from "@base-ui/react/radio";
 import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
 import type { ComponentProps } from "react";
 
-import { CONTROL_SURFACE } from "../lib/class-presets";
+import { BOXED_CONTROL_BOX, BOXED_CONTROL_TARGET } from "../lib/class-presets";
 import { cn } from "../lib/cn";
 
 export type RadioGroupProps = Omit<
@@ -33,14 +33,17 @@ export function RadioGroup({ className, ...rest }: RadioGroupProps) {
 export function Radio({ className, ...rest }: RadioProps) {
   return (
     <BaseRadio.Root
-      className={cn(
-        "rounded-pill in-[[role=radiogroup][aria-invalid=true]]:not-data-disabled:border-danger box-border inline-flex size-5 shrink-0 cursor-pointer items-center justify-center bg-transparent",
-        CONTROL_SURFACE,
-        className,
-      )}
+      className={cn("size-5", BOXED_CONTROL_TARGET, className)}
       {...rest}
     >
-      <BaseRadio.Indicator className="rounded-pill bg-fill data-disabled:bg-ink-faint size-2.5 forced-colors:bg-[CanvasText] data-disabled:forced-colors:bg-[GrayText]" />
+      <span
+        className={cn(
+          "rounded-pill in-[[role=radiogroup][aria-invalid=true]]:group-[:not([data-disabled])]:border-danger size-5",
+          BOXED_CONTROL_BOX,
+        )}
+      >
+        <BaseRadio.Indicator className="rounded-pill bg-fill data-disabled:bg-ink-faint size-2.5 forced-colors:bg-[CanvasText] data-disabled:forced-colors:bg-[GrayText]" />
+      </span>
     </BaseRadio.Root>
   );
 }

@@ -21,7 +21,7 @@ export function TabsList({ className, children, ...rest }: TabsListProps) {
     <BaseTabs.List
       activateOnFocus
       className={cn(
-        "border-border relative flex gap-1 border-b border-solid",
+        "border-border coarse:gap-2 relative flex gap-1 border-b border-solid",
         className,
       )}
       {...rest}
@@ -43,7 +43,7 @@ export function TabsTab({ className, ...rest }: TabsTabProps) {
   return (
     <BaseTabs.Tab
       className={cn(
-        "text-ink-dim hover:not-data-disabled:text-ink data-active:text-ink data-disabled:text-ink-faint cursor-pointer rounded-sm px-4 py-2.5 text-base font-semibold data-disabled:cursor-not-allowed data-disabled:forced-colors:text-[GrayText]",
+        "touch-target text-ink-dim hover:not-data-disabled:text-ink data-active:text-ink data-disabled:text-ink-faint cursor-pointer rounded-sm px-4 py-2.5 text-base font-semibold data-disabled:cursor-not-allowed data-disabled:forced-colors:text-[GrayText]",
         TRANSITION_INTERACTIVE,
         FOCUS_RING,
         className,

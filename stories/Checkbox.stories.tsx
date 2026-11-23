@@ -2,7 +2,7 @@ import { Checkbox, Field, FieldHint, FieldLabel } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
-import { expectStateBorders } from "./border-color";
+import { drawnBox, expectStateBorders } from "./border-color";
 
 const meta = {
   title: "Forms/Checkbox",
@@ -44,15 +44,23 @@ export const Toggling: Story = {
   },
 };
 
+export const DrawnSize: Story = {
+  play: async ({ canvas }) => {
+    const box = drawnBox(canvas.getByRole("checkbox"));
+    await expect(box.getBoundingClientRect().width).toBe(20);
+    await expect(box.getBoundingClientRect().height).toBe(20);
+  },
+};
+
 export const States: Story = {
   play: async ({ canvas }) => {
     await expectStateBorders({
-      resting: canvas.getByRole("checkbox", { name: "Default" }),
-      invalid: canvas.getByRole("checkbox", { name: "Invalid" }),
-      disabled: canvas.getByRole("checkbox", { name: "Disabled" }),
-      disabledInvalid: canvas.getByRole("checkbox", {
-        name: "Disabled and invalid",
-      }),
+      resting: drawnBox(canvas.getByRole("checkbox", { name: "Default" })),
+      invalid: drawnBox(canvas.getByRole("checkbox", { name: "Invalid" })),
+      disabled: drawnBox(canvas.getByRole("checkbox", { name: "Disabled" })),
+      disabledInvalid: drawnBox(
+        canvas.getByRole("checkbox", { name: "Disabled and invalid" }),
+      ),
     });
   },
   render: (args) => (

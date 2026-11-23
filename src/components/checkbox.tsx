@@ -1,7 +1,7 @@
 import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
 import type { ComponentProps } from "react";
 
-import { CONTROL_SURFACE } from "../lib/class-presets";
+import { BOXED_CONTROL_BOX, BOXED_CONTROL_TARGET } from "../lib/class-presets";
 import { cn } from "../lib/cn";
 import { CheckIcon, DashIcon } from "../lib/control-icons";
 
@@ -16,17 +16,15 @@ export type CheckboxProps = Omit<
 export function Checkbox({ className, ...rest }: CheckboxProps) {
   return (
     <BaseCheckbox.Root
-      className={cn(
-        "box-border inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm bg-transparent",
-        CONTROL_SURFACE,
-        className,
-      )}
+      className={cn("size-5", BOXED_CONTROL_TARGET, className)}
       {...rest}
     >
-      <BaseCheckbox.Indicator className="text-fill data-disabled:text-ink-faint flex forced-colors:text-[CanvasText] data-disabled:forced-colors:text-[GrayText]">
-        <CheckIcon className="size-4 in-data-indeterminate:hidden" />
-        <DashIcon className="hidden size-4 in-data-indeterminate:block" />
-      </BaseCheckbox.Indicator>
+      <span className={cn("size-5 rounded-sm", BOXED_CONTROL_BOX)}>
+        <BaseCheckbox.Indicator className="text-fill data-disabled:text-ink-faint flex forced-colors:text-[CanvasText] data-disabled:forced-colors:text-[GrayText]">
+          <CheckIcon className="size-4 in-data-indeterminate:hidden" />
+          <DashIcon className="hidden size-4 in-data-indeterminate:block" />
+        </BaseCheckbox.Indicator>
+      </span>
     </BaseCheckbox.Root>
   );
 }

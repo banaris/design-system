@@ -1,4 +1,5 @@
 import {
+  Button,
   DateTimePicker,
   Field,
   FieldError,
@@ -245,19 +246,20 @@ function InsideNativeDialog(props: PickerArgs) {
   const [dialog, setDialog] = useState<HTMLDialogElement | null>(null);
   return (
     <div>
-      <button
-        type="button"
-        className="text-ink"
+      <Button
+        variant="secondary"
         onClick={() => {
           dialog?.showModal();
         }}
       >
         Open the form
-      </button>
+      </Button>
       <dialog ref={setDialog} aria-label="Entry form" className="text-ink p-6">
         <Harness {...props} portalContainer={dialog} />
         <form method="dialog">
-          <button type="submit">Close the form</button>
+          <Button type="submit" variant="secondary">
+            Close the form
+          </Button>
         </form>
       </dialog>
     </div>
@@ -403,15 +405,14 @@ function RenamingParent({ onClose, ...props }: PickerArgs) {
   const [label, setLabel] = useState("first");
   return (
     <div>
-      <button
-        type="button"
-        className="text-ink"
+      <Button
+        variant="secondary"
         onClick={() => {
           dialog?.showModal();
         }}
       >
         Open the form
-      </button>
+      </Button>
       <dialog ref={setDialog} aria-label="Entry form" className="text-ink p-6">
         <div
           role="presentation"

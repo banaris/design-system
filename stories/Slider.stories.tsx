@@ -1,4 +1,10 @@
-import { Field, FieldHint, FieldLabel, Slider } from "@banaris/design-system";
+import {
+  Button,
+  Field,
+  FieldHint,
+  FieldLabel,
+  Slider,
+} from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
@@ -704,9 +710,9 @@ export const InputCommitsOnceWhenCallbackMovesFocus: Story = {
   render: (args) => (
     <div>
       <Slider {...args} />
-      <button id="next-field" type="button">
+      <Button id="next-field" variant="secondary">
         Next
-      </button>
+      </Button>
     </div>
   ),
   play: async ({ args, canvas }) => {

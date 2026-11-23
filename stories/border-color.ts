@@ -11,6 +11,12 @@ export const resolveToken = (token: string): string => {
   return color;
 };
 
+export const drawnBox = (control: HTMLElement): HTMLElement => {
+  const box = control.firstElementChild;
+  if (!(box instanceof HTMLElement)) throw new Error("control has no box");
+  return box;
+};
+
 export const expectStateBorders = async (borders: {
   resting: HTMLElement;
   invalid: HTMLElement;
