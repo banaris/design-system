@@ -269,11 +269,11 @@
      line-height and tracking, so applying one class produces the intended
      voice with no `font-bold` alongside it. Use it for prose and headings.
 
-     The UTILITY tier (`text-lg` … `text-xs`) sets size and line-height only,
+     The UTILITY tier (`text-ds-lg` … `text-ds-xs`) sets size and line-height only,
      leaving weight to the caller. Use it inside controls — buttons, inputs,
      badges — where weight varies by variant.
 
-     Sizes overlap across tiers on purpose: `text-body` and `text-lg` are both
+     Sizes overlap across tiers on purpose: `text-body` and `text-ds-lg` are both
      16px, and the difference is whether weight comes with it. Wanting a step
      BETWEEN two utility sizes is a sign the role belongs in the semantic tier,
      not a reason to add a step.
