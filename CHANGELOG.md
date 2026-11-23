@@ -1,5 +1,41 @@
 # @banaris/design-system
 
+## 0.5.0
+
+### Minor Changes
+
+- [#332](https://github.com/banaris/design-system/pull/332) [`48c6514`](https://github.com/banaris/design-system/commit/48c6514ed3bdce74978d64a949edb26ec921e016) - Add `DateTimePicker`, a popup with a calendar, typed date, hour and minute inputs, and `Cancel` / `Apply`. Its required `onClose` reports `{ outcome: "dismissed" }` or `{ outcome: "applied", value }`, so a form can tell how it was closed. `PopoverContent` gains `portalContainer` for rendering inside a native modal `<dialog>`.
+
+- [#348](https://github.com/banaris/design-system/pull/348) [`b785733`](https://github.com/banaris/design-system/commit/b7857339544c641e57d38a46e50cdc2d58d26da0) - Make `Grid` reflow on narrow screens: below the `sm` breakpoint a grid is one column whatever its `columns`, so a 4-column grid no longer squeezes or overflows at 320px; from `sm` up the column counts are unchanged. `Popover` (and so `DateTimePicker`) and `SelectContent` now stay within the viewport width instead of reaching past its right edge on a narrow screen.
+
+- [#330](https://github.com/banaris/design-system/pull/330) [`072dc6d`](https://github.com/banaris/design-system/commit/072dc6d4826032614e1eefc39a74a367e58404c5) - Add `IconButton`, a square icon-only button with `xs`, `sm`, `md` and `lg` sizes and the same variants, focus ring and disabled styling as `Button`. It requires `aria-label`.
+
+- [#343](https://github.com/banaris/design-system/pull/343) [`0028de0`](https://github.com/banaris/design-system/commit/0028de0b66f7858561ef8d4ad0222411e5228e18) - Raise the font size of `TextField`, `Textarea`, `Select`, `DateTimeField` and the typed inputs of `DateTimePicker` to 16px on touch devices (`any-pointer: coarse`) so iOS Safari no longer zooms the page when one is focused. Desktop stays 14px. The new `text-input` type step (`--text-input`) carries the size and is the one to use on your own editable fields; `--text-base` is unchanged.
+
+- [#356](https://github.com/banaris/design-system/pull/356) [`36f37ef`](https://github.com/banaris/design-system/commit/36f37efbc1e7a0af87e0a27cecea4aba18a52acc) - Make every pointer target at least 44×44 CSS px on touch devices (`any-pointer: coarse`), with 8px between neighbours inside a component, as ADR 0002 requires. This covers `Button` (every size), `IconButton`, `Checkbox`, `Radio`, `Switch`, the `Slider` control, `Tabs` triggers, the editable fields and the `Select` trigger, `DropdownMenu` and `Select` items, `Dialog` close controls, the `DateTimePicker` calendar days and the `Toast` buttons. Desktop sizes are unchanged.
+  
+  `touch-target` is the one place the 44px floor is defined; use it on your own interactive elements. `Checkbox`, `Radio` and `Switch` now take the press on their root and draw the box in its first child, so the drawn box keeps its size while the target grows; a `className` still lands on the root, so a size class now resizes the target and not the drawn box, and a rule that styled the root's border or background must now reach that child. `DropdownMenu` and `SelectContent` popups space their items 8px apart on touch devices, and `DateTimePicker`'s popover is a little wider there so seven 44px days fit, and on a narrower screen the popover scrolls sideways. A `gap` or layout class you pass to `TabsList`, `DropdownMenuContent` or `SelectContent` is overridden by those spacings on touch devices; repeat it with the `coarse:` prefix to change it there.
+
+- [#362](https://github.com/banaris/design-system/pull/362) [`04983fd`](https://github.com/banaris/design-system/commit/04983fdc15858d90c9ca13a1d6162da45a0d9fb8) - Keep the `Popover`, `Tooltip`, `DropdownMenu`, `Select` and `DateTimePicker` popups clear of the device safe-area insets: with `viewport-fit=cover` set on the page, they no longer open under the notch, the home indicator or a landscape cutout. With zero insets nothing moves. `Tooltip` and `SelectContent` now carry a `"use client"` boundary, as `Popover` and `DropdownMenu` already did.
+
+- [#360](https://github.com/banaris/design-system/pull/360) [`4c7fe1d`](https://github.com/banaris/design-system/commit/4c7fe1d9529bc7e0341ada9f8d6a0ec51b97a09c) - Keep `Dialog` and `Toast` clear of the device safe-area insets: with `viewport-fit=cover` set on the page, the toast and the dialog no longer sit under the notch, the home indicator or a landscape cutout. The gap each keeps from an edge is exposed as `--ds-edge-*` (1rem, or the inset when that is larger) for your own fixed-position UI; with zero insets nothing moves.
+
+- [#328](https://github.com/banaris/design-system/pull/328) [`845739c`](https://github.com/banaris/design-system/commit/845739cb281181680cb54293fd9e3a8b1c11dca8) - Add `Slider`, a single-value range control built on Base UI with `value` / `defaultValue`, `min`, `max`, `step` and `disabled`. Name it with `aria-label`, `aria-labelledby` or a `Field` label.
+
+- [#350](https://github.com/banaris/design-system/pull/350) [`f70bf17`](https://github.com/banaris/design-system/commit/f70bf171a3aa0426ba277a59b6f45f20a2360cca) - Let a `Slider` show a number input beside the track with `showInput`, so a value can be typed instead of dragged. The typed value is applied on Enter or blur, clamped to `min`/`max` and snapped to `step`; text that is not a number, or Escape, puts the current value back. `inputReadOnly` keeps the input visible but not editable, and `inputAriaLabel` names it (it defaults to `aria-label`).
+
+- [#345](https://github.com/banaris/design-system/pull/345) [`e8917d3`](https://github.com/banaris/design-system/commit/e8917d34489030506fbc996c97e384e9e58ea772) - Let a vertical swipe that starts on a `Slider` scroll the page on touch screens: the control is now `touch-action: pan-y` instead of `none`, and a swipe that turns into a scroll no longer changes the value. On touch, tapping the track sets the value when the finger lifts, and a horizontal drag still moves the thumb. `Slider` is now a client component.
+
+### Patch Changes
+
+- [#354](https://github.com/banaris/design-system/pull/354) [`8986b8f`](https://github.com/banaris/design-system/commit/8986b8f45523d4b8420fe48a717c08d15bf18c40) - Wire the `DateTimePicker` trigger into `Field`: the `FieldLabel` now names it (the current value stays in the name), a click on the label activates it, a disabled `Field` disables it, and the `Field`'s hint and error describe it. An explicit `aria-labelledby` on the trigger now also gets the current value appended to its name.
+
+- [#353](https://github.com/banaris/design-system/pull/353) [`b5eaafb`](https://github.com/banaris/design-system/commit/b5eaafbf5eacecea5e39b7e3dca16e5c2dea247b) - Give the hour and minute inputs of `DateTimePicker` a fixed width that fits two digits at 14px and at the 16px touch size, so the time row no longer spills past the popover.
+
+- [#355](https://github.com/banaris/design-system/pull/355) [`5e9c8c9`](https://github.com/banaris/design-system/commit/5e9c8c91061890cb14f936ce2922aec8072068e7) - Keep `Tooltip` and `DropdownMenu` popups within the available width: long content now wraps instead of reaching past the viewport's right edge on a narrow screen, and `SelectContent`, which shares the menu popup style, is capped the same way.
+
+- [#304](https://github.com/banaris/design-system/pull/304) [`756204b`](https://github.com/banaris/design-system/commit/756204b14f68705a0f2c4855c2c30b8e31dab24f) - Fix importing the package from a React Server Component, which failed `next build` for every export. The build now emits one module per component, and only the ones that need a client boundary (`Field`, `Toaster`, `Textarea`, `Dialog`, `DropdownMenu` and `Popover`, with their parts) carry `"use client"`. The static components stay server-renderable, so `<Icon icon={Check} />` works from a server component. `pnpm run check:rsc` keeps the boundaries from drifting.
+
 ## 0.4.0
 
 ### Minor Changes
