@@ -28,7 +28,7 @@ export const Sizes: Story = {
       {(["sm", "md", "lg"] as const).map((size) => (
         <div key={size} className="flex flex-col items-center gap-2">
           <Icon icon={Info} size={size} />
-          <span className="text-ink-faint text-xs">{size}</span>
+          <span className="text-ink-faint text-ds-xs">{size}</span>
         </div>
       ))}
     </div>

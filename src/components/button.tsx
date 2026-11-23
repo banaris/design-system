@@ -39,7 +39,7 @@ export type ButtonProps = {
  * button looking enabled AND responding to hover. `data-disabled` is emitted
  * for both routes, so one spelling covers them. */
 /* Exported for IconButton. Stay in this file: check:tw-merge and check:styles read them here. */
-export const BASE = `touch-target inline-flex items-center justify-center gap-2 border border-solid box-border font-sans cursor-pointer select-none ${TRANSITION_INTERACTIVE} ${FOCUS_RING} active:not-data-disabled:scale-[0.98] data-disabled:cursor-not-allowed data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:border-transparent data-disabled:shadow-none data-disabled:forced-colors:text-[GrayText]`;
+export const BASE = `touch-target inline-flex items-center justify-center gap-2 border border-solid box-border font-ds-sans cursor-pointer select-none ${TRANSITION_INTERACTIVE} ${FOCUS_RING} active:not-data-disabled:scale-[0.98] data-disabled:cursor-not-allowed data-disabled:bg-surface-sunken data-disabled:text-ink-faint data-disabled:border-transparent data-disabled:shadow-none data-disabled:forced-colors:text-[GrayText]`;
 
 /* ⚠ Each variant sets background, text and border colour EXACTLY once, and
  * `BASE` sets none of them UNPREFIXED — its `data-disabled:` overrides are a
@@ -66,9 +66,9 @@ export const VARIANT: Record<ButtonVariant, string> = {
 };
 
 const SIZE: Record<ButtonSize, string> = {
-  sm: "text-sm px-3 py-1.5",
-  md: "text-base px-4 py-2.5",
-  lg: "text-lg px-6 py-3",
+  sm: "text-ds-sm px-3 py-1.5",
+  md: "text-ds-base px-4 py-2.5",
+  lg: "text-ds-lg px-6 py-3",
 };
 
 /**
@@ -99,7 +99,7 @@ export function Button({
          the variant without needing `!`. */
       className={cn(
         BASE,
-        pill ? "rounded-pill" : "rounded-md",
+        pill ? "rounded-pill" : "rounded-ds-md",
         VARIANT[variant],
         SIZE[size],
         className,

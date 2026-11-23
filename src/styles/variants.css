@@ -1,0 +1,36 @@
+/* @banaris/design-system — the `dark` and `coarse` variants and the `touch-target` utility.
+ *
+ * Kept apart from `tokens.css` because Tailwind refuses `@custom-variant` and
+ * `@utility` inside a layer, and `styles.src.css` imports the tokens into
+ * `@layer theme.ds`. Consumers import both through `theme.css`.
+ */
+
+/* Both activation routes, matching the dark overlay in `tokens.css`. The OS
+   route must stay inside the media query: as a bare selector it matches
+   whenever no attribute is set, so `dark:` fires under a light OS (measured). */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(
+      :root:not([data-theme="light"]) *,
+      :root:not([data-theme="light"])
+    ) {
+      @slot;
+    }
+  }
+}
+
+/* `coarse:<utility>` applies on devices whose primary or any input is a coarse
+   pointer (a finger). The mobile rules in ADR 0002 switch on this one
+   condition; components never repeat the media query. */
+@custom-variant coarse (@media (any-pointer: coarse));
+
+/* The ADR 0002 pointer-target floor: a minimum, so a larger control keeps its size. */
+@utility touch-target {
+  @variant coarse {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

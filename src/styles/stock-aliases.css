@@ -1,0 +1,24 @@
+/* Opt-in, through `theme.css` only: the package's radii, type sizes and fonts
+ * under Tailwind's own names, so `rounded-md`, `text-sm` and `font-sans` in a
+ * consumer's markup take the package's values. `styles.css` never carries
+ * these: it would change the consumer's own utilities.
+ */
+
+@theme static {
+  --radius-xs: var(--radius-ds-xs);
+  --radius-sm: var(--radius-ds-sm);
+  --radius-md: var(--radius-ds-md);
+  --radius-lg: var(--radius-ds-lg);
+
+  --font-sans: var(--font-ds-sans);
+  --font-mono: var(--font-ds-mono);
+
+  --text-lg: var(--text-ds-lg);
+  --text-lg--line-height: var(--text-ds-lg--line-height);
+  --text-base: var(--text-ds-base);
+  --text-base--line-height: var(--text-ds-base--line-height);
+  --text-sm: var(--text-ds-sm);
+  --text-sm--line-height: var(--text-ds-sm--line-height);
+  --text-xs: var(--text-ds-xs);
+  --text-xs--line-height: var(--text-ds-xs--line-height);
+}

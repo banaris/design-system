@@ -60,6 +60,9 @@ export function TableHead({ className, ...rest }: TableHeadProps) {
 
 export function TableCell({ className, ...rest }: TableCellProps) {
   return (
-    <td className={cn("text-ink px-4 py-3 text-base", className)} {...rest} />
+    <td
+      className={cn("text-ink text-ds-base px-4 py-3", className)}
+      {...rest}
+    />
   );
 }

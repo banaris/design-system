@@ -13,7 +13,7 @@ export function List({ className, ...rest }: ListProps) {
 export function ListItem({ className, ...rest }: ListItemProps) {
   return (
     <li
-      className={cn(ROW_DIVIDER, "text-ink px-4 py-3 text-base", className)}
+      className={cn(ROW_DIVIDER, "text-ink text-ds-base px-4 py-3", className)}
       {...rest}
     />
   );

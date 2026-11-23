@@ -96,7 +96,7 @@ export type PopoverTitleProps = Omit<
 export function PopoverTitle({ className, ...rest }: PopoverTitleProps) {
   return (
     <BasePopover.Title
-      className={cn("text-ink text-base font-semibold", className)}
+      className={cn("text-ink text-ds-base font-semibold", className)}
       {...rest}
     />
   );

@@ -16,13 +16,21 @@
  *   2. Every path in `files` exists (a typo silently ships an empty package).
  *   3. `sideEffects` still protects CSS from tree-shaking.
  *   4. The published CSS carries tokens and does not carry preflight.
+ *   5. Every custom property in the published CSS sits inside an `@layer`, and
+ *      one that reuses a Tailwind stock name is listed as deliberate. An
+ *      unlayered token block beats a consumer's layered theme.
  */
 
 import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { inspectDistCss } from "./lib/dist-css.mjs";
+import {
+  inspectDistCss,
+  inspectTokenLayering,
+  stockTailwindValues,
+} from "./lib/dist-css.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -89,7 +97,15 @@ if (
 /* ---- 4. The distributed CSS is actually usable ---- */
 const cssPath = join(ROOT, "dist", "styles.css");
 if (existsSync(cssPath)) {
-  errors.push(...inspectDistCss(readFileSync(cssPath, "utf8")));
+  const css = readFileSync(cssPath, "utf8");
+  errors.push(...inspectDistCss(css));
+  const stock = stockTailwindValues(
+    readFileSync(
+      createRequire(import.meta.url).resolve("tailwindcss/theme.css"),
+      "utf8",
+    ),
+  );
+  errors.push(...inspectTokenLayering(css, stock));
 } else {
   errors.push(`no built stylesheet at ${cssPath} — run \`pnpm run build\`.`);
 }

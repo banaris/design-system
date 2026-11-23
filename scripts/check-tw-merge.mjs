@@ -17,7 +17,7 @@
  * to call `twMerge` and look, which is what this does.
  *
  * ── What it checks ─────────────────────────────────────────────────────
- *   1. Tokens declared in `theme.css` are registered in `cn.ts`, and vice
+ *   1. Tokens declared in `tokens.css` are registered in `cn.ts`, and vice
  *      versa — adding a token and forgetting the merge config is the common
  *      way this drifts.
  *   2. The measured grouping: same-group classes collapse, different-group
@@ -47,11 +47,11 @@ const expect = (label, actual, expected) => {
     );
 };
 
-/* ---- 1. theme.css and cn.ts agree ----
- * Comments are stripped first: `theme.css` writes prose that contains
+/* ---- 1. tokens.css and cn.ts agree ----
+ * Comments are stripped first: `tokens.css` writes prose that contains
  * declaration-shaped text, which a naive scan reads as real tokens. */
-const theme = readFileSync(
-  join(ROOT, "src", "styles", "theme.css"),
+const tokens = readFileSync(
+  join(ROOT, "src", "styles", "tokens.css"),
   "utf8",
 ).replace(/\/\*[\s\S]*?\*\//g, "");
 
@@ -59,7 +59,7 @@ const theme = readFileSync(
 const declared = (prefix) =>
   [
     ...new Set(
-      [...theme.matchAll(new RegExp(`--${prefix}-([\\w-]+):`, "g"))]
+      [...tokens.matchAll(new RegExp(`--${prefix}-([\\w-]+):`, "g"))]
         .map((m) => m[1])
         /* `--text-body--line-height` and friends are modifiers on a step, not
            steps of their own. */
@@ -110,13 +110,13 @@ for (const [cssPrefix, mergeGroup] of [
 
   if (missing.length > 0) {
     errors.push(
-      `cn.ts is missing ${mergeGroup} entries declared in theme.css: ${missing.join(", ")}\n` +
+      `cn.ts is missing ${mergeGroup} entries declared in tokens.css: ${missing.join(", ")}\n` +
         `      Without them these classes are misgrouped or passed through untouched.`,
     );
   }
   if (extra.length > 0) {
     errors.push(
-      `cn.ts registers ${mergeGroup} entries that theme.css no longer declares: ${extra.join(", ")}`,
+      `cn.ts registers ${mergeGroup} entries that tokens.css no longer declares: ${extra.join(", ")}`,
     );
   }
   log.push(
@@ -153,8 +153,28 @@ expect(
   "text-sm",
 );
 expect(
+  "a package size (font size) and a colour coexist",
+  twMerge("text-ds-sm text-ink"),
+  "text-ds-sm text-ink",
+);
+expect(
+  "a semantic step and a package size collapse",
+  twMerge("text-body text-ds-sm"),
+  "text-ds-sm",
+);
+expect(
+  "package radii collapse with each other and with a stock one",
+  twMerge("rounded-ds-sm rounded-ds-md rounded-lg"),
+  "rounded-lg",
+);
+expect(
+  "a package typeface and a weight coexist",
+  twMerge("font-ds-sans font-semibold"),
+  "font-ds-sans font-semibold",
+);
+expect(
   "custom radius is exclusive with a stock one",
-  twMerge("rounded-md rounded-shell"),
+  twMerge("rounded-ds-md rounded-shell"),
   "rounded-shell",
 );
 expect(
@@ -223,7 +243,7 @@ if (variantBlock === null) {
       ["background", (c) => c.startsWith("bg-")],
       [
         "text colour",
-        (c) => c.startsWith("text-") && !/^text-(xs|sm|base|lg)$/.test(c),
+        (c) => c.startsWith("text-") && !/^text-ds-(xs|sm|base|lg)$/.test(c),
       ],
       ["border colour", (c) => c.startsWith("border-")],
     ]) {

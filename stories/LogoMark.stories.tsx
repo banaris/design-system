@@ -18,7 +18,7 @@ export const Sizes: Story = {
       {[16, 24, 32, 48, 96].map((size) => (
         <div key={size} className="flex flex-col items-center gap-2">
           <LogoMark size={size} />
-          <span className="text-ink-faint text-xs">{size}</span>
+          <span className="text-ink-faint text-ds-xs">{size}</span>
         </div>
       ))}
     </div>
@@ -29,7 +29,7 @@ export const Sizes: Story = {
  * rather than by a prop. */
 export const OnShell: Story = {
   render: () => (
-    <div className="bg-shell text-on-shell flex items-center gap-4 rounded-lg px-8 py-6">
+    <div className="bg-shell text-on-shell rounded-ds-lg flex items-center gap-4 px-8 py-6">
       <LogoMark size={48} />
       <span className="text-h2">Banaris</span>
     </div>

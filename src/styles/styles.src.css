@@ -19,7 +19,10 @@
 @layer theme, base, components, utilities;
 
 @import "tailwindcss/utilities.css" layer(utilities);
-@import "./theme.css";
+/* Tokens go in a SUBLAYER of `theme`: a layer's own rules beat its sublayers, so
+   a consumer's `@theme` outranks ours whichever file they import first. */
+@import "./tokens.css" layer(theme.ds);
+@import "./variants.css";
 @import "./base.css";
 @import "./components.css";
 

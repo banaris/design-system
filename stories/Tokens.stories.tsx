@@ -10,13 +10,15 @@ const readToken = (name: string) =>
 const Swatch = ({ token, note }: { token: string; note?: string }) => (
   <div className="flex items-center gap-3">
     <div
-      className="border-border size-12 shrink-0 rounded-sm border"
+      className="border-border rounded-ds-sm size-12 shrink-0 border"
       style={{ background: `var(${token})` }}
     />
     <div className="min-w-0">
-      <div className="text-ink font-mono text-sm">{token}</div>
-      <div className="text-ink-faint text-xs">{readToken(token) || "—"}</div>
-      {note !== undefined && <div className="text-ink-dim text-xs">{note}</div>}
+      <div className="text-ink font-ds-mono text-ds-sm">{token}</div>
+      <div className="text-ink-faint text-ds-xs">{readToken(token) || "—"}</div>
+      {note !== undefined && (
+        <div className="text-ink-dim text-ds-xs">{note}</div>
+      )}
     </div>
   </div>
 );
@@ -108,13 +110,13 @@ export const Typography: Story = {
         <h2 className="text-label text-ink-faint uppercase">
           Utility — size only
         </h2>
-        <p className="text-ink text-lg">Large — dialog titles</p>
-        <p className="text-ink text-base">Base — controls</p>
+        <p className="text-ink text-ds-lg">Large — dialog titles</p>
+        <p className="text-ink text-ds-base">Base — controls</p>
         <p className="text-ink text-input">
           Input — editable fields, 16px on touch
         </p>
-        <p className="text-ink text-sm">Small — helper text</p>
-        <p className="text-ink text-xs">Extra small — badges and metadata</p>
+        <p className="text-ink text-ds-sm">Small — helper text</p>
+        <p className="text-ink text-ds-xs">Extra small — badges and metadata</p>
       </section>
     </div>
   ),
@@ -123,13 +125,13 @@ export const Typography: Story = {
 export const Radius: Story = {
   render: () => (
     <div className="flex flex-wrap gap-6">
-      {["xs", "sm", "md", "lg", "shell", "pill"].map((step) => (
+      {["ds-xs", "ds-sm", "ds-md", "ds-lg", "shell", "pill"].map((step) => (
         <div key={step} className="flex flex-col items-center gap-2">
           <div
             className="border-border bg-surface size-20 border"
             style={{ borderRadius: `var(--radius-${step})` }}
           />
-          <span className="text-ink-dim font-mono text-xs">{step}</span>
+          <span className="text-ink-dim font-ds-mono text-ds-xs">{step}</span>
         </div>
       ))}
     </div>
@@ -142,10 +144,10 @@ export const Elevation: Story = {
       {["soft", "raised", "overlay"].map((step) => (
         <div key={step} className="flex flex-col items-center gap-3">
           <div
-            className="bg-surface size-24 rounded-md"
+            className="bg-surface rounded-ds-md size-24"
             style={{ boxShadow: `var(--shadow-${step})` }}
           />
-          <span className="text-ink-dim font-mono text-xs">{step}</span>
+          <span className="text-ink-dim font-ds-mono text-ds-xs">{step}</span>
         </div>
       ))}
     </div>

@@ -9,7 +9,7 @@
  * axe run in `pnpm test` checks the colours a story happens to render, not the
  * contract the tokens are supposed to hold.
  *
- * The comments in `theme.css` quote specific ratios. This is what keeps those
+ * The comments in `tokens.css` quote specific ratios. This is what keeps those
  * numbers honest — they are assertions, not annotations.
  *
  * ── What it checks ─────────────────────────────────────────────────────
@@ -27,17 +27,17 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const THEME = join(ROOT, "src", "styles", "theme.css");
+const TOKENS = join(ROOT, "src", "styles", "tokens.css");
 
 /* ---- Parse the declared tokens per theme ----
- * Comments are stripped first: `theme.css` documents superseded values in
+ * Comments are stripped first: `tokens.css` documents superseded values in
  * prose ("was #647519, 4.46:1"), and a naive scan would read those as
  * declarations and measure colours that no longer exist. */
-const source = readFileSync(THEME, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+const source = readFileSync(TOKENS, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 
 const blockAfter = (marker) => {
   const start = source.indexOf(marker);
-  if (start === -1) throw new Error(`theme.css no longer contains ${marker}`);
+  if (start === -1) throw new Error(`tokens.css no longer contains ${marker}`);
   let depth = 0;
   for (let i = source.indexOf("{", start); i < source.length; i += 1) {
     if (source[i] === "{") depth += 1;
