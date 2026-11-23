@@ -73,8 +73,9 @@ export const LongContent: Story = {
   },
 };
 
-const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
-  render: (args) => (
+const renderAt =
+  (edge: "left-0" | "right-0"): NonNullable<Story["render"]> =>
+  (args) => (
     <TooltipProvider>
       <Tooltip {...args}>
         <TooltipTrigger
@@ -91,7 +92,10 @@ const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  ),
+  );
+
+const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
+  render: renderAt(edge),
   play: async () => {
     await withInsets(async () => {
       await userEvent.tab();
@@ -106,3 +110,16 @@ const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
 export const InsideSafeAreaAtTheLeftEdge: Story = insideSafeArea("left-0");
 
 export const InsideSafeAreaAtTheRightEdge: Story = insideSafeArea("right-0");
+
+export const FiveFromTheEdgeWithoutInsets: Story = {
+  render: renderAt("left-0"),
+  play: async () => {
+    await userEvent.tab();
+    const tip = await expectVisible(() =>
+      screen.findByText(/Save the draft to this device/),
+    );
+    await waitFor(() =>
+      expect(tip.getBoundingClientRect().left).toBeCloseTo(5, 0),
+    );
+  },
+};

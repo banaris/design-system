@@ -20,7 +20,7 @@ export async function withInsets(run: () => Promise<void>) {
   }
 }
 
-export function slackInsideInsets(box: DOMRect) {
+function slackInsideInsets(box: DOMRect) {
   return {
     top: box.top - INSETS.top,
     right: window.innerWidth - INSETS.right - box.right,

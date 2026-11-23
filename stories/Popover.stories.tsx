@@ -66,8 +66,9 @@ export const OutsidePress: Story = {
   },
 };
 
-const insideSafeArea = (placement: string): Story => ({
-  render: (args) => (
+const renderTallAt =
+  (placement: string): NonNullable<Story["render"]> =>
+  (args) => (
     <Popover {...args}>
       <div className={`fixed ${placement}`}>
         <PopoverTrigger variant="secondary">Shortcuts</PopoverTrigger>
@@ -82,7 +83,10 @@ const insideSafeArea = (placement: string): Story => ({
         <Button variant="secondary">Done</Button>
       </PopoverContent>
     </Popover>
-  ),
+  );
+
+const insideSafeArea = (placement: string): Story => ({
+  render: renderTallAt(placement),
   play: async ({ canvas }) => {
     await withInsets(async () => {
       await userEvent.click(canvas.getByRole("button", { name: "Shortcuts" }));

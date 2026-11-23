@@ -264,7 +264,7 @@ if (!present.has("inline-flex")) {
 /* ---- 6. Safe-area insets are read ---- */
 if (!css.includes("env(safe-area-inset-"))
   errors.push(
-    "dist/styles.css has no `env(safe-area-inset-`. Dialog and Toast keep clear of the device insets through `--ds-safe-*` in src/styles/theme.css.",
+    "dist/styles.css has no `env(safe-area-inset-`. Dialog, Toast and the popups keep clear of the device insets through `--ds-safe-*` in src/styles/theme.css.",
   );
 
 if (errors.length > 0) {

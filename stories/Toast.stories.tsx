@@ -7,7 +7,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { slackInsideInsets, withInsets } from "./safe-area";
+import { expectInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 function Trigger({
@@ -144,11 +144,7 @@ export const InsideSafeArea: Story = {
       const title = await expectVisible(() => screen.findByText("Draft saved"));
       const toast = title.closest<HTMLElement>('[role="dialog"]');
       if (toast === null) throw new Error("toast root not found");
-      await waitFor(async () => {
-        const slack = slackInsideInsets(toast.getBoundingClientRect());
-        for (const side of Object.values(slack))
-          await expect(side).toBeGreaterThanOrEqual(-0.5);
-      });
+      await expectInsideInsets(toast);
     });
   },
 };

@@ -13,7 +13,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { slackInsideInsets, withInsets } from "./safe-area";
+import { expectInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
 const meta = {
@@ -167,11 +167,7 @@ export const InsideSafeArea: Story = {
     await withInsets(async () => {
       await userEvent.click(canvas.getByRole("button", { name: "Terms" }));
       const dialog = await expectVisible(() => screen.findByRole("dialog"));
-      await waitFor(async () => {
-        const slack = slackInsideInsets(dialog.getBoundingClientRect());
-        for (const side of Object.values(slack))
-          await expect(side).toBeGreaterThanOrEqual(-0.5);
-      });
+      await expectInsideInsets(dialog);
     });
   },
 };
