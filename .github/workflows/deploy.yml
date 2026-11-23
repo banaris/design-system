@@ -184,9 +184,9 @@ jobs:
           # With no wranglerVersion, the action uses the wrangler it finds from here.
           workingDirectory: deploy
           command: >-
-            ${{ github.event_name == 'pull_request' && 'versions upload -c ../wrangler.json'
-            || inputs.environment == 'production' && 'deploy -c ../wrangler.json'
-            || 'deploy -c ../wrangler.json --name design-system-staging' }}
+            ${{ github.event_name == 'pull_request' && 'versions upload -c ../wrangler.json --env=""'
+            || inputs.environment == 'production' && 'deploy -c ../wrangler.json --env=""'
+            || 'deploy -c ../wrangler.json --env stg' }}
 
       - if: ${{ github.event_name == 'pull_request' && steps.deploy.outputs.deployment-url != '' }}
         name: Write the catalogue URL into the PR description
