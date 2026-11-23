@@ -203,6 +203,11 @@ try {
         property,
         expected,
       );
+    const untouchedFont = effectiveRootValue(untouched, "--font-sans") ?? "";
+    if (!/Segoe UI/.test(untouchedFont) || /Hiragino/.test(untouchedFont))
+      errors.push(
+        `${label}, consumer overrides nothing: \`--font-sans\` is not Tailwind's own stack.`,
+      );
     if (
       !/Helvetica Neue/.test(effectiveRootValue(untouched, PACKAGE_FONT) ?? "")
     )
