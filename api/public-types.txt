@@ -4,13 +4,14 @@ AlertProps.status?: StatusTone | undefined
 AlertProps.title?: ReactNode
 Badge: ({ status, className, children, ...rest }: BadgeProps) => Element
 BadgeProps.status?: StatusTone | undefined
-Button: ({ variant, size, loading, disabled, pill, type, children, className, ...rest }: ButtonProps) => Element
+Button: ({ variant, size, loading, disabled, pill, type, nativeButton, children, className, ...rest }: ButtonProps) => Element
 ButtonProps.children: ReactNode
 ButtonProps.className?: string | undefined
 ButtonProps.focusableWhenDisabled?: boolean | undefined
 ButtonProps.loading?: boolean | undefined
 ButtonProps.nativeButton?: boolean | undefined
 ButtonProps.pill?: boolean | undefined
+ButtonProps.render?: ReactElement<unknown, string | JSXElementConstructor<any>> | ComponentRenderFn<HTMLProps, ButtonState> | undefined
 ButtonProps.size?: ButtonSize | undefined
 ButtonProps.style?: CSSProperties | ((state: ButtonState) => CSSProperties | undefined) | undefined
 ButtonProps.variant?: ButtonVariant | undefined
@@ -157,6 +158,7 @@ DropdownMenuLinkItemProps.className?: string | undefined
 DropdownMenuLinkItemProps.closeOnClick?: boolean | undefined
 DropdownMenuLinkItemProps.id?: string | undefined
 DropdownMenuLinkItemProps.label?: string | undefined
+DropdownMenuLinkItemProps.render?: ReactElement<unknown, string | JSXElementConstructor<any>> | ComponentRenderFn<DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>, MenuLinkItemState> | undefined
 DropdownMenuLinkItemProps.style?: CSSProperties | ((state: MenuLinkItemState) => CSSProperties | undefined) | undefined
 DropdownMenuProps.actionsRef?: RefObject<MenuRootActions | null> | undefined
 DropdownMenuProps.children?: ReactNode | PayloadChildRenderFunction<unknown>
@@ -229,13 +231,14 @@ Icon(props).className?: string | undefined
 Icon(props).icon: ComponentType<SVGProps<SVGSVGElement>>
 Icon(props).label?: string | undefined
 Icon(props).size?: IconSize | undefined
-IconButton: ({ icon, variant, size, pill, type, className, ...rest }: IconButtonProps) => Element
+IconButton: ({ icon, variant, size, pill, type, nativeButton, className, ...rest }: IconButtonProps) => Element
 IconButtonProps.aria-label: string
 IconButtonProps.className?: string | undefined
 IconButtonProps.focusableWhenDisabled?: boolean | undefined
 IconButtonProps.icon: ComponentType<SVGProps<SVGSVGElement>>
 IconButtonProps.nativeButton?: boolean | undefined
 IconButtonProps.pill?: boolean | undefined
+IconButtonProps.render?: ReactElement<unknown, string | JSXElementConstructor<any>> | ComponentRenderFn<HTMLProps, ButtonState> | undefined
 IconButtonProps.size?: IconButtonSize | undefined
 IconButtonProps.style?: CSSProperties | ((state: ButtonState) => CSSProperties | undefined) | undefined
 IconButtonProps.variant?: ButtonVariant | undefined
@@ -245,6 +248,8 @@ IconProps.icon: ComponentType<SVGProps<SVGSVGElement>>
 IconProps.label?: string | undefined
 IconProps.size?: IconSize | undefined
 IconSize = "sm" | "md" | "lg"
+Link: ({ render, className, children, ...rest }: LinkProps) => Element
+LinkProps.render?: ReactElement<{ className?: string | undefined; children?: unknown; }, string | JSXElementConstructor<any>> | undefined
 List: ({ className, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLUListElement>, HTMLUListElement>) => Element
 ListItem: ({ className, ...rest }: DetailedHTMLProps<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>) => Element
 ListItemProps: no own properties

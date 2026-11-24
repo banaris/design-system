@@ -12,23 +12,18 @@ export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Show a spinner and block interaction. Implies `disabled`. */
+  /**
+   * Show a spinner and block interaction. Implies `disabled`.
+   * No spinner when `nativeButton` is `false` (a rendered link).
+   */
   loading?: boolean;
   /** Render fully rounded instead of the default corner radius. */
   pill?: boolean;
   children: ReactNode;
-  /* Two props are deliberately withheld from Base UI's surface.
-   *
-   * `render` would let a caller swap the element — the canonical way to get a
-   * button-shaped link — but this component injects its own children (the
-   * spinner) and a render function receives them already assembled, so the two
-   * need a design decision rather than a pass-through. Add it when a link
-   * actually needs it, not before.
-   *
-   * `className` is narrowed from Base UI's `string | (state) => string` to a
+  /* `className` is narrowed from Base UI's `string | (state) => string` to a
    * plain string because `cn()` merges strings; the callback form would have to
    * be resolved before merging and silently is not. */
-} & Omit<ComponentProps<typeof BaseButton>, "className" | "render"> & {
+} & Omit<ComponentProps<typeof BaseButton>, "className"> & {
     className?: string;
   };
 
@@ -77,6 +72,8 @@ const SIZE: Record<ButtonSize, string> = {
  * Built on Base UI's `Button`, so it keeps that component's disabled and
  * focus semantics. Styling is token-driven; pass `className` to override and
  * it will win over the variant.
+ *
+ * For a link, pass `render={<RouterLink />}` with `nativeButton={false}`.
  */
 export function Button({
   variant = "primary",
@@ -85,13 +82,15 @@ export function Button({
   disabled = false,
   pill = false,
   type = "button",
+  nativeButton = true,
   children,
   className,
   ...rest
 }: ButtonProps) {
   return (
     <BaseButton
-      type={type}
+      type={nativeButton ? type : undefined}
+      nativeButton={nativeButton}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       data-loading={loading || undefined}
@@ -106,7 +105,7 @@ export function Button({
       )}
       {...rest}
     >
-      {loading && <Spinner size={size} />}
+      {loading && nativeButton && <Spinner size={size} />}
       {children}
     </BaseButton>
   );

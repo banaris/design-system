@@ -9,6 +9,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { MouseEventHandler } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { RouterLink } from "./router-link";
 import { expectInsideInsets, withInsets } from "./safe-area";
 
 const meta = {
@@ -90,6 +91,32 @@ export const LinkItem: Story = {
     await expect(link.tagName).toBe("A");
     await expect(link).toHaveAttribute("href", "#account");
     await userEvent.click(link);
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+  },
+};
+
+const onNavigate = fn();
+
+export const RouterLinkItem: Story = {
+  args: { defaultOpen: true },
+  render: (args) => (
+    <DropdownMenu {...args}>
+      <DropdownMenuTrigger variant="secondary">Account</DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLinkItem
+          render={<RouterLink to="/account" onNavigate={onNavigate} />}
+        >
+          Account page
+        </DropdownMenuLinkItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async () => {
+    const link = await screen.findByRole("menuitem", { name: "Account page" });
+    await expect(link.tagName).toBe("A");
+    await expect(link).toHaveAttribute("href", "/account");
+    await userEvent.click(link);
+    await expect(onNavigate).toHaveBeenCalledWith("/account");
     await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
   },
 };
