@@ -37,6 +37,8 @@ export const BOXED_CONTROL_BOX = `box-border inline-flex shrink-0 items-center b
 export const MENU_ITEM =
   "touch-target box-border flex w-full cursor-pointer wrap-anywhere items-center gap-2 rounded-ds-sm px-3 py-2 text-ds-base text-ink select-none data-highlighted:not-data-disabled:bg-surface-hover data-disabled:cursor-not-allowed data-disabled:text-ink-faint data-disabled:forced-colors:text-[GrayText]";
 
+export const MENU_ITEM_STACK = "coarse:flex coarse:flex-col coarse:gap-2";
+
 export const MENU_POPUP =
   "border-border bg-surface shadow-overlay coarse:flex coarse:flex-col coarse:gap-2 box-border max-w-[var(--available-width)] min-w-40 rounded-ds-md border border-solid p-1 font-ds-sans outline-none";
 
