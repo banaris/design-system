@@ -1,6 +1,16 @@
 /* The package's public surface. Anything not re-exported here is internal and
  * may change without a major version. */
 
+export {
+  Accordion,
+  AccordionItem,
+  type AccordionItemProps,
+  AccordionPanel,
+  type AccordionPanelProps,
+  type AccordionProps,
+  AccordionTrigger,
+  type AccordionTriggerProps,
+} from "./components/accordion";
 export { Alert, type AlertProps } from "./components/alert";
 export {
   Autocomplete,
@@ -10,6 +20,7 @@ export {
   type AutocompleteItemProps,
   type AutocompleteProps,
 } from "./components/autocomplete";
+export { Avatar, type AvatarProps, type AvatarSize } from "./components/avatar";
 export { Badge, type BadgeProps } from "./components/badge";
 export {
   Button,
@@ -139,6 +150,7 @@ export {
   type ListProps,
 } from "./components/list";
 export { LogoMark, type LogoMarkProps } from "./components/logo-mark";
+export { NumberField, type NumberFieldProps } from "./components/number-field";
 export {
   Popover,
   PopoverContent,
@@ -151,6 +163,7 @@ export {
   PopoverTrigger,
   type PopoverTriggerProps,
 } from "./components/popover";
+export { Progress, type ProgressProps } from "./components/progress";
 export {
   Radio,
   RadioGroup,
@@ -220,6 +233,7 @@ export {
   type ToastProviderProps,
   useToast,
 } from "./components/toast";
+export { Toggle, type ToggleProps, type ToggleSize } from "./components/toggle";
 export {
   Tooltip,
   TooltipContent,

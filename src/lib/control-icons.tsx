@@ -25,6 +25,14 @@ export function DashIcon(props: ComponentProps<"svg">) {
   );
 }
 
+export function PlusIcon(props: ComponentProps<"svg">) {
+  return (
+    <svg {...ICON_PROPS} aria-hidden {...props}>
+      <path d="M8 4v8M4 8h8" />
+    </svg>
+  );
+}
+
 export function ChevronIcon(props: ComponentProps<"svg">) {
   return (
     <svg {...ICON_PROPS} aria-hidden {...props}>

@@ -40,6 +40,18 @@ Keep a menu to secondary choices. The one action the page is for belongs on a vi
 - `Popover` stays beside what opened it. Use it for a small panel the reader can ignore: extra detail, a quick setting.
 - `Tooltip` only describes its trigger, in a few words. It must not carry anything the reader needs: it is brief, and a touch user has no hover to open it.
 
+## Spinner and Progress
+
+- `Progress` is a bar for work with a known end, such as an upload; it shows how far along it is. Pass `value={null}` while the amount is not known yet.
+- `Spinner` is for a short wait with no measure, such as a button that is loading. It carries no number, so do not use it for work that takes long enough for the reader to wonder how much is left.
+
+## Tabs and Accordion
+
+- `Tabs` shows one panel at a time among a few sections of equal weight, with the names always in view.
+- `Accordion` stacks sections that open in place, so a long page stays short: FAQs, details the reader may skip. It lets several be open at once with `multiple`.
+
+If the reader needs to compare sections side by side, use neither; show them.
+
 ## Alert, Toast, ErrorMessage and FieldError
 
 - `Alert` stays in the page and reports something about it: a saved state, a warning, a failure. `danger` and `warning` interrupt assistive technology; the other statuses wait their turn.
@@ -48,13 +60,15 @@ Keep a menu to secondary choices. The one action the page is for belongs on a vi
 - `FieldError` belongs to a `Field`: it shows the field's `error` next to the control it describes. Set `error` on `Field` rather than rendering your own message.
 - `FieldsetError` does the same for a group of choices inside a `Fieldset`.
 
-## Checkbox, Switch, RadioGroup, Select, Combobox and Autocomplete
+## Checkbox, Switch, Toggle, RadioGroup, Select, Combobox, Autocomplete and NumberField
 
 - `Checkbox` is a yes/no answer that is submitted with the form, or one of several that can all be chosen.
 - `Switch` is a setting that takes effect as soon as it is flipped. If a Save button decides it, use a `Checkbox`.
+- `Toggle` is a button that stays pressed or not, such as bold in a toolbar. It acts on something the reader is looking at, not on a setting; for a setting, use a `Switch`.
 - `RadioGroup` is one choice from a few options, all visible at once.
 - `Select` is one choice from many options, or from a few when space is tight.
 - `Combobox` is one choice from a list long enough that the reader wants to type to narrow it. It does not accept text that is not an option.
 - `Autocomplete` is a text field that suggests options while the reader types, such as a search box or an address field. Its value is whatever text was typed, an option or not.
+- `NumberField` is a number the reader types or steps with the buttons, such as a quantity. It keeps the value inside `min` and `max`. For a plain text answer use a `TextField`; for a number picked along a range where the exact value matters less, use a `Slider`.
 
-Put a single control inside a `Field` to get a label, a hint and an error wired to it. Put a group of `Checkbox`es (in a `CheckboxGroup`) or `Radio`s inside a `Fieldset` with a `FieldsetLegend` to give the group one visible name, hint and error.
+Put a single form control (not a `Toggle`, which is a button) inside a `Field` to get a label, a hint and an error wired to it. Put a group of `Checkbox`es (in a `CheckboxGroup`) or `Radio`s inside a `Fieldset` with a `FieldsetLegend` to give the group one visible name, hint and error.
