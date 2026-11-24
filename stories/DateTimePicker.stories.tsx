@@ -8,7 +8,7 @@ import {
   FieldLabel,
 } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ComponentProps, useState } from "react";
+import { type ComponentProps, useRef, useState } from "react";
 import {
   expect,
   fn,
@@ -864,5 +864,182 @@ export const NarrowFormsSeparateTheDaysWhenPrefixesCannot: Story = {
         narrow.format(new Date(Date.UTC(2023, 0, day))),
       ),
     );
+  },
+};
+
+const submittedValue = (form: HTMLElement, name: string) => {
+  if (!(form instanceof HTMLFormElement)) throw new Error("form missing");
+  return new FormData(form).get(name);
+};
+
+const inForm = (args: PickerArgs) => (
+  <form data-testid="form">
+    <Harness {...args} />
+  </form>
+);
+
+export const SubmitsItsValueWithTheForm: Story = {
+  args: { name: "starts" },
+  render: inForm,
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    await expect(submittedValue(form, "starts")).toBe("2030-06-15T09:30");
+    await openPicker(canvas, "2030-06-15 09:30");
+    await userEvent.clear(screen.getByRole("textbox", { name: "Hour" }));
+    await userEvent.type(screen.getByRole("textbox", { name: "Hour" }), "11");
+    await userEvent.click(screen.getByRole("button", { name: "Apply" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await expect(submittedValue(form, "starts")).toBe("2030-06-15T11:30");
+  },
+};
+
+export const SubmitsAnEmptyOrMalformedValueAsEmpty: Story = {
+  args: { name: "starts", initial: "" },
+  render: (args) => (
+    <form data-testid="form">
+      <Harness {...args} />
+      <Harness {...args} name="ends" initial="2030-06-15" />
+    </form>
+  ),
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    await expect(submittedValue(form, "starts")).toBe("");
+    await expect(submittedValue(form, "ends")).toBe("");
+  },
+};
+
+export const RequiredBlocksSubmitUntilChosen: Story = {
+  args: { name: "starts", required: true, initial: "" },
+  render: inForm,
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    if (!(form instanceof HTMLFormElement)) throw new Error("form missing");
+    await expect(form.checkValidity()).toBe(false);
+    await openPicker(canvas, "Select date and time");
+    await userEvent.type(
+      screen.getByRole("textbox", { name: "Date" }),
+      "2030-07-04",
+    );
+    await userEvent.type(screen.getByRole("textbox", { name: "Hour" }), "7");
+    await userEvent.type(screen.getByRole("textbox", { name: "Minute" }), "5");
+    await userEvent.click(screen.getByRole("button", { name: "Apply" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await expect(form.checkValidity()).toBe(true);
+    await expect(submittedValue(form, "starts")).toBe("2030-07-04T07:05");
+  },
+};
+
+export const InvalidRequiredFocusesTheTrigger: Story = {
+  args: { name: "starts", required: true, initial: "" },
+  render: inForm,
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    if (!(form instanceof HTMLFormElement)) throw new Error("form missing");
+    form.reportValidity();
+    await expect(
+      canvas.getByRole("button", { name: "Select date and time" }),
+    ).toHaveFocus();
+  },
+};
+
+export const ARefReachesTheTrigger: Story = {
+  render: (args) => {
+    function WithRef() {
+      const ref = useRef<HTMLButtonElement>(null);
+      return (
+        <>
+          <Button
+            onClick={() => {
+              ref.current?.focus();
+            }}
+          >
+            Focus the picker
+          </Button>
+          <Harness {...args} ref={ref} />
+        </>
+      );
+    }
+    return <WithRef />;
+  },
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Focus the picker" }),
+    );
+    await expect(
+      canvas.getByRole("button", { name: "2030-06-15 09:30" }),
+    ).toHaveFocus();
+  },
+};
+
+export const TakesItsNameFromTheField: Story = {
+  args: { initial: "2030-06-15T09:30" },
+  render: (args) => (
+    <form data-testid="form">
+      <Field name="starts">
+        <FieldLabel>Starts</FieldLabel>
+        <Harness {...args} />
+      </Field>
+    </form>
+  ),
+  play: async ({ canvas }) => {
+    await expect(submittedValue(canvas.getByTestId("form"), "starts")).toBe(
+      "2030-06-15T09:30",
+    );
+  },
+};
+
+export const ADisabledFieldLeavesItOutOfTheForm: Story = {
+  args: { required: true, initial: "" },
+  render: (args) => (
+    <form data-testid="form">
+      <Field name="starts" disabled>
+        <FieldLabel>Starts</FieldLabel>
+        <Harness {...args} />
+      </Field>
+    </form>
+  ),
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    if (!(form instanceof HTMLFormElement)) throw new Error("form missing");
+    await expect(form.checkValidity()).toBe(true);
+    await expect(submittedValue(form, "starts")).toBeNull();
+  },
+};
+
+const refCleanup = fn();
+const refNodes: (HTMLButtonElement | null)[] = [];
+
+function RemovablePicker(args: PickerArgs) {
+  const [shown, setShown] = useState(true);
+  return (
+    <>
+      <Button
+        onClick={() => {
+          setShown(false);
+        }}
+      >
+        Remove the picker
+      </Button>
+      {shown && (
+        <Harness
+          {...args}
+          ref={(node: HTMLButtonElement | null) => {
+            refNodes.push(node);
+            return refCleanup;
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+export const ACleanupRefRunsItsCleanupAndIsNeverCalledWithNull: Story = {
+  render: (args) => <RemovablePicker {...args} />,
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Remove the picker" }),
+    );
+    await waitFor(() => expect(refCleanup).toHaveBeenCalled());
+    await expect(refNodes).not.toContain(null);
   },
 };

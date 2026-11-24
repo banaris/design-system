@@ -1,9 +1,12 @@
+"use client";
+
 import { Radio as BaseRadio } from "@base-ui/react/radio";
 import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
 import type { ComponentProps } from "react";
 
 import { BOXED_CONTROL_BOX, BOXED_CONTROL_TARGET } from "../lib/class-presets";
 import { cn } from "../lib/cn";
+import { useFieldsetState } from "./fieldset";
 
 export type RadioGroupProps = Omit<
   ComponentProps<typeof BaseRadioGroup>,
@@ -19,11 +22,13 @@ export type RadioProps = Omit<
   className?: string;
 };
 
-/** Groups `Radio`s; give it an accessible name (`aria-label`/`aria-labelledby`). */
+/** Groups `Radio`s; name it with `aria-label`, or put it in a `Fieldset`. */
 export function RadioGroup({ className, ...rest }: RadioGroupProps) {
+  const { invalid } = useFieldsetState();
   return (
     <BaseRadioGroup
       className={cn("flex flex-col gap-2", className)}
+      {...(invalid ? { "aria-invalid": true } : {})}
       {...rest}
     />
   );

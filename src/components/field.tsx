@@ -6,34 +6,43 @@ import { Children, type ComponentProps, createContext, use } from "react";
 import { cn } from "../lib/cn";
 
 const ErrorContext = createContext("");
-const StateContext = createContext({ disabled: false, invalid: false });
+const StateContext = createContext<{
+  disabled: boolean;
+  invalid: boolean;
+  name: string | undefined;
+}>({ disabled: false, invalid: false, name: undefined });
 
-/** The enclosing `Field`'s state, for a control that must not register with it. */
+/** The enclosing `Field`'s disabled, invalid and `name`, for a control that must not register with it. */
 export const useFieldState = () => use(StateContext);
 
 export type FieldProps = Omit<
   ComponentProps<typeof BaseField.Root>,
-  | "className"
-  | "render"
-  | "invalid"
-  | "validate"
-  | "validationMode"
-  | "validationDebounceTime"
+  "className" | "render"
 > & {
   className?: string;
   /** A non-empty string marks the control invalid and is what `FieldError` shows. */
   error?: string;
 };
 
-/** Groups a label, a control, a hint and an error, and links them for assistive tech. */
-export function Field({ className, error = "", ...rest }: FieldProps) {
+/** Groups a label, a control, a hint and an error. Outside a Base UI `Form`, native messages need `validationMode` `"onBlur"` or `"onChange"`. */
+export function Field({
+  className,
+  error = "",
+  invalid = false,
+  ...rest
+}: FieldProps) {
+  const marked = error !== "" || invalid;
   return (
     <ErrorContext value={error}>
       <StateContext
-        value={{ disabled: rest.disabled === true, invalid: error !== "" }}
+        value={{
+          disabled: rest.disabled === true,
+          invalid: marked,
+          name: rest.name,
+        }}
       >
         <BaseField.Root
-          invalid={error !== ""}
+          invalid={marked}
           className={cn("flex flex-col gap-1.5", className)}
           {...rest}
         />
@@ -84,18 +93,25 @@ export function FieldHint({ className, children, ...rest }: FieldHintProps) {
 
 export type FieldErrorProps = Omit<
   ComponentProps<typeof BaseField.Error>,
-  "className" | "render" | "match"
+  "className" | "render"
 > & {
   className?: string;
 };
 
-/** Shows the `Field`'s `error` in a live region; children replace the text. Nothing renders without an `error`. */
-export function FieldError({ className, children, ...rest }: FieldErrorProps) {
+/** Shows `children`, else the `Field`'s `error`, else the native validation message; `match` picks which validity state shows it. */
+export function FieldError({
+  className,
+  children,
+  match,
+  ...rest
+}: FieldErrorProps) {
   const error = use(ErrorContext);
+  const { invalid } = use(StateContext);
   const content = children ?? (error === "" ? undefined : error);
+  const showCustom = invalid && content !== undefined;
   return (
     <BaseField.Error
-      match={error !== ""}
+      match={match ?? (showCustom || undefined)}
       role="alert"
       className={cn("text-small text-danger", className)}
       {...rest}

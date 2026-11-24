@@ -20,6 +20,14 @@ ButtonVariant = "danger" | "primary" | "accent" | "secondary" | "ghost"
 Card: ({ className, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>) => Element
 CardProps: no own properties
 Checkbox: ({ className, ...rest }: CheckboxProps) => Element
+CheckboxGroup: ({ className, ...rest }: CheckboxGroupProps) => Element
+CheckboxGroupProps.allValues?: string[] | undefined
+CheckboxGroupProps.className?: string | undefined
+CheckboxGroupProps.defaultValue?: string[] | undefined
+CheckboxGroupProps.disabled?: boolean | undefined
+CheckboxGroupProps.onValueChange?: ((value: string[], eventDetails: { reason: "none"; event: Event; cancel: () => void; allowPropagation: () => void; isCanceled: boolean; isPropagationAllowed: boolean; trigger: Element | undefined; }) => void) | undefined
+CheckboxGroupProps.style?: CSSProperties | ((state: CheckboxGroupState) => CSSProperties | undefined) | undefined
+CheckboxGroupProps.value?: string[] | undefined
 CheckboxProps.checked?: boolean | undefined
 CheckboxProps.className?: string | undefined
 CheckboxProps.defaultChecked?: boolean | undefined
@@ -47,7 +55,7 @@ DateTimeFieldProps.defaultValue?: string | number | readonly string[] | undefine
 DateTimeFieldProps.onValueChange?: ((value: string, eventDetails: { reason: "none"; event: Event; cancel: () => void; allowPropagation: () => void; isCanceled: boolean; isPropagationAllowed: boolean; trigger: Element | undefined; }) => void) | undefined
 DateTimeFieldProps.style?: CSSProperties | ((state: InputState) => CSSProperties | undefined) | undefined
 DateTimeFieldProps.value?: string | number | readonly string[] | undefined
-DateTimePicker: ({ value, onValueChange, onClose, min, placeholder, locale, labels: labelOverrides, firstDayOfWeek, portalContainer, ...triggerProps }: DateTimePickerProps) => Element
+DateTimePicker: ({ value, onValueChange, onClose, min, placeholder, locale, labels: labelOverrides, firstDayOfWeek, portalContainer, name, required, ref, ...triggerProps }: DateTimePickerProps) => Element
 DateTimePickerClose = { outcome: "dismissed"; } | { outcome: "applied"; value: string; }
 DateTimePickerLabels.apply: string
 DateTimePickerLabels.beforeMin: (min: string) => string
@@ -65,10 +73,13 @@ DateTimePickerProps.firstDayOfWeek?: WeekStart | undefined
 DateTimePickerProps.labels?: Partial<DateTimePickerLabels> | undefined
 DateTimePickerProps.locale?: string | undefined
 DateTimePickerProps.min?: string | undefined
+DateTimePickerProps.name?: string | undefined
 DateTimePickerProps.onClose: (close: DateTimePickerClose) => void
 DateTimePickerProps.onValueChange: (value: string) => void
 DateTimePickerProps.placeholder?: string | undefined
 DateTimePickerProps.portalContainer?: HTMLElement | null | undefined
+DateTimePickerProps.ref?: Ref<HTMLButtonElement> | undefined
+DateTimePickerProps.required?: boolean | undefined
 DateTimePickerProps.value: string
 Dialog: <Payload>(props: Props<Payload>) => Element
 Dialog(props).actionsRef?: RefObject<DialogRootActions | null> | undefined
@@ -192,15 +203,16 @@ DropdownMenuTriggerProps.style?: CSSProperties | ((state: MenuTriggerState) => C
 DropdownMenuTriggerProps.variant?: ButtonVariant | undefined
 ErrorMessage: ({ children, className, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>) => Element | null
 ErrorMessageProps: no own properties
-Field: ({ className, error, ...rest }: FieldProps) => Element
+Field: ({ className, error, invalid, ...rest }: FieldProps) => Element
 FieldControl: ForwardRefExoticComponent<Omit<FieldControlProps, "ref"> & RefAttributes<HTMLElement>>
 FieldControl(props).className?: string | ((state: FieldControlState) => string | undefined) | undefined
 FieldControl(props).defaultValue?: string | number | readonly string[] | undefined
 FieldControl(props).onValueChange?: ((value: string, eventDetails: { reason: "none"; event: Event; cancel: () => void; allowPropagation: () => void; isCanceled: boolean; isPropagationAllowed: boolean; trigger: Element | undefined; }) => void) | undefined
 FieldControl(props).render?: ReactElement<unknown, string | JSXElementConstructor<any>> | ComponentRenderFn<HTMLProps, FieldControlState> | undefined
 FieldControl(props).style?: CSSProperties | ((state: FieldControlState) => CSSProperties | undefined) | undefined
-FieldError: ({ className, children, ...rest }: FieldErrorProps) => Element
+FieldError: ({ className, children, match, ...rest }: FieldErrorProps) => Element
 FieldErrorProps.className?: string | undefined
+FieldErrorProps.match?: boolean | keyof ValidityState | undefined
 FieldErrorProps.style?: CSSProperties | ((state: FieldErrorState) => CSSProperties | undefined) | undefined
 FieldHint: ({ className, children, ...rest }: FieldHintProps) => Element | null
 FieldHintProps.className?: string | undefined
@@ -214,9 +226,24 @@ FieldProps.className?: string | undefined
 FieldProps.dirty?: boolean | undefined
 FieldProps.disabled?: boolean | undefined
 FieldProps.error?: string | undefined
+FieldProps.invalid?: boolean | undefined
 FieldProps.name?: string | undefined
 FieldProps.style?: CSSProperties | ((state: FieldRootState) => CSSProperties | undefined) | undefined
 FieldProps.touched?: boolean | undefined
+FieldProps.validate?: ((value: unknown, formValues: Record<string, any>) => string | void | string[] | Promise<string | void | string[] | null> | null) | undefined
+FieldProps.validationDebounceTime?: number | undefined
+FieldProps.validationMode?: FormValidationMode | undefined
+Fieldset: ({ className, error, "aria-describedby": describedBy, ...rest }: FieldsetProps) => Element
+FieldsetError: ({ children, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>) => Element | null
+FieldsetErrorProps: no own properties
+FieldsetHint: ({ className, children, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>) => Element | null
+FieldsetHintProps: no own properties
+FieldsetLegend: ({ className, ...rest }: FieldsetLegendProps) => Element
+FieldsetLegendProps.className?: string | undefined
+FieldsetLegendProps.style?: CSSProperties | ((state: FieldsetLegendState) => CSSProperties | undefined) | undefined
+FieldsetProps.className?: string | undefined
+FieldsetProps.error?: string | undefined
+FieldsetProps.style?: CSSProperties | ((state: FieldsetRootState) => CSSProperties | undefined) | undefined
 Grid: ({ columns, gap, className, ...rest }: GridProps) => Element
 GridColumns = 1 | 2 | 3 | 4
 GridProps.columns?: GridColumns | undefined
