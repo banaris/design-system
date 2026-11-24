@@ -282,3 +282,77 @@ const insideSafeArea = (edge: "left-0" | "right-0"): Story => ({
 export const InsideSafeAreaAtTheLeftEdge: Story = insideSafeArea("left-0");
 
 export const InsideSafeAreaAtTheRightEdge: Story = insideSafeArea("right-0");
+
+export const NoMatchWithoutEmptyMessage: Story = {
+  render: (args) => (
+    <Combobox {...args}>
+      <ComboboxInput aria-label="Repeat" />
+      <ComboboxContent>
+        <ComboboxList>
+          {(item: (typeof ITEMS)[number]) => (
+            <ComboboxItem key={item.value} value={item}>
+              {item.label}
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("combobox");
+    await userEvent.click(input);
+    await userEvent.type(input, "xyz");
+    await waitFor(() =>
+      expect(screen.queryAllByRole("option")).toHaveLength(0),
+    );
+    const popup = document.querySelector("[role=listbox]")?.parentElement;
+    if (!popup) throw new Error("no popup");
+    await expect(getComputedStyle(popup).display).toBe("none");
+  },
+};
+
+const MANY = Array.from({ length: 40 }, (_, i) => ({
+  value: `v${String(i)}`,
+  label: `Option ${String(i)}`,
+}));
+
+export const TallListInsideSafeArea: Story = {
+  args: { items: MANY },
+  render: (args) => (
+    <div className="fixed top-1/2 left-0 w-48">
+      <Combobox {...args}>
+        <ComboboxInput aria-label="Many" />
+        <ComboboxContent>
+          <ComboboxList>
+            {(item: (typeof MANY)[number]) => (
+              <ComboboxItem key={item.value} value={item}>
+                {item.label}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await withInsets(async () => {
+      await userEvent.click(canvas.getByRole("combobox"));
+      const list = await screen.findByRole("listbox");
+      await expectInsideInsets(list.parentElement ?? list);
+    });
+  },
+};
+
+export const PopupSpacing: Story = {
+  args: { defaultOpen: true },
+  play: async () => {
+    const list = await screen.findByRole("listbox");
+    const popup = list.parentElement;
+    if (!popup) throw new Error("no popup");
+    const first = screen.getAllByRole("option")[0];
+    if (!first) throw new Error("no option");
+    const inset =
+      first.getBoundingClientRect().top - popup.getBoundingClientRect().top;
+    await expect(inset).toBeCloseTo(5, 0);
+  },
+};

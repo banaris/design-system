@@ -7,6 +7,7 @@ import {
   CONTROL_SURFACE,
   FOCUS_RING,
   MENU_ITEM,
+  MENU_ITEM_STACK,
   MENU_POPUP,
   TEXT_ENTRY_BOX,
 } from "../lib/class-presets";
@@ -67,6 +68,7 @@ export function ComboboxContent({
         <BaseCombobox.Popup
           className={cn(
             MENU_POPUP,
+            "coarse:gap-0 flex max-h-[var(--available-height)] flex-col has-[[role=listbox][data-empty]]:not-has-[[role=status]:not(:empty)]:hidden",
             "min-w-[min(var(--anchor-width),var(--available-width))]",
             className,
           )}
@@ -91,7 +93,8 @@ export function ComboboxList({ className, ...rest }: ComboboxListProps) {
   return (
     <BaseCombobox.List
       className={cn(
-        "coarse:flex coarse:flex-col coarse:gap-2 max-h-[min(20rem,var(--available-height))] overflow-y-auto overscroll-contain outline-none data-empty:hidden",
+        MENU_ITEM_STACK,
+        "max-h-80 min-h-0 overflow-y-auto overscroll-contain outline-none data-empty:hidden",
         className,
       )}
       {...rest}
@@ -135,10 +138,7 @@ export type ComboboxEmptyProps = Omit<
 export function ComboboxEmpty({ className, ...rest }: ComboboxEmptyProps) {
   return (
     <BaseCombobox.Empty
-      className={cn(
-        "text-ds-base text-ink-dim px-3 py-2 empty:hidden",
-        className,
-      )}
+      className={cn("text-ds-base text-ink-dim px-3 py-2 empty:p-0", className)}
       {...rest}
     />
   );
