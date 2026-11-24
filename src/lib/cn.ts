@@ -88,8 +88,6 @@ export const createCn = <
       }),
   );
 
-export const twMerge = extendTailwindMerge({ extend: tokenExtension });
-
 /**
  * Build a class string, resolving Tailwind conflicts left to right — later
  * arguments win. Pass the caller's `className` last so it beats the component.

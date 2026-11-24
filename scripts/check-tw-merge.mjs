@@ -14,27 +14,28 @@
  *
  * Neither is visible to the type checker, the build or the linter. And the
  * classification cannot be reasoned about reliably — the only way to know is
- * to call `twMerge` and look, which is what this does.
+ * to call `cn` and look, which is what this does.
  *
  * ── What it checks ─────────────────────────────────────────────────────
  *   1. Tokens declared in `tokens.css` are registered in `cn.ts`, and vice
  *      versa — adding a token and forgetting the merge config is the common
  *      way this drifts.
  *   2. The measured grouping: same-group classes collapse, different-group
- *      classes coexist — for the internal instance and for `createCn()`, the
- *      public constructor — and a consumer token added via `createCn` merges
- *      beside the package's.
+ *      classes coexist — for `cn`, the instance the components use, and for
+ *      `createCn()`, the public constructor — and a consumer token added via
+ *      `createCn` merges beside the package's.
  *   3. A caller's `className` beats the component's own variant.
  *   4. Each variant sets each colour property exactly once — a component-shape
  *      convention rather than a classification one, but it lives here because
  *      it is only meaningful given how (3) resolves conflicts.
+ *   5. `src/index.ts` exports `createCn`, the public constructor.
  */
 
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { cn, createCn, twMerge } from "../src/lib/cn.ts";
+import { cn, createCn } from "../src/lib/cn.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -127,10 +128,10 @@ for (const [cssPrefix, mergeGroup] of [
 }
 
 /* ---- 2. Measured classification ----
- * Run against the internal instance and against `createCn()`, the public
- * constructor, so a consumer's `cn` is held to the same cases. */
+ * Run against `cn`, the instance the components use, and against `createCn()`,
+ * the public constructor, so a consumer's `cn` is held to the same cases. */
 for (const [name, merge] of [
-  ["twMerge", twMerge],
+  ["cn", cn],
   ["createCn()", createCn()],
 ]) {
   // `text-*` splits across two groups; these must NOT collapse into each other.
@@ -219,18 +220,6 @@ expect(
   "rounded-shell",
 );
 
-const indexSource = readFileSync(join(ROOT, "src", "index.ts"), "utf8").replace(
-  /\/\*[\s\S]*?\*\/|\/\/.*$/gm,
-  "",
-);
-if (
-  !/export\s*\{(?:[^}]*,)?\s*createCn\s*(?:,[^}]*)?\}\s*from\s*"\.\/lib\/cn"/.test(
-    indexSource,
-  )
-) {
-  errors.push("src/index.ts does not export createCn from ./lib/cn.");
-}
-
 /* ---- 3. The caller wins ----
  * The property the whole merge exists for: overriding a variant must not
  * require `!`. Measured against Button's real variant strings, read from
@@ -300,6 +289,19 @@ if (variantBlock === null) {
   log.push(
     `  --  ${entries.length} Button variant(s): caller wins, each colour set once`,
   );
+}
+
+/* ---- 5. The public export ---- */
+const indexSource = readFileSync(join(ROOT, "src", "index.ts"), "utf8").replace(
+  /\/\*[\s\S]*?\*\/|\/\/.*$/gm,
+  "",
+);
+if (
+  !/export\s*\{(?:[^}]*,)?\s*createCn\s*(?:,[^}]*)?\}\s*from\s*"\.\/lib\/cn"/.test(
+    indexSource,
+  )
+) {
+  errors.push("src/index.ts does not export createCn from ./lib/cn.");
 }
 
 console.log(log.join("\n"));
