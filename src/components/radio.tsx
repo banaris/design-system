@@ -19,7 +19,7 @@ export type RadioProps = Omit<
   className?: string;
 };
 
-/** Groups `Radio`s; give it an accessible name (`aria-label`/`aria-labelledby`). */
+/** Groups `Radio`s; name it with `aria-label`, or put it in a `Fieldset`. */
 export function RadioGroup({ className, ...rest }: RadioGroupProps) {
   return (
     <BaseRadioGroup

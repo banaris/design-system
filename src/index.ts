@@ -12,6 +12,10 @@ export {
 export { Card, type CardProps } from "./components/card";
 export { Checkbox, type CheckboxProps } from "./components/checkbox";
 export {
+  CheckboxGroup,
+  type CheckboxGroupProps,
+} from "./components/checkbox-group";
+export {
   Container,
   type ContainerProps,
   type ContainerSize,
@@ -67,6 +71,16 @@ export {
   type FieldLabelProps,
   type FieldProps,
 } from "./components/field";
+export {
+  Fieldset,
+  FieldsetError,
+  type FieldsetErrorProps,
+  FieldsetHint,
+  type FieldsetHintProps,
+  FieldsetLegend,
+  type FieldsetLegendProps,
+  type FieldsetProps,
+} from "./components/fieldset";
 export { Grid, type GridColumns, type GridProps } from "./components/grid";
 export {
   Heading,

@@ -13,27 +13,28 @@ export const useFieldState = () => use(StateContext);
 
 export type FieldProps = Omit<
   ComponentProps<typeof BaseField.Root>,
-  | "className"
-  | "render"
-  | "invalid"
-  | "validate"
-  | "validationMode"
-  | "validationDebounceTime"
+  "className" | "render"
 > & {
   className?: string;
   /** A non-empty string marks the control invalid and is what `FieldError` shows. */
   error?: string;
 };
 
-/** Groups a label, a control, a hint and an error, and links them for assistive tech. */
-export function Field({ className, error = "", ...rest }: FieldProps) {
+/** Groups a label, a control, a hint and an error. Outside a Base UI `Form`, native messages need `validationMode` `"onBlur"` or `"onChange"`. */
+export function Field({
+  className,
+  error = "",
+  invalid = false,
+  ...rest
+}: FieldProps) {
+  const marked = error !== "" || invalid;
   return (
     <ErrorContext value={error}>
       <StateContext
-        value={{ disabled: rest.disabled === true, invalid: error !== "" }}
+        value={{ disabled: rest.disabled === true, invalid: marked }}
       >
         <BaseField.Root
-          invalid={error !== ""}
+          invalid={marked}
           className={cn("flex flex-col gap-1.5", className)}
           {...rest}
         />
@@ -84,18 +85,24 @@ export function FieldHint({ className, children, ...rest }: FieldHintProps) {
 
 export type FieldErrorProps = Omit<
   ComponentProps<typeof BaseField.Error>,
-  "className" | "render" | "match"
+  "className" | "render"
 > & {
   className?: string;
 };
 
-/** Shows the `Field`'s `error` in a live region; children replace the text. Nothing renders without an `error`. */
-export function FieldError({ className, children, ...rest }: FieldErrorProps) {
+/** Shows the `Field`'s `error`, or the native validation message when none; `match` narrows when. */
+export function FieldError({
+  className,
+  children,
+  match,
+  ...rest
+}: FieldErrorProps) {
   const error = use(ErrorContext);
+  const { invalid } = use(StateContext);
   const content = children ?? (error === "" ? undefined : error);
   return (
     <BaseField.Error
-      match={error !== ""}
+      match={match ?? (invalid && content !== undefined ? true : undefined)}
       role="alert"
       className={cn("text-small text-danger", className)}
       {...rest}

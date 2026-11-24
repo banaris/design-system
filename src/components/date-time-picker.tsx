@@ -3,6 +3,8 @@
 import {
   type ComponentProps,
   type KeyboardEvent,
+  type Ref,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -106,6 +108,12 @@ export type DateTimePickerProps = {
   /** `0` is Sunday. Defaults to the locale's first weekday, Sunday if the runtime has none. */
   firstDayOfWeek?: WeekStart;
   portalContainer?: HTMLElement | null | undefined;
+  /** Submitted with the surrounding `<form>` as `YYYY-MM-DDTHH:mm`, or `""` when `value` is empty or malformed. */
+  name?: string;
+  /** Blocks a native form submit while `value` is empty. */
+  required?: boolean;
+  /** The trigger button. */
+  ref?: Ref<HTMLButtonElement>;
 } & Pick<
   ComponentProps<"button">,
   | "aria-describedby"
@@ -151,6 +159,8 @@ function PopupInput({ className, ...rest }: ComponentProps<"input">) {
   );
 }
 
+const noop = () => undefined;
+
 const preventEnter = (event: KeyboardEvent) => {
   if (event.key === "Enter") event.preventDefault();
 };
@@ -165,6 +175,9 @@ export function DateTimePicker({
   labels: labelOverrides,
   firstDayOfWeek,
   portalContainer,
+  name,
+  required,
+  ref,
   ...triggerProps
 }: DateTimePickerProps) {
   const labels = withDefaults(labelOverrides);
@@ -177,7 +190,15 @@ export function DateTimePicker({
   const [focusDay, setFocusDay] = useState<CalendarDate>(today);
   const settled = useRef(true);
   const body = useRef<HTMLDivElement>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
+  const trigger = useRef<HTMLButtonElement | null>(null);
+  const setTrigger = useCallback(
+    (node: HTMLButtonElement | null) => {
+      trigger.current = node;
+      if (typeof ref === "function") return ref(node);
+      if (ref) ref.current = node;
+    },
+    [ref],
+  );
 
   function begin() {
     const next = known ?? EMPTY;
@@ -237,126 +258,145 @@ export function DateTimePicker({
     if (day !== null) setFocusDay(day);
   }
 
+  const submitted = known === null ? "" : value;
+
   return (
-    <Popover
-      open={open}
-      onOpenChange={(next, details) => {
-        if (!next && details.reason.startsWith("outside")) {
-          const target = details.event.target;
-          const label =
-            target instanceof Element ? target.closest("label") : null;
-          if (label !== null && label.control === trigger.current) {
-            details.cancel();
-            return;
+    <>
+      <Popover
+        open={open}
+        onOpenChange={(next, details) => {
+          if (!next && details.reason.startsWith("outside")) {
+            const target = details.event.target;
+            const label =
+              target instanceof Element ? target.closest("label") : null;
+            if (label !== null && label.control === trigger.current) {
+              details.cancel();
+              return;
+            }
           }
-        }
-        if (next) begin();
-        else finish({ outcome: "dismissed" });
-      }}
-    >
-      <PopoverTrigger
-        ref={trigger}
-        variant="secondary"
-        inField
-        {...triggerProps}
+          if (next) begin();
+          else finish({ outcome: "dismissed" });
+        }}
       >
-        {known === null
-          ? placeholder
-          : `${known.date} ${known.hour}:${known.minute}`}
-      </PopoverTrigger>
-      <PopoverContent
-        className="coarse:max-w-[min(22rem,var(--available-width))]"
-        portalContainer={portalContainer}
-        initialFocus={() =>
-          body.current?.querySelector<HTMLElement>(
-            '[role="grid"] [tabindex="0"]',
-          ) ?? true
-        }
-      >
-        <PopoverTitle>{labels.title}</PopoverTitle>
-        <div ref={body} className="mt-3 flex flex-col gap-3">
-          <PopupInput
-            aria-label={labels.date}
-            placeholder={labels.datePlaceholder}
-            autoComplete="off"
-            value={draft.date}
-            aria-invalid={dateInvalid || undefined}
-            onKeyDown={preventEnter}
-            onChange={(event) => {
-              typeDate(event.target.value);
-            }}
-          />
-          <DateTimeCalendar
-            focusDay={focusDay}
-            onFocusDayChange={setFocusDay}
-            selected={parseDate(draft.date) === null ? "" : draft.date}
-            min={bound}
-            onSelect={select}
-            locale={resolvedLocale}
-            weekStart={weekStart}
-            previousMonthLabel={labels.previousMonth}
-            nextMonthLabel={labels.nextMonth}
-          />
-          <div className="flex items-center gap-2">
+        <PopoverTrigger
+          ref={setTrigger}
+          variant="secondary"
+          inField
+          {...triggerProps}
+        >
+          {known === null
+            ? placeholder
+            : `${known.date} ${known.hour}:${known.minute}`}
+        </PopoverTrigger>
+        <PopoverContent
+          className="coarse:max-w-[min(22rem,var(--available-width))]"
+          portalContainer={portalContainer}
+          initialFocus={() =>
+            body.current?.querySelector<HTMLElement>(
+              '[role="grid"] [tabindex="0"]',
+            ) ?? true
+          }
+        >
+          <PopoverTitle>{labels.title}</PopoverTitle>
+          <div ref={body} className="mt-3 flex flex-col gap-3">
             <PopupInput
-              aria-label={labels.hour}
-              className="w-16 text-center"
-              placeholder={labels.hourPlaceholder}
-              inputMode="numeric"
+              aria-label={labels.date}
+              placeholder={labels.datePlaceholder}
               autoComplete="off"
-              maxLength={2}
-              value={draft.hour}
-              aria-invalid={hourInvalid || undefined}
+              value={draft.date}
+              aria-invalid={dateInvalid || undefined}
               onKeyDown={preventEnter}
               onChange={(event) => {
-                setDraft({ ...draft, hour: event.target.value });
+                typeDate(event.target.value);
               }}
             />
-            <span aria-hidden className="text-ink">
-              :
-            </span>
-            <PopupInput
-              aria-label={labels.minute}
-              className="w-16 text-center"
-              placeholder={labels.minutePlaceholder}
-              inputMode="numeric"
-              autoComplete="off"
-              maxLength={2}
-              value={draft.minute}
-              aria-invalid={minuteInvalid || undefined}
-              onKeyDown={preventEnter}
-              onChange={(event) => {
-                setDraft({ ...draft, minute: event.target.value });
-              }}
+            <DateTimeCalendar
+              focusDay={focusDay}
+              onFocusDayChange={setFocusDay}
+              selected={parseDate(draft.date) === null ? "" : draft.date}
+              min={bound}
+              onSelect={select}
+              locale={resolvedLocale}
+              weekStart={weekStart}
+              previousMonthLabel={labels.previousMonth}
+              nextMonthLabel={labels.nextMonth}
             />
+            <div className="flex items-center gap-2">
+              <PopupInput
+                aria-label={labels.hour}
+                className="w-16 text-center"
+                placeholder={labels.hourPlaceholder}
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={2}
+                value={draft.hour}
+                aria-invalid={hourInvalid || undefined}
+                onKeyDown={preventEnter}
+                onChange={(event) => {
+                  setDraft({ ...draft, hour: event.target.value });
+                }}
+              />
+              <span aria-hidden className="text-ink">
+                :
+              </span>
+              <PopupInput
+                aria-label={labels.minute}
+                className="w-16 text-center"
+                placeholder={labels.minutePlaceholder}
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={2}
+                value={draft.minute}
+                aria-invalid={minuteInvalid || undefined}
+                onKeyDown={preventEnter}
+                onChange={(event) => {
+                  setDraft({ ...draft, minute: event.target.value });
+                }}
+              />
+            </div>
+            {beforeMin && (
+              <p role="alert" className="text-small text-danger">
+                {labels.beforeMin((bound ?? "").replace("T", " "))}
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  finish({ outcome: "dismissed" });
+                }}
+              >
+                {labels.cancel}
+              </Button>
+              <Button
+                disabled={!canApply}
+                onClick={() => {
+                  if (candidate !== null) {
+                    finish({ outcome: "applied", value: candidate });
+                  }
+                }}
+              >
+                {labels.apply}
+              </Button>
+            </div>
           </div>
-          {beforeMin && (
-            <p role="alert" className="text-small text-danger">
-              {labels.beforeMin((bound ?? "").replace("T", " "))}
-            </p>
-          )}
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                finish({ outcome: "dismissed" });
-              }}
-            >
-              {labels.cancel}
-            </Button>
-            <Button
-              disabled={!canApply}
-              onClick={() => {
-                if (candidate !== null) {
-                  finish({ outcome: "applied", value: candidate });
-                }
-              }}
-            >
-              {labels.apply}
-            </Button>
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+      {(name !== undefined || required === true) && (
+        <input
+          aria-hidden
+          tabIndex={-1}
+          name={name}
+          required={required}
+          disabled={triggerProps.disabled}
+          value={submitted}
+          onChange={noop}
+          onFocus={() => {
+            trigger.current?.focus();
+          }}
+          className="pointer-events-none absolute size-px overflow-hidden opacity-0 [clip-path:inset(50%)]"
+        />
+      )}
+    </>
   );
 }
