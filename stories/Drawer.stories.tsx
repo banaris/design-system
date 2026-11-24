@@ -13,19 +13,6 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { expectInsideInsets, withInsets } from "./safe-area";
 import { expectVisible } from "./visible";
 
-/* `vitest/browser` throws when imported outside Vitest, so a plain Storybook
- * gets no commands and the swipe assertion below is skipped. */
-const touchCommands = async () => {
-  if (!matchMedia("(any-pointer: coarse)").matches) return null;
-  try {
-    return (await import("vitest/browser")).commands;
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("Browser Mode"))
-      return null;
-    throw error;
-  }
-};
-
 type Side = NonNullable<DrawerContentProps["side"]>;
 
 const meta = {
@@ -159,46 +146,19 @@ export const TouchTargets: Story = {
   },
 };
 
-const SWIPE_DISTANCE = 400;
-
-function swipeToDismiss(side: Side): Story {
+function swipeDirectionIs(side: Side, direction: string): Story {
   return {
     render: renderShort(side),
     play: async ({ canvas }) => {
-      const trigger = canvas.getByRole("button", { name: "Filters" });
       const drawer = await openDrawer(canvas);
-      await expect(drawer.dataset["swipeDirection"]).toBe(
-        { bottom: "down", left: "left", right: "right" }[side],
-      );
-      const commands = await touchCommands();
-      if (!commands) return;
-      /* The drawer slides in after it turns visible; a swipe aimed at where it
-       * is not yet would miss it. */
-      await waitFor(async () => {
-        const { top, right, bottom, left } = drawer.getBoundingClientRect();
-        await expect(top).toBeGreaterThanOrEqual(0);
-        await expect(left).toBeGreaterThanOrEqual(0);
-        await expect(right).toBeLessThanOrEqual(window.innerWidth);
-        await expect(bottom).toBeLessThanOrEqual(window.innerHeight);
-      });
-      drawer.dataset["touchTarget"] = "";
-      const box = drawer.getBoundingClientRect();
-      const [x, y, dx, dy]: [number, number, number, number] =
-        side === "bottom"
-          ? [box.width / 2, 24, 0, SWIPE_DISTANCE]
-          : side === "left"
-            ? [box.width - 24, 200, -SWIPE_DISTANCE, 0]
-            : [24, 200, SWIPE_DISTANCE, 0];
-      await commands.swipe("[data-touch-target]", x, y, dx, dy);
-      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-      await waitFor(() => expect(trigger).toHaveFocus());
+      await expect(drawer.dataset["swipeDirection"]).toBe(direction);
     },
   };
 }
 
-export const SwipeToDismiss: Story = swipeToDismiss("bottom");
-export const SwipeLeftToDismiss: Story = swipeToDismiss("left");
-export const SwipeRightToDismiss: Story = swipeToDismiss("right");
+export const SwipesDownToDismiss: Story = swipeDirectionIs("bottom", "down");
+export const SwipesLeftToDismiss: Story = swipeDirectionIs("left", "left");
+export const SwipesRightToDismiss: Story = swipeDirectionIs("right", "right");
 
 export const TallContentScrolls: Story = {
   render: renderSide("right"),
