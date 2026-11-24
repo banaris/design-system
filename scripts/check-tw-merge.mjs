@@ -219,9 +219,12 @@ expect(
   "rounded-shell",
 );
 
-const indexSource = readFileSync(join(ROOT, "src", "index.ts"), "utf8");
+const indexSource = readFileSync(join(ROOT, "src", "index.ts"), "utf8").replace(
+  /\/\*[\s\S]*?\*\/|\/\/.*$/gm,
+  "",
+);
 if (
-  !/export\s*\{[^}]*\bcreateCn\b[^}]*\}\s*from\s*"\.\/lib\/cn"/.test(
+  !/export\s*\{(?:[^}]*,)?\s*createCn\s*(?:,[^}]*)?\}\s*from\s*"\.\/lib\/cn"/.test(
     indexSource,
   )
 ) {

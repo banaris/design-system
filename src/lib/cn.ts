@@ -1,5 +1,7 @@
 import {
   type ConfigExtension,
+  type DefaultClassGroupIds,
+  type DefaultThemeGroupIds,
   extendTailwindMerge,
   mergeConfigs,
 } from "tailwind-merge";
@@ -66,20 +68,25 @@ const tokenExtension = {
   },
 } satisfies ConfigExtension<string, string>["extend"];
 
-type CnClass = string | false | null | undefined;
-
 /**
  * A `cn` that knows the package's tokens plus `extend`, which takes
  * `tailwind-merge`'s own `extend` option: `createCn({ theme: { text: ["tiny"] } })`.
  */
-export const createCn = (
-  extend: ConfigExtension<string, string>["extend"] = {},
-): ((...classes: CnClass[]) => string) => {
-  const merge = extendTailwindMerge({ extend: tokenExtension }, (config) =>
-    mergeConfigs(config, { extend }),
+export const createCn = <
+  AdditionalClassGroupIds extends string = never,
+  AdditionalThemeGroupIds extends string = never,
+>(
+  extend: ConfigExtension<
+    DefaultClassGroupIds | AdditionalClassGroupIds,
+    DefaultThemeGroupIds | AdditionalThemeGroupIds
+  >["extend"] = {},
+) =>
+  extendTailwindMerge<AdditionalClassGroupIds, AdditionalThemeGroupIds>(
+    (config) =>
+      mergeConfigs(mergeConfigs(config, { extend: tokenExtension }), {
+        extend,
+      }),
   );
-  return (...classes) => merge(classes.filter(Boolean).join(" "));
-};
 
 export const twMerge = extendTailwindMerge({ extend: tokenExtension });
 
