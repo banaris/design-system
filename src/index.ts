@@ -2,6 +2,14 @@
  * may change without a major version. */
 
 export { Alert, type AlertProps } from "./components/alert";
+export {
+  Autocomplete,
+  AutocompleteInput,
+  type AutocompleteInputProps,
+  AutocompleteItem,
+  type AutocompleteItemProps,
+  type AutocompleteProps,
+} from "./components/autocomplete";
 export { Badge, type BadgeProps } from "./components/badge";
 export {
   Button,

@@ -88,7 +88,7 @@ export type ComboboxListProps = Omit<
   className?: string;
 };
 
-/** Holds the options; with `items` on `Combobox`, pass a function that renders one option. */
+/** Holds the options; with `items` on `Combobox` or `Autocomplete`, pass a function that renders one option. */
 export function ComboboxList({ className, ...rest }: ComboboxListProps) {
   return (
     <BaseCombobox.List
