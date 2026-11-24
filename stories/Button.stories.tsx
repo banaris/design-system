@@ -107,7 +107,7 @@ export const AsLink: Story = {
     </div>
   ),
   play: async ({ canvas }) => {
-    const link = canvas.getByText("Open habits");
+    const link = canvas.getByRole("link", { name: "Open habits" });
     await expect(link.tagName).toBe("A");
     await expect(link).toHaveAttribute("href", "/habits");
     await userEvent.click(link);

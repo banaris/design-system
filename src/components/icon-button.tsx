@@ -42,6 +42,8 @@ export function IconButton({
   pill = false,
   type = "button",
   nativeButton = true,
+  role = nativeButton ? undefined : "link",
+  disabled,
   className,
   ...rest
 }: IconButtonProps) {
@@ -49,6 +51,8 @@ export function IconButton({
     <BaseButton
       type={nativeButton ? type : undefined}
       nativeButton={nativeButton}
+      role={role}
+      disabled={disabled}
       className={cn(
         BASE,
         pill ? "rounded-pill" : "rounded-ds-md",

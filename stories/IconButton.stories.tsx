@@ -86,6 +86,26 @@ export const RequiresAccessibleName: Story = {
 
 const onNavigate = fn();
 
+const onBlockedNavigate = fn();
+
+export const DisabledLink: Story = {
+  render: (args) => (
+    <IconButton
+      {...args}
+      aria-label="Reset the habit"
+      disabled
+      render={<RouterLink to="/habits/reset" onNavigate={onBlockedNavigate} />}
+      nativeButton={false}
+    />
+  ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole("link", { name: "Reset the habit" });
+    await expect(link).toHaveAttribute("aria-disabled", "true");
+    await userEvent.click(link);
+    await expect(onBlockedNavigate).not.toHaveBeenCalled();
+  },
+};
+
 export const AsLink: Story = {
   render: (args) => (
     <IconButton
@@ -96,7 +116,7 @@ export const AsLink: Story = {
     />
   ),
   play: async ({ canvas }) => {
-    const link = canvas.getByLabelText("Reset the habit");
+    const link = canvas.getByRole("link", { name: "Reset the habit" });
     await expect(link.tagName).toBe("A");
     await expect(link).toHaveAttribute("href", "/habits/reset");
     await userEvent.click(link);

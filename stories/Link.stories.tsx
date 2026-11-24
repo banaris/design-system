@@ -1,5 +1,6 @@
 import { Link } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { ComponentProps } from "react";
 import { expect, fn, userEvent } from "storybook/test";
 
 import { RouterLink } from "./router-link";
@@ -35,6 +36,59 @@ export const InText: Story = {
 };
 
 const onNavigate = fn();
+
+const onOwnClick = fn();
+const onLinkClick = fn();
+
+export const KeepsBothClickHandlers: Story = {
+  render: () => (
+    <Link
+      onClick={onLinkClick}
+      render={
+        <RouterLink to="/habits" onNavigate={onNavigate} onClick={onOwnClick} />
+      }
+    >
+      Track a click
+    </Link>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("link", { name: "Track a click" }));
+    await expect(onOwnClick).toHaveBeenCalledOnce();
+    await expect(onLinkClick).toHaveBeenCalledOnce();
+  },
+};
+
+const ActiveLink = ({
+  className,
+  children,
+  ...rest
+}: Omit<ComponentProps<"a">, "className"> & {
+  className: (state: { isActive: boolean }) => string;
+}) => (
+  <a className={className({ isActive: true })} {...rest}>
+    {children}
+  </a>
+);
+
+export const FunctionClassName: Story = {
+  render: () => (
+    <Link
+      className="font-semibold"
+      render={
+        <ActiveLink
+          href="#habits"
+          className={({ isActive }) => (isActive ? "is-active" : "")}
+        />
+      }
+    >
+      Open habits
+    </Link>
+  ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole("link", { name: "Open habits" });
+    await expect(link).toHaveClass("is-active", "font-semibold", "underline");
+  },
+};
 
 export const RenderedAsRouterLink: Story = {
   render: () => (

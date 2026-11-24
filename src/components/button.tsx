@@ -73,7 +73,9 @@ const SIZE: Record<ButtonSize, string> = {
  * focus semantics. Styling is token-driven; pass `className` to override and
  * it will win over the variant.
  *
- * For a link, pass `render={<RouterLink />}` with `nativeButton={false}`.
+ * For a link, pass `render={<RouterLink />}` with `nativeButton={false}`;
+ * `role` then defaults to `link` (pass `role="button"` for a non-link
+ * element). Without the flag, `disabled` is inert on an `<a>`.
  */
 export function Button({
   variant = "primary",
@@ -83,15 +85,18 @@ export function Button({
   pill = false,
   type = "button",
   nativeButton = true,
+  role = nativeButton ? undefined : "link",
   children,
   className,
   ...rest
 }: ButtonProps) {
+  const blocked = disabled || loading;
   return (
     <BaseButton
       type={nativeButton ? type : undefined}
       nativeButton={nativeButton}
-      disabled={disabled || loading}
+      role={role}
+      disabled={blocked}
       aria-busy={loading || undefined}
       data-loading={loading || undefined}
       /* Order is priority: `className` sits last so a caller's utility beats

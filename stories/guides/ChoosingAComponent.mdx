@@ -28,6 +28,11 @@ A `Card` can hold a `List` or a `Table`. Do not stack a `Card` per row.
 
 Keep a menu to secondary choices. The one action the page is for belongs on a visible `Button`.
 
+## Link and Button
+
+- `Link` is a link inside a sentence or beside text, in the accent colour and underlined.
+- A link that stands alone as the page's call to action is a `Button` rendered as a link (`render` with `nativeButton={false}`). Pass the router's link element to either to navigate without a page load.
+
 ## Dialog, Popover and Tooltip
 
 - `Dialog` interrupts. It dims the page and asks for a decision or a short task, and the reader answers or dismisses it. Name it with a `DialogTitle`.

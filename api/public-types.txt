@@ -4,7 +4,7 @@ AlertProps.status?: StatusTone | undefined
 AlertProps.title?: ReactNode
 Badge: ({ status, className, children, ...rest }: BadgeProps) => Element
 BadgeProps.status?: StatusTone | undefined
-Button: ({ variant, size, loading, disabled, pill, type, nativeButton, children, className, ...rest }: ButtonProps) => Element
+Button: ({ variant, size, loading, disabled, pill, type, nativeButton, role, children, className, ...rest }: ButtonProps) => Element
 ButtonProps.children: ReactNode
 ButtonProps.className?: string | undefined
 ButtonProps.focusableWhenDisabled?: boolean | undefined
@@ -231,7 +231,7 @@ Icon(props).className?: string | undefined
 Icon(props).icon: ComponentType<SVGProps<SVGSVGElement>>
 Icon(props).label?: string | undefined
 Icon(props).size?: IconSize | undefined
-IconButton: ({ icon, variant, size, pill, type, nativeButton, className, ...rest }: IconButtonProps) => Element
+IconButton: ({ icon, variant, size, pill, type, nativeButton, role, disabled, className, ...rest }: IconButtonProps) => Element
 IconButtonProps.aria-label: string
 IconButtonProps.className?: string | undefined
 IconButtonProps.focusableWhenDisabled?: boolean | undefined
@@ -249,7 +249,7 @@ IconProps.label?: string | undefined
 IconProps.size?: IconSize | undefined
 IconSize = "sm" | "md" | "lg"
 Link: ({ render, className, children, ...rest }: LinkProps) => Element
-LinkProps.render?: ReactElement<{ className?: string | undefined; children?: unknown; }, string | JSXElementConstructor<any>> | undefined
+LinkProps.render?: ReactElement<{ className?: string | ((state: unknown) => string) | undefined; children?: unknown; }, string | JSXElementConstructor<any>> | undefined
 List: ({ className, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLUListElement>, HTMLUListElement>) => Element
 ListItem: ({ className, ...rest }: DetailedHTMLProps<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>) => Element
 ListItemProps: no own properties
