@@ -6,31 +6,39 @@
  * Most public prop types are derived from Base UI's (`ComponentProps<typeof
  * BaseX>`), and `@base-ui/react` is a caret dependency. A Base UI minor that
  * adds, renames or retypes a prop changes this package's API with no release
- * or changeset here — and two consumers on the same version of this package
- * can see different types. The built `dist/**\/*.d.mts` keeps
+ * or changeset here. The built `dist/**\/*.d.mts` keeps
  * `ComponentProps<typeof BaseX>` unexpanded, so its text does not move when
  * Base UI does; the snapshot is therefore the type checker's resolved form.
  *
- * A Base UI bump (a Renovate PR) that changes the surface fails here, and the
- * maintainer adds a changeset. An intended change to this package's own types
- * shows up as a reviewable diff of the snapshot.
+ * When this repo's lockfile moves to a Base UI that changes the surface (a
+ * Renovate PR), the check fails and the maintainer records it with a
+ * changeset. An intended change to this package's own types shows up as a
+ * reviewable diff of the snapshot.
  *
  * ── What it checks ─────────────────────────────────────────────────────
  *   Every export of the file at `exports["."].types`, resolved with the
- *   TypeScript compiler API: a props type lists its properties (name,
- *   optionality, resolved type), anything else its resolved type. The result
- *   must equal `api/public-types.txt`; `--update` rewrites that file.
+ *   TypeScript compiler API, one line each: a props type lists its properties
+ *   (name, optionality, resolved type), a component also the properties of its
+ *   props parameter, anything else its resolved type. The result must equal
+ *   `api/public-types.txt`; `--update` rewrites that file.
  *
  * ── What it does not catch ─────────────────────────────────────────────
+ *   - A consumer's install resolving a newer Base UI inside the range before
+ *     this repo has moved to it: the record lands after the drift, and two
+ *     consumers of one version of this package can still see different types.
+ *     Only an exact pin or a peer dependency would close that.
+ *   - A lowest-versions run: only the version in the lockfile is measured, so
+ *     a consumer on an older Base UI inside the range is not exercised.
  *   - Properties declared only in `@types/react` or TypeScript's lib are left
  *     out (hundreds of DOM attributes per component, and they move with every
  *     `@types/react` release). A property of theirs that this package starts
  *     or stops omitting is therefore not seen.
  *   - Behaviour: a prop that keeps its type but changes what it does.
- *   - A lowest-versions run: only the version in the lockfile is measured, so
- *     a consumer on an older Base UI inside the range is not exercised.
- *   - A type the checker prints by name (a callback's `state` argument, say)
- *     is recorded by that name; a change inside it is not seen.
+ *   - A type the checker prints by name (a callback's `state` argument, a
+ *     hook's return type) is recorded by that name; a change inside it is not
+ *     seen. `@types/react` aliases such as `ReactNode` stay by name on purpose.
+ *   - A TypeScript release that changes how types are printed moves the
+ *     snapshot with no API change: run `--update`, no changeset needed.
  *   - A union-typed export is recorded as its resolved type, not per member.
  *
  * Run `pnpm run build` first; this reads `dist/`.
@@ -100,58 +108,67 @@ const normalisePath = (path) => {
   if (path.startsWith(`${ROOT}/`)) return path.slice(ROOT.length + 1);
   return path;
 };
-const print = (type) =>
+const print = (type, expandAlias = false) =>
   checker
     .typeToString(
       type,
       undefined,
-      ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.InTypeAlias,
+      ts.TypeFormatFlags.NoTruncation |
+        (expandAlias ? ts.TypeFormatFlags.InTypeAlias : 0),
     )
     .replace(
       /import\("([^"]+)"\)/g,
       (_, path) => `import("${normalisePath(path)}")`,
     );
 
-const isExternal = (declaration) =>
+const isReactOrTsLibDeclaration = (declaration) =>
   /\/node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?(?:@types\/react|typescript)\//.test(
     declaration.getSourceFile().fileName,
   );
 
+const propertyLines = (label, type) =>
+  checker
+    .getPropertiesOfType(type)
+    .filter((p) => !p.declarations?.every(isReactOrTsLibDeclaration))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((p) => {
+      const optional = p.flags & ts.SymbolFlags.Optional ? "?" : "";
+      return `${label}.${p.name}${optional}: ${print(checker.getTypeOfSymbol(p))}`;
+    });
+
 const lines = [];
-const exportsOfModule = moduleSymbol
-  ? checker.getExportsOfModule(moduleSymbol)
-  : [];
-for (const exported of exportsOfModule.sort((a, b) =>
-  a.name.localeCompare(b.name),
-)) {
+const exportsOfModule = (
+  moduleSymbol ? checker.getExportsOfModule(moduleSymbol) : []
+).sort((a, b) => a.name.localeCompare(b.name));
+const exportedNames = new Set(exportsOfModule.map((e) => e.name));
+for (const exported of exportsOfModule) {
   const symbol =
     exported.flags & ts.SymbolFlags.Alias
       ? checker.getAliasedSymbol(exported)
       : exported;
-  const isValue = (symbol.flags & ts.SymbolFlags.Value) !== 0;
-  lines.push(`## ${exported.name}`);
-  if (isValue) {
-    lines.push(`  ${print(checker.getTypeOfSymbol(symbol))}`);
+  if (symbol.flags & ts.SymbolFlags.Value) {
+    const valueType = checker.getTypeOfSymbol(symbol);
+    lines.push(`${exported.name}: ${print(valueType)}`);
+    const parameter = valueType.getCallSignatures()[0]?.parameters[0];
+    const props =
+      parameter && checker.getTypeOfSymbolAtLocation(parameter, rootFile);
+    if (props && !exportedNames.has(props.aliasSymbol?.name)) {
+      lines.push(...propertyLines(`${exported.name}(props)`, props));
+    }
     continue;
   }
   const type = checker.getDeclaredTypeOfSymbol(symbol);
   if (type.flags & ts.TypeFlags.Any) {
     errors.push(`${exported.name} resolves to \`any\``);
   }
-  const listsProperties =
-    (type.flags & (ts.TypeFlags.Object | ts.TypeFlags.Intersection)) !== 0;
-  if (!listsProperties) {
-    lines.push(`  ${print(type)}`);
+  if (!(type.flags & (ts.TypeFlags.Object | ts.TypeFlags.Intersection))) {
+    lines.push(`${exported.name} = ${print(type, true)}`);
     continue;
   }
-  const properties = checker
-    .getPropertiesOfType(type)
-    .filter((p) => !p.declarations?.every(isExternal))
-    .sort((a, b) => a.name.localeCompare(b.name));
-  for (const p of properties) {
-    const optional = p.flags & ts.SymbolFlags.Optional ? "?" : "";
-    lines.push(`  ${p.name}${optional}: ${print(checker.getTypeOfSymbol(p))}`);
-  }
+  const own = propertyLines(exported.name, type);
+  lines.push(
+    ...(own.length > 0 ? own : [`${exported.name}: no own properties`]),
+  );
 }
 
 if (errors.length > 0) {
@@ -182,21 +199,23 @@ const expected = readFileSync(SNAPSHOT, "utf8");
 if (expected !== report) {
   const before = new Set(expected.split("\n"));
   const after = new Set(report.split("\n"));
+  const SHOWN = 40;
   const removed = [...before].filter((l) => !after.has(l));
   const added = [...after].filter((l) => !before.has(l));
   console.error("check:public-types failed\n");
   console.error(
     "  The public type surface differs from api/public-types.txt.\n" +
-      "  If the change is intended, run `pnpm run check:public-types --update`,\n" +
-      "  commit the snapshot and add a changeset (`pnpm run changeset`).\n",
+      "  If the change is intended, run `pnpm run check:public-types --update`\n" +
+      "  and commit the snapshot. Add a changeset when the change comes from this\n" +
+      "  package's own types or a runtime dependency such as @base-ui/react; a\n" +
+      "  typescript or @types/react bump alone needs none.\n",
   );
-  for (const l of removed.slice(0, 40)) console.error(`  - ${l}`);
-  for (const l of added.slice(0, 40)) console.error(`  + ${l}`);
-  const more =
-    removed.length +
-    added.length -
-    Math.min(removed.length, 40) -
-    Math.min(added.length, 40);
+  const shown = [
+    ...removed.slice(0, SHOWN).map((l) => `  - ${l}`),
+    ...added.slice(0, SHOWN).map((l) => `  + ${l}`),
+  ];
+  for (const l of shown) console.error(l);
+  const more = removed.length + added.length - shown.length;
   if (more > 0) console.error(`  … and ${more} more changed lines`);
   process.exit(1);
 }
