@@ -45,6 +45,108 @@ CheckboxProps.required?: boolean | undefined
 CheckboxProps.style?: CSSProperties | ((state: CheckboxRootState) => CSSProperties | undefined) | undefined
 CheckboxProps.uncheckedValue?: string | undefined
 CheckboxProps.value?: string | undefined
+Combobox: <Value, Multiple extends boolean | undefined = false, Item = Value>(props: Props<Value, Multiple, Item>) => Element
+Combobox(props).actionsRef?: RefObject<Actions | null> | undefined
+Combobox(props).autoComplete?: string | undefined
+Combobox(props).autoHighlight?: boolean | undefined
+Combobox(props).children?: ReactNode
+Combobox(props).defaultInputValue?: string | number | readonly string[] | undefined
+Combobox(props).defaultOpen?: boolean | undefined
+Combobox(props).defaultValue?: ComboboxInputValue<Value, Multiple> | null | undefined
+Combobox(props).disabled?: boolean | undefined
+Combobox(props).filter?: ((item: Item, query: string, itemToString?: ((item: Item) => string) | undefined) => boolean) | null | undefined
+Combobox(props).filteredItems?: readonly Item[] | readonly Group<Item>[] | undefined
+Combobox(props).form?: string | undefined
+Combobox(props).grid?: boolean | undefined
+Combobox(props).highlightItemOnHover?: boolean | undefined
+Combobox(props).id?: string | undefined
+Combobox(props).inline?: boolean | undefined
+Combobox(props).inputRef?: Ref<HTMLInputElement> | undefined
+Combobox(props).inputValue?: string | number | readonly string[] | undefined
+Combobox(props).isItemEqualToValue?: ((itemValue: Value, value: Value) => boolean) | undefined
+Combobox(props).items?: readonly any[] | readonly Group<any>[] | ComboboxItemCollection<Item, Value> | undefined
+Combobox(props).itemToStringLabel?: ((itemValue: Value) => string) | undefined
+Combobox(props).itemToStringValue?: ((itemValue: Value) => string) | undefined
+Combobox(props).limit?: number | undefined
+Combobox(props).locale?: LocalesArgument
+Combobox(props).loopFocus?: boolean | undefined
+Combobox(props).modal?: boolean | undefined
+Combobox(props).multiple?: Multiple | undefined
+Combobox(props).name?: string | undefined
+Combobox(props).onInputValueChange?: ((inputValue: string, eventDetails: ChangeEventDetails) => void) | undefined
+Combobox(props).onItemHighlighted?: ((highlightedValue: Value | undefined, eventDetails: HighlightEventDetails) => void) | undefined
+Combobox(props).onOpenChange?: ((open: boolean, eventDetails: OpenChangeEventDetails) => void) | undefined
+Combobox(props).onOpenChangeComplete?: ((open: boolean) => void) | undefined
+Combobox(props).onValueChange?: ((value: ComboboxOutputValue<Value, Multiple> | (Multiple extends true ? never : null), eventDetails: ChangeEventDetails) => void) | undefined
+Combobox(props).open?: boolean | undefined
+Combobox(props).openOnInputClick?: boolean | undefined
+Combobox(props).readOnly?: boolean | undefined
+Combobox(props).required?: boolean | undefined
+Combobox(props).value?: ComboboxInputValue<Value, Multiple> | null | undefined
+Combobox(props).virtualized?: boolean | undefined
+ComboboxContent: ({ className, children, ...rest }: ComboboxContentProps) => Element
+ComboboxContentProps.className?: string | undefined
+ComboboxContentProps.finalFocus?: boolean | RefObject<HTMLElement | null> | ((closeType: InteractionType) => boolean | void | HTMLElement | null) | undefined
+ComboboxContentProps.initialFocus?: boolean | RefObject<HTMLElement | null> | ((openType: InteractionType) => boolean | void | HTMLElement | null) | undefined
+ComboboxContentProps.style?: CSSProperties | ((state: ComboboxPopupState) => CSSProperties | undefined) | undefined
+ComboboxEmpty: ({ className, ...rest }: ComboboxEmptyProps) => Element
+ComboboxEmptyProps.className?: string | undefined
+ComboboxEmptyProps.style?: CSSProperties | ((state: ComboboxEmptyState) => CSSProperties | undefined) | undefined
+ComboboxInput: ({ className, ...rest }: ComboboxInputProps) => Element
+ComboboxInputProps.className?: string | undefined
+ComboboxInputProps.disabled?: boolean | undefined
+ComboboxInputProps.style?: CSSProperties | ((state: ComboboxInputState) => CSSProperties | undefined) | undefined
+ComboboxItem: ({ className, children, ...rest }: ComboboxItemProps) => Element
+ComboboxItemProps.children?: ReactNode
+ComboboxItemProps.className?: string | undefined
+ComboboxItemProps.disabled?: boolean | undefined
+ComboboxItemProps.index?: number | undefined
+ComboboxItemProps.nativeButton?: boolean | undefined
+ComboboxItemProps.onClick?: ((event: BaseUIEvent<MouseEvent<HTMLDivElement, MouseEvent>>) => void) | undefined
+ComboboxItemProps.style?: CSSProperties | ((state: ComboboxItemState) => CSSProperties | undefined) | undefined
+ComboboxItemProps.value?: any
+ComboboxList: ({ className, ...rest }: ComboboxListProps) => Element
+ComboboxListProps.children?: ReactNode | ((item: any, index: number) => ReactNode)
+ComboboxListProps.className?: string | undefined
+ComboboxListProps.style?: CSSProperties | ((state: ComboboxListState) => CSSProperties | undefined) | undefined
+ComboboxProps.actionsRef?: RefObject<Actions | null> | undefined
+ComboboxProps.autoComplete?: string | undefined
+ComboboxProps.autoHighlight?: boolean | undefined
+ComboboxProps.children?: ReactNode
+ComboboxProps.defaultInputValue?: string | number | readonly string[] | undefined
+ComboboxProps.defaultOpen?: boolean | undefined
+ComboboxProps.defaultValue?: unknown
+ComboboxProps.disabled?: boolean | undefined
+ComboboxProps.filter?: ((item: unknown, query: string, itemToString?: ((item: unknown) => string) | undefined) => boolean) | null | undefined
+ComboboxProps.filteredItems?: readonly unknown[] | readonly Group<unknown>[] | undefined
+ComboboxProps.form?: string | undefined
+ComboboxProps.grid?: boolean | undefined
+ComboboxProps.highlightItemOnHover?: boolean | undefined
+ComboboxProps.id?: string | undefined
+ComboboxProps.inline?: boolean | undefined
+ComboboxProps.inputRef?: Ref<HTMLInputElement> | undefined
+ComboboxProps.inputValue?: string | number | readonly string[] | undefined
+ComboboxProps.isItemEqualToValue?: ((itemValue: unknown, value: unknown) => boolean) | undefined
+ComboboxProps.items?: readonly any[] | readonly Group<any>[] | ComboboxItemCollection<unknown, unknown> | undefined
+ComboboxProps.itemToStringLabel?: ((itemValue: unknown) => string) | undefined
+ComboboxProps.itemToStringValue?: ((itemValue: unknown) => string) | undefined
+ComboboxProps.limit?: number | undefined
+ComboboxProps.locale?: LocalesArgument
+ComboboxProps.loopFocus?: boolean | undefined
+ComboboxProps.modal?: boolean | undefined
+ComboboxProps.multiple?: boolean | undefined
+ComboboxProps.name?: string | undefined
+ComboboxProps.onInputValueChange?: ((inputValue: string, eventDetails: ChangeEventDetails) => void) | undefined
+ComboboxProps.onItemHighlighted?: ((highlightedValue: unknown, eventDetails: HighlightEventDetails) => void) | undefined
+ComboboxProps.onOpenChange?: ((open: boolean, eventDetails: OpenChangeEventDetails) => void) | undefined
+ComboboxProps.onOpenChangeComplete?: ((open: boolean) => void) | undefined
+ComboboxProps.onValueChange?: ((value: unknown, eventDetails: ChangeEventDetails) => void) | undefined
+ComboboxProps.open?: boolean | undefined
+ComboboxProps.openOnInputClick?: boolean | undefined
+ComboboxProps.readOnly?: boolean | undefined
+ComboboxProps.required?: boolean | undefined
+ComboboxProps.value?: unknown
+ComboboxProps.virtualized?: boolean | undefined
 Container: ({ size, className, ...rest }: ContainerProps) => Element
 ContainerProps.size?: ContainerSize | undefined
 ContainerSize = "narrow" | "default" | "wide"
@@ -403,7 +505,7 @@ Select(props).highlightItemOnHover?: boolean | undefined
 Select(props).id?: string | undefined
 Select(props).inputRef?: Ref<HTMLInputElement> | undefined
 Select(props).isItemEqualToValue?: ((itemValue: Value, value: Value) => boolean) | undefined
-Select(props).items?: Record<string, ReactNode> | readonly { label: ReactNode; value: any; }[] | readonly Group<any>[] | undefined
+Select(props).items?: readonly Group<any>[] | Record<string, ReactNode> | readonly { label: ReactNode; value: any; }[] | undefined
 Select(props).itemToStringLabel?: ((itemValue: Value) => string) | undefined
 Select(props).itemToStringValue?: ((itemValue: Value) => string) | undefined
 Select(props).modal?: boolean | undefined
@@ -440,7 +542,7 @@ SelectProps.highlightItemOnHover?: boolean | undefined
 SelectProps.id?: string | undefined
 SelectProps.inputRef?: Ref<HTMLInputElement> | undefined
 SelectProps.isItemEqualToValue?: ((itemValue: unknown, value: unknown) => boolean) | undefined
-SelectProps.items?: Record<string, ReactNode> | readonly { label: ReactNode; value: any; }[] | readonly Group<any>[] | undefined
+SelectProps.items?: readonly Group<any>[] | Record<string, ReactNode> | readonly { label: ReactNode; value: any; }[] | undefined
 SelectProps.itemToStringLabel?: ((itemValue: unknown) => string) | undefined
 SelectProps.itemToStringValue?: ((itemValue: unknown) => string) | undefined
 SelectProps.modal?: boolean | undefined

@@ -48,11 +48,12 @@ Keep a menu to secondary choices. The one action the page is for belongs on a vi
 - `FieldError` belongs to a `Field`: it shows the field's `error` next to the control it describes. Set `error` on `Field` rather than rendering your own message.
 - `FieldsetError` does the same for a group of choices inside a `Fieldset`.
 
-## Checkbox, Switch, RadioGroup and Select
+## Checkbox, Switch, RadioGroup, Select and Combobox
 
 - `Checkbox` is a yes/no answer that is submitted with the form, or one of several that can all be chosen.
 - `Switch` is a setting that takes effect as soon as it is flipped. If a Save button decides it, use a `Checkbox`.
 - `RadioGroup` is one choice from a few options, all visible at once.
 - `Select` is one choice from many options, or from a few when space is tight.
+- `Combobox` is one choice from a list long enough that the reader wants to type to narrow it. It does not accept text that is not an option.
 
 Put a single control inside a `Field` to get a label, a hint and an error wired to it. Put a group of `Checkbox`es (in a `CheckboxGroup`) or `Radio`s inside a `Fieldset` with a `FieldsetLegend` to give the group one visible name, hint and error.

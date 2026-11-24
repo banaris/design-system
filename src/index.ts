@@ -16,6 +16,20 @@ export {
   type CheckboxGroupProps,
 } from "./components/checkbox-group";
 export {
+  Combobox,
+  ComboboxContent,
+  type ComboboxContentProps,
+  ComboboxEmpty,
+  type ComboboxEmptyProps,
+  ComboboxInput,
+  type ComboboxInputProps,
+  ComboboxItem,
+  type ComboboxItemProps,
+  ComboboxList,
+  type ComboboxListProps,
+  type ComboboxProps,
+} from "./components/combobox";
+export {
   Container,
   type ContainerProps,
   type ContainerSize,
