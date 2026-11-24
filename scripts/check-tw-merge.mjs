@@ -21,7 +21,9 @@
  *      versa — adding a token and forgetting the merge config is the common
  *      way this drifts.
  *   2. The measured grouping: same-group classes collapse, different-group
- *      classes coexist.
+ *      classes coexist — for the internal instance and for `createCn()`, the
+ *      public constructor — and a consumer token added via `createCn` merges
+ *      beside the package's.
  *   3. A caller's `className` beats the component's own variant.
  *   4. Each variant sets each colour property exactly once — a component-shape
  *      convention rather than a classification one, but it lives here because
@@ -32,7 +34,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { cn, twMerge } from "../src/lib/cn.ts";
+import { cn, createCn, twMerge } from "../src/lib/cn.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -124,70 +126,107 @@ for (const [cssPrefix, mergeGroup] of [
   );
 }
 
-/* ---- 2. Measured classification ---- */
-// `text-*` splits across two groups; these must NOT collapse into each other.
+/* ---- 2. Measured classification ----
+ * Run against the internal instance and against `createCn()`, the public
+ * constructor, so a consumer's `cn` is held to the same cases. */
+for (const [name, merge] of [
+  ["twMerge", twMerge],
+  ["createCn()", createCn()],
+]) {
+  // `text-*` splits across two groups; these must NOT collapse into each other.
+  expect(
+    `${name}: text-body (font-size) and text-accent-soft (colour) coexist`,
+    merge("text-body text-accent-soft"),
+    "text-body text-accent-soft",
+  );
+  // Same group: last wins.
+  expect(
+    `${name}: two semantic type steps collapse`,
+    merge("text-body text-h1"),
+    "text-h1",
+  );
+  expect(
+    `${name}: a semantic step and a utility step collapse`,
+    merge("text-body text-sm"),
+    "text-sm",
+  );
+  expect(
+    `${name}: the input step (font size) and a colour coexist`,
+    merge("text-input text-ink"),
+    "text-input text-ink",
+  );
+  expect(
+    `${name}: the input step is a font size, so a stock step replaces it`,
+    merge("text-input text-sm"),
+    "text-sm",
+  );
+  expect(
+    `${name}: a package size (font size) and a colour coexist`,
+    merge("text-ds-sm text-ink"),
+    "text-ds-sm text-ink",
+  );
+  expect(
+    `${name}: a semantic step and a package size collapse`,
+    merge("text-body text-ds-sm"),
+    "text-ds-sm",
+  );
+  expect(
+    `${name}: package radii collapse with each other and with a stock one`,
+    merge("rounded-ds-sm rounded-ds-md rounded-lg"),
+    "rounded-lg",
+  );
+  expect(
+    `${name}: a package typeface and a weight coexist`,
+    merge("font-ds-sans font-semibold"),
+    "font-ds-sans font-semibold",
+  );
+  expect(
+    `${name}: custom radius is exclusive with a stock one`,
+    merge("rounded-ds-md rounded-shell"),
+    "rounded-shell",
+  );
+  expect(
+    `${name}: custom shadows collapse`,
+    merge("shadow-soft shadow-overlay"),
+    "shadow-overlay",
+  );
+  expect(
+    `${name}: custom easings collapse`,
+    merge("ease-spring ease-standard"),
+    "ease-standard",
+  );
+  expect(
+    `${name}: colours still collapse`,
+    merge("bg-accent bg-surface"),
+    "bg-surface",
+  );
+}
+
+const consumerCn = createCn({ theme: { text: ["tiny"] } });
 expect(
-  "text-body (font-size) and text-accent-soft (colour) coexist",
-  twMerge("text-body text-accent-soft"),
-  "text-body text-accent-soft",
+  "consumer font size and a package colour coexist",
+  consumerCn("text-ink text-small", "text-tiny"),
+  "text-ink text-tiny",
 );
-// Same group: last wins.
 expect(
-  "two semantic type steps collapse",
-  twMerge("text-body text-h1"),
-  "text-h1",
+  "consumer font size collapses with a package font size",
+  consumerCn("text-small", "text-tiny"),
+  "text-tiny",
 );
 expect(
-  "a semantic step and a utility step collapse",
-  twMerge("text-body text-sm"),
-  "text-sm",
-);
-expect(
-  "the input step (font size) and a colour coexist",
-  twMerge("text-input text-ink"),
-  "text-input text-ink",
-);
-expect(
-  "the input step is a font size, so a stock step replaces it",
-  twMerge("text-input text-sm"),
-  "text-sm",
-);
-expect(
-  "a package size (font size) and a colour coexist",
-  twMerge("text-ds-sm text-ink"),
-  "text-ds-sm text-ink",
-);
-expect(
-  "a semantic step and a package size collapse",
-  twMerge("text-body text-ds-sm"),
-  "text-ds-sm",
-);
-expect(
-  "package radii collapse with each other and with a stock one",
-  twMerge("rounded-ds-sm rounded-ds-md rounded-lg"),
-  "rounded-lg",
-);
-expect(
-  "a package typeface and a weight coexist",
-  twMerge("font-ds-sans font-semibold"),
-  "font-ds-sans font-semibold",
-);
-expect(
-  "custom radius is exclusive with a stock one",
-  twMerge("rounded-ds-md rounded-shell"),
+  "a package token is still known after the consumer extends",
+  consumerCn("rounded-md", "rounded-shell"),
   "rounded-shell",
 );
-expect(
-  "custom shadows collapse",
-  twMerge("shadow-soft shadow-overlay"),
-  "shadow-overlay",
-);
-expect(
-  "custom easings collapse",
-  twMerge("ease-spring ease-standard"),
-  "ease-standard",
-);
-expect("colours still collapse", twMerge("bg-accent bg-surface"), "bg-surface");
+
+const indexSource = readFileSync(join(ROOT, "src", "index.ts"), "utf8");
+if (
+  !/export\s*\{[^}]*\bcreateCn\b[^}]*\}\s*from\s*"\.\/lib\/cn"/.test(
+    indexSource,
+  )
+) {
+  errors.push("src/index.ts does not export createCn from ./lib/cn.");
+}
 
 /* ---- 3. The caller wins ----
  * The property the whole merge exists for: overriding a variant must not

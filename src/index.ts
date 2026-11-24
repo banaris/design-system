@@ -1,6 +1,5 @@
 /* The package's public surface. Anything not re-exported here is internal and
- * may change without a major version — notably the `tailwind-merge` instance
- * in `lib/cn.ts`, which is configuration rather than API. */
+ * may change without a major version. */
 
 export { Alert, type AlertProps } from "./components/alert";
 export { Badge, type BadgeProps } from "./components/badge";
@@ -180,3 +179,4 @@ export {
   type TooltipTriggerProps,
 } from "./components/tooltip";
 export type { StatusTone } from "./lib/class-presets";
+export { createCn } from "./lib/cn";
