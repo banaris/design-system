@@ -72,6 +72,10 @@ export const KeepsUnmatchedText: Story = {
     const popup = document.querySelector("[role=listbox]")?.parentElement;
     if (!popup) throw new Error("no popup");
     await expect(getComputedStyle(popup).display).toBe("none");
+    await waitFor(() =>
+      expect(input).toHaveAttribute("aria-expanded", "false"),
+    );
+    await expect(input).not.toHaveAttribute("aria-controls");
     await userEvent.keyboard("{Enter}");
     await userEvent.click(document.body);
     await expect(input).toHaveValue("xyz");

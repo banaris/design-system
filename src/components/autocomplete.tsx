@@ -1,5 +1,7 @@
+"use client";
+
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete";
-import type { ComponentProps } from "react";
+import type { ComponentProps, JSX } from "react";
 
 import {
   CONTROL_SURFACE,
@@ -8,11 +10,33 @@ import {
   TEXT_ENTRY_BOX,
 } from "../lib/class-presets";
 import { cn } from "../lib/cn";
+import { PopupHiddenProvider, usePopupHidden } from "../lib/popup-hidden";
 
 export type AutocompleteProps = ComponentProps<typeof BaseAutocomplete.Root>;
 
 /** Owns the typed text (`value`) and open state; pass `items` so the list filters by that text. */
-export const Autocomplete = BaseAutocomplete.Root;
+export function Autocomplete<
+  // `any` mirrors Base UI's own overload so the public type stays identical.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Items extends readonly { items: readonly any[] }[],
+>(
+  props: Omit<
+    BaseAutocomplete.Root.Props<Items[number]["items"][number]>,
+    "items"
+  > & { items: Items },
+): JSX.Element;
+export function Autocomplete<ItemValue>(
+  props: Omit<BaseAutocomplete.Root.Props<ItemValue>, "items"> & {
+    items?: readonly ItemValue[] | undefined;
+  },
+): JSX.Element;
+export function Autocomplete(props: AutocompleteProps) {
+  return (
+    <PopupHiddenProvider>
+      <BaseAutocomplete.Root {...props} />
+    </PopupHiddenProvider>
+  );
+}
 
 export type AutocompleteInputProps = Omit<
   ComponentProps<typeof BaseAutocomplete.Input>,
@@ -26,6 +50,7 @@ export function AutocompleteInput({
   className,
   ...rest
 }: AutocompleteInputProps) {
+  const popupHidden = usePopupHidden();
   return (
     <BaseAutocomplete.Input
       className={cn(
@@ -34,6 +59,10 @@ export function AutocompleteInput({
         "w-full min-w-0",
         className,
       )}
+      {...(popupHidden && {
+        "aria-expanded": false,
+        "aria-controls": undefined,
+      })}
       {...rest}
     />
   );

@@ -83,6 +83,7 @@ export const NoMatch: Story = {
     await userEvent.click(input);
     await userEvent.type(input, "xyz");
     await expect(await screen.findByText("No cadence matches.")).toBeVisible();
+    await expect(input).toHaveAttribute("aria-expanded", "true");
     await expect(screen.queryAllByRole("option")).toHaveLength(0);
     await userEvent.keyboard("{Enter}");
     await expect(args.onValueChange).not.toHaveBeenCalled();
@@ -308,6 +309,17 @@ export const NoMatchWithoutEmptyMessage: Story = {
     const popup = document.querySelector("[role=listbox]")?.parentElement;
     if (!popup) throw new Error("no popup");
     await expect(getComputedStyle(popup).display).toBe("none");
+    await waitFor(() =>
+      expect(input).toHaveAttribute("aria-expanded", "false"),
+    );
+    await expect(input).not.toHaveAttribute("aria-controls");
+    await userEvent.clear(input);
+    await userEvent.type(input, "wee");
+    await screen.findByRole("option", { name: "Weekly" });
+    await waitFor(() => expect(input).toHaveAttribute("aria-expanded", "true"));
+    await expect(input.getAttribute("aria-controls")).toBe(
+      screen.getByRole("listbox").id,
+    );
   },
 };
 
