@@ -23,6 +23,8 @@ import {
 
 export type DrawerSide = "bottom" | "left" | "right";
 
+const DEFAULT_SIDE: DrawerSide = "bottom";
+
 const SWIPE_DIRECTION = {
   bottom: "down",
   left: "left",
@@ -46,7 +48,7 @@ export type DrawerProps = Omit<
 
 /** Owns the open state; put a `DrawerTrigger` and a `DrawerContent` inside. */
 export function Drawer(props: DrawerProps) {
-  const [side, setSide] = useState<DrawerSide>("bottom");
+  const [side, setSide] = useState<DrawerSide>(DEFAULT_SIDE);
   return (
     <SideContext value={setSide}>
       <BaseDrawer.Root {...props} swipeDirection={SWIPE_DIRECTION[side]} />
@@ -104,7 +106,7 @@ export type DrawerContentProps = Omit<
 /** Name it with a `DrawerTitle`; Escape, an outside press and a swipe toward its edge close it. */
 export function DrawerContent({
   className,
-  side = "bottom",
+  side = DEFAULT_SIDE,
   children,
   ...rest
 }: DrawerContentProps) {

@@ -64,6 +64,19 @@ const renderSide =
     </Drawer>
   );
 
+const renderShort =
+  (side: Side): NonNullable<Story["render"]> =>
+  (args) => (
+    <Drawer {...args}>
+      <DrawerTrigger variant="secondary">Filters</DrawerTrigger>
+      <DrawerContent side={side}>
+        <DrawerTitle>Filters</DrawerTitle>
+        <DrawerDescription>Narrow the list of projects.</DrawerDescription>
+        <DrawerClose>Done</DrawerClose>
+      </DrawerContent>
+    </Drawer>
+  );
+
 const openDrawer = async (canvas: {
   getByRole: (role: string, options: { name: string }) => HTMLElement;
 }) => {
@@ -146,23 +159,57 @@ export const TouchTargets: Story = {
   },
 };
 
-export const SwipeToDismiss: Story = {
+const SWIPE_DISTANCE = 400;
+
+function swipeToDismiss(side: Side): Story {
+  return {
+    render: renderShort(side),
+    play: async ({ canvas }) => {
+      const trigger = canvas.getByRole("button", { name: "Filters" });
+      const drawer = await openDrawer(canvas);
+      await expect(drawer.dataset["swipeDirection"]).toBe(
+        { bottom: "down", left: "left", right: "right" }[side],
+      );
+      const commands = await touchCommands();
+      if (!commands) return;
+      /* The drawer slides in after it turns visible; a swipe aimed at where it
+       * is not yet would miss it. */
+      await waitFor(async () => {
+        const { top, right, bottom, left } = drawer.getBoundingClientRect();
+        await expect(top).toBeGreaterThanOrEqual(0);
+        await expect(left).toBeGreaterThanOrEqual(0);
+        await expect(right).toBeLessThanOrEqual(window.innerWidth);
+        await expect(bottom).toBeLessThanOrEqual(window.innerHeight);
+      });
+      drawer.dataset["touchTarget"] = "";
+      const box = drawer.getBoundingClientRect();
+      const [x, y, dx, dy]: [number, number, number, number] =
+        side === "bottom"
+          ? [box.width / 2, 24, 0, SWIPE_DISTANCE]
+          : side === "left"
+            ? [box.width - 24, 200, -SWIPE_DISTANCE, 0]
+            : [24, 200, SWIPE_DISTANCE, 0];
+      await commands.swipe("[data-touch-target]", x, y, dx, dy);
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+      await waitFor(() => expect(trigger).toHaveFocus());
+    },
+  };
+}
+
+export const SwipeToDismiss: Story = swipeToDismiss("bottom");
+export const SwipeLeftToDismiss: Story = swipeToDismiss("left");
+export const SwipeRightToDismiss: Story = swipeToDismiss("right");
+
+export const TallContentScrolls: Story = {
+  render: renderSide("right"),
   play: async ({ canvas }) => {
-    const commands = await touchCommands();
-    if (!commands) return;
     const drawer = await openDrawer(canvas);
-    /* The sheet slides in after it turns visible; a swipe aimed at where it
-     * is not yet would miss it. */
     await waitFor(() =>
-      expect(drawer.getBoundingClientRect().bottom).toBeCloseTo(
-        window.innerHeight - 16,
-        0,
+      expect(drawer.getBoundingClientRect().height).toBeLessThanOrEqual(
+        window.innerHeight,
       ),
     );
-    drawer.dataset["touchTarget"] = "";
-    const { width } = drawer.getBoundingClientRect();
-    await commands.swipe("[data-touch-target]", width / 2, 24, 0, 400);
-    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await expect(drawer.scrollHeight).toBeGreaterThan(drawer.clientHeight);
   },
 };
 
