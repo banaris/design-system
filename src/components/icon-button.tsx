@@ -16,7 +16,7 @@ export type IconButtonProps = {
   pill?: boolean;
 } & Omit<
   ComponentProps<typeof BaseButton>,
-  "aria-label" | "children" | "className" | "render"
+  "aria-label" | "children" | "className"
 > & {
     className?: string;
   };
@@ -41,12 +41,18 @@ export function IconButton({
   size = "md",
   pill = false,
   type = "button",
+  nativeButton = true,
+  role = nativeButton ? undefined : "link",
+  disabled,
   className,
   ...rest
 }: IconButtonProps) {
   return (
     <BaseButton
-      type={type}
+      type={nativeButton ? type : undefined}
+      nativeButton={nativeButton}
+      role={role}
+      disabled={disabled}
       className={cn(
         BASE,
         pill ? "rounded-pill" : "rounded-ds-md",

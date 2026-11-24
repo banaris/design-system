@@ -82,7 +82,7 @@ export function DropdownMenuItem({
 
 export type DropdownMenuLinkItemProps = Omit<
   ComponentProps<typeof BaseMenu.LinkItem>,
-  "className" | "render" | "closeOnClick"
+  "className" | "closeOnClick"
 > & {
   className?: string;
   /**

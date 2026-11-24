@@ -80,6 +80,7 @@ export {
   type IconButtonProps,
   type IconButtonSize,
 } from "./components/icon-button";
+export { Link, type LinkProps } from "./components/link";
 export {
   List,
   ListItem,

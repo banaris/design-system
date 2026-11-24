@@ -1,7 +1,9 @@
 import { IconButton } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { RotateCcw } from "lucide-react";
-import { expect } from "storybook/test";
+import { expect, fn, userEvent } from "storybook/test";
+
+import { RouterLink } from "./router-link";
 
 const meta = {
   title: "Actions/IconButton",
@@ -80,4 +82,44 @@ export const RequiresAccessibleName: Story = {
     <IconButton icon={RotateCcw} />
   ),
   tags: ["!dev", "!test"],
+};
+
+const onNavigate = fn();
+
+const onBlockedNavigate = fn();
+
+export const DisabledLink: Story = {
+  render: (args) => (
+    <IconButton
+      {...args}
+      aria-label="Reset the habit"
+      disabled
+      render={<RouterLink to="/habits/reset" onNavigate={onBlockedNavigate} />}
+      nativeButton={false}
+    />
+  ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole("link", { name: "Reset the habit" });
+    await expect(link).toHaveAttribute("aria-disabled", "true");
+    await userEvent.click(link);
+    await expect(onBlockedNavigate).not.toHaveBeenCalled();
+  },
+};
+
+export const AsLink: Story = {
+  render: (args) => (
+    <IconButton
+      {...args}
+      aria-label="Reset the habit"
+      render={<RouterLink to="/habits/reset" onNavigate={onNavigate} />}
+      nativeButton={false}
+    />
+  ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole("link", { name: "Reset the habit" });
+    await expect(link.tagName).toBe("A");
+    await expect(link).toHaveAttribute("href", "/habits/reset");
+    await userEvent.click(link);
+    await expect(onNavigate).toHaveBeenCalledWith("/habits/reset");
+  },
 };
