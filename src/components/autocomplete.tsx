@@ -1,3 +1,5 @@
+"use client";
+
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete";
 import type { ComponentProps } from "react";
 
@@ -8,11 +10,23 @@ import {
   TEXT_ENTRY_BOX,
 } from "../lib/class-presets";
 import { cn } from "../lib/cn";
+import {
+  PopupHiddenProvider,
+  usePopupHiddenInputProps,
+} from "../lib/popup-hidden";
 
 export type AutocompleteProps = ComponentProps<typeof BaseAutocomplete.Root>;
 
 /** Owns the typed text (`value`) and open state; pass `items` so the list filters by that text. */
-export const Autocomplete = BaseAutocomplete.Root;
+export const Autocomplete: typeof BaseAutocomplete.Root = function Autocomplete(
+  props: AutocompleteProps,
+) {
+  return (
+    <PopupHiddenProvider>
+      <BaseAutocomplete.Root {...props} />
+    </PopupHiddenProvider>
+  );
+};
 
 export type AutocompleteInputProps = Omit<
   ComponentProps<typeof BaseAutocomplete.Input>,
@@ -26,6 +40,7 @@ export function AutocompleteInput({
   className,
   ...rest
 }: AutocompleteInputProps) {
+  const popupHiddenProps = usePopupHiddenInputProps();
   return (
     <BaseAutocomplete.Input
       className={cn(
@@ -34,6 +49,7 @@ export function AutocompleteInput({
         "w-full min-w-0",
         className,
       )}
+      {...popupHiddenProps}
       {...rest}
     />
   );

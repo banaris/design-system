@@ -83,6 +83,7 @@ export const NoMatch: Story = {
     await userEvent.click(input);
     await userEvent.type(input, "xyz");
     await expect(await screen.findByText("No cadence matches.")).toBeVisible();
+    await expect(input).toHaveAttribute("aria-expanded", "true");
     await expect(screen.queryAllByRole("option")).toHaveLength(0);
     await userEvent.keyboard("{Enter}");
     await expect(args.onValueChange).not.toHaveBeenCalled();
@@ -283,21 +284,23 @@ export const InsideSafeAreaAtTheLeftEdge: Story = insideSafeArea("left-0");
 
 export const InsideSafeAreaAtTheRightEdge: Story = insideSafeArea("right-0");
 
+const withoutEmptyMessage: Story["render"] = (args) => (
+  <Combobox {...args}>
+    <ComboboxInput aria-label="Repeat" />
+    <ComboboxContent>
+      <ComboboxList>
+        {(item: (typeof ITEMS)[number]) => (
+          <ComboboxItem key={item.value} value={item}>
+            {item.label}
+          </ComboboxItem>
+        )}
+      </ComboboxList>
+    </ComboboxContent>
+  </Combobox>
+);
+
 export const NoMatchWithoutEmptyMessage: Story = {
-  render: (args) => (
-    <Combobox {...args}>
-      <ComboboxInput aria-label="Repeat" />
-      <ComboboxContent>
-        <ComboboxList>
-          {(item: (typeof ITEMS)[number]) => (
-            <ComboboxItem key={item.value} value={item}>
-              {item.label}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxContent>
-    </Combobox>
-  ),
+  render: withoutEmptyMessage,
   play: async ({ canvas }) => {
     const input = canvas.getByRole("combobox");
     await userEvent.click(input);
@@ -308,6 +311,31 @@ export const NoMatchWithoutEmptyMessage: Story = {
     const popup = document.querySelector("[role=listbox]")?.parentElement;
     if (!popup) throw new Error("no popup");
     await expect(getComputedStyle(popup).display).toBe("none");
+    await waitFor(() =>
+      expect(input).toHaveAttribute("aria-expanded", "false"),
+    );
+    await expect(input).not.toHaveAttribute("aria-controls");
+    await userEvent.clear(input);
+    await userEvent.type(input, "wee");
+    await screen.findByRole("option", { name: "Weekly" });
+    await waitFor(() => expect(input).toHaveAttribute("aria-expanded", "true"));
+    await expect(input.getAttribute("aria-controls")).toBe(
+      screen.getByRole("listbox").id,
+    );
+  },
+};
+
+export const EmptyItemsWithoutEmptyMessage: Story = {
+  args: { items: [] },
+  render: withoutEmptyMessage,
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("combobox");
+    await userEvent.click(input);
+    await userEvent.keyboard("{ArrowDown}");
+    await waitFor(() =>
+      expect(input).toHaveAttribute("aria-expanded", "false"),
+    );
+    await expect(input).not.toHaveAttribute("aria-controls");
   },
 };
 

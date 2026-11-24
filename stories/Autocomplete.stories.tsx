@@ -72,6 +72,10 @@ export const KeepsUnmatchedText: Story = {
     const popup = document.querySelector("[role=listbox]")?.parentElement;
     if (!popup) throw new Error("no popup");
     await expect(getComputedStyle(popup).display).toBe("none");
+    await waitFor(() =>
+      expect(input).toHaveAttribute("aria-expanded", "false"),
+    );
+    await expect(input).not.toHaveAttribute("aria-controls");
     await userEvent.keyboard("{Enter}");
     await userEvent.click(document.body);
     await expect(input).toHaveValue("xyz");
@@ -79,6 +83,19 @@ export const KeepsUnmatchedText: Story = {
       "xyz",
       expect.anything(),
     );
+  },
+};
+
+export const EmptyItems: Story = {
+  args: { items: [] },
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("combobox");
+    await userEvent.click(input);
+    await userEvent.keyboard("{ArrowDown}");
+    await waitFor(() =>
+      expect(input).toHaveAttribute("aria-expanded", "false"),
+    );
+    await expect(input).not.toHaveAttribute("aria-controls");
   },
 };
 

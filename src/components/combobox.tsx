@@ -13,12 +13,23 @@ import {
 } from "../lib/class-presets";
 import { cn } from "../lib/cn";
 import { CheckIcon, ChevronIcon } from "../lib/control-icons";
+import {
+  PopupHiddenProvider,
+  usePopupHiddenInputProps,
+  usePositionerRef,
+} from "../lib/popup-hidden";
 import { usePopupCollisionPadding } from "../lib/safe-area";
 
 export type ComboboxProps = ComponentProps<typeof BaseCombobox.Root>;
 
 /** Owns the value, query and open state; pass `items` so the list filters and the input shows labels. */
-export const Combobox = BaseCombobox.Root;
+export const Combobox: typeof BaseCombobox.Root = function Combobox(props) {
+  return (
+    <PopupHiddenProvider>
+      <BaseCombobox.Root {...props} />
+    </PopupHiddenProvider>
+  );
+};
 
 export type ComboboxInputProps = Omit<
   ComponentProps<typeof BaseCombobox.Input>,
@@ -29,6 +40,7 @@ export type ComboboxInputProps = Omit<
 
 /** The text input with a chevron; clicking the input opens the list. Name it with `aria-label` or a `Field` label. */
 export function ComboboxInput({ className, ...rest }: ComboboxInputProps) {
+  const popupHiddenProps = usePopupHiddenInputProps();
   return (
     <BaseCombobox.InputGroup className="group/combobox relative flex w-full">
       <BaseCombobox.Input
@@ -38,6 +50,7 @@ export function ComboboxInput({ className, ...rest }: ComboboxInputProps) {
           "w-full min-w-0 pe-10",
           className,
         )}
+        {...popupHiddenProps}
         {...rest}
       />
       <ChevronIcon className="text-ink-dim group-data-disabled/combobox:text-ink-faint pointer-events-none absolute inset-y-0 end-4 my-auto size-4 forced-colors:text-[CanvasText] group-data-disabled/combobox:forced-colors:text-[GrayText]" />
@@ -57,6 +70,7 @@ export function ComboboxContent({
   children,
   ...rest
 }: ComboboxContentProps) {
+  const positionerRef = usePositionerRef();
   const collisionPadding = usePopupCollisionPadding();
   return (
     <BaseCombobox.Portal>
@@ -64,6 +78,7 @@ export function ComboboxContent({
         sideOffset={4}
         collisionPadding={collisionPadding}
         className="z-[var(--z-dropdown)]"
+        ref={positionerRef}
       >
         <BaseCombobox.Popup
           className={cn(
