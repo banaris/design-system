@@ -3,7 +3,6 @@ import {
   AutocompleteInput,
   AutocompleteItem,
   ComboboxContent,
-  ComboboxEmpty,
   ComboboxList,
   Field,
   FieldHint,
@@ -29,7 +28,6 @@ const meta = {
     <Autocomplete {...args}>
       <AutocompleteInput aria-label="Repeat" placeholder="Type a cadence" />
       <ComboboxContent>
-        <ComboboxEmpty>No cadence matches.</ComboboxEmpty>
         <ComboboxList>
           {(item: string) => (
             <AutocompleteItem key={item} value={item}>
@@ -71,6 +69,9 @@ export const KeepsUnmatchedText: Story = {
     await waitFor(() =>
       expect(screen.queryAllByRole("option")).toHaveLength(0),
     );
+    const popup = document.querySelector("[role=listbox]")?.parentElement;
+    if (!popup) throw new Error("no popup");
+    await expect(getComputedStyle(popup).display).toBe("none");
     await userEvent.keyboard("{Enter}");
     await userEvent.click(document.body);
     await expect(input).toHaveValue("xyz");
@@ -135,6 +136,8 @@ export const EscapeCloses: Story = {
     await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
     await expect(input).toHaveAttribute("aria-expanded", "false");
     await expect(input).toHaveValue("mo");
+    await userEvent.keyboard("{Escape}");
+    await expect(input).toHaveValue("");
   },
 };
 
