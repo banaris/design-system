@@ -71,4 +71,4 @@ If the reader needs to compare sections side by side, use neither; show them.
 - `Autocomplete` is a text field that suggests options while the reader types, such as a search box or an address field. Its value is whatever text was typed, an option or not.
 - `NumberField` is a number the reader types or steps with the buttons, such as a quantity. It keeps the value inside `min` and `max`. For a plain text answer use a `TextField`; for a number picked along a range where the exact value matters less, use a `Slider`.
 
-Put a single control inside a `Field` to get a label, a hint and an error wired to it. Put a group of `Checkbox`es (in a `CheckboxGroup`) or `Radio`s inside a `Fieldset` with a `FieldsetLegend` to give the group one visible name, hint and error.
+Put a single form control (not a `Toggle`, which is a button) inside a `Field` to get a label, a hint and an error wired to it. Put a group of `Checkbox`es (in a `CheckboxGroup`) or `Radio`s inside a `Fieldset` with a `FieldsetLegend` to give the group one visible name, hint and error.

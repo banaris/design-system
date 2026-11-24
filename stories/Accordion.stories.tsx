@@ -90,6 +90,59 @@ export const Keyboard: Story = {
   },
 };
 
+const cornerRadius = (
+  canvas: {
+    getByRole: (role: string, options: { name: string }) => HTMLElement;
+  },
+  name: string,
+  corner: "TopLeft" | "BottomLeft",
+) =>
+  getComputedStyle(canvas.getByRole("button", { name }))[
+    `border${corner}Radius`
+  ];
+
+export const EdgeCorners: Story = {
+  play: async ({ canvas }) => {
+    await expect(cornerRadius(canvas, "Shipping", "TopLeft")).toBe("10px");
+    await expect(cornerRadius(canvas, "Shipping", "BottomLeft")).toBe("0px");
+    await expect(cornerRadius(canvas, "Warranty", "BottomLeft")).toBe("10px");
+    await expect(cornerRadius(canvas, "Warranty", "TopLeft")).toBe("0px");
+  },
+};
+
+export const EdgeCornersCustomRadius: Story = {
+  args: { className: "max-w-96 rounded-none" },
+  play: async ({ canvas }) => {
+    await expect(cornerRadius(canvas, "Shipping", "TopLeft")).toBe("0px");
+    await expect(cornerRadius(canvas, "Warranty", "BottomLeft")).toBe("0px");
+  },
+};
+
+export const HeadingLevel: Story = {
+  render: (args) => (
+    <Accordion {...args}>
+      <AccordionItem value="shipping">
+        <AccordionTrigger headingLevel={2}>Shipping</AccordionTrigger>
+        <AccordionPanel>
+          Orders leave the warehouse within a day.
+        </AccordionPanel>
+      </AccordionItem>
+      <AccordionItem value="returns">
+        <AccordionTrigger>Returns</AccordionTrigger>
+        <AccordionPanel>Send an item back within 30 days.</AccordionPanel>
+      </AccordionItem>
+    </Accordion>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("heading", { level: 2, name: "Shipping" }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByRole("heading", { level: 3, name: "Returns" }),
+    ).toBeVisible();
+  },
+};
+
 export const Disabled: Story = {
   play: async ({ canvas }) => {
     const warranty = canvas.getByRole("button", { name: "Warranty" });

@@ -21,8 +21,9 @@ AccordionProps.onValueChange?: ((value: AccordionValue<unknown>, eventDetails: A
 AccordionProps.orientation?: Orientation | undefined
 AccordionProps.style?: CSSProperties | ((state: State<unknown>) => CSSProperties | undefined) | undefined
 AccordionProps.value?: AccordionValue<unknown> | undefined
-AccordionTrigger: ({ className, children, ...rest }: AccordionTriggerProps) => Element
+AccordionTrigger: ({ className, children, headingLevel, ...rest }: AccordionTriggerProps) => Element
 AccordionTriggerProps.className?: string | undefined
+AccordionTriggerProps.headingLevel?: 2 | 3 | 4 | 5 | 6 | undefined
 AccordionTriggerProps.nativeButton?: boolean | undefined
 AccordionTriggerProps.style?: CSSProperties | ((state: AccordionTriggerState) => CSSProperties | undefined) | undefined
 Alert: ({ status, title, className, children, ...rest }: AlertProps) => Element
@@ -541,17 +542,17 @@ ListProps: no own properties
 LogoMark: ({ size, title, className, ...rest }: LogoMarkProps) => Element
 LogoMarkProps.size?: number | undefined
 LogoMarkProps.title?: string | undefined
-NumberField: ({ className, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, ...rest }: NumberFieldProps) => Element
+NumberField: ({ className, decrementLabel, incrementLabel, ...rest }: NumberFieldProps) => Element
 NumberFieldProps.allowOutOfRange?: boolean | undefined
 NumberFieldProps.allowWheelScrub?: boolean | undefined
-NumberFieldProps.aria-label?: string | undefined
-NumberFieldProps.aria-labelledby?: string | undefined
 NumberFieldProps.className?: string | undefined
+NumberFieldProps.decrementLabel?: string | undefined
 NumberFieldProps.defaultValue?: number | undefined
 NumberFieldProps.disabled?: boolean | undefined
 NumberFieldProps.form?: string | undefined
 NumberFieldProps.format?: NumberFormatOptions | undefined
 NumberFieldProps.id?: string | undefined
+NumberFieldProps.incrementLabel?: string | undefined
 NumberFieldProps.inputRef?: Ref<HTMLInputElement> | undefined
 NumberFieldProps.largeStep?: number | undefined
 NumberFieldProps.locale?: LocalesArgument

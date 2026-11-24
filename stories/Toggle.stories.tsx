@@ -1,4 +1,4 @@
-import { Field, FieldLabel, Toggle } from "@banaris/design-system";
+import { Toggle } from "@banaris/design-system";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
@@ -52,6 +52,26 @@ export const Disabled: Story = {
   },
 };
 
+export const DisabledPressed: Story = {
+  render: (args) => (
+    <div className="flex items-center gap-3">
+      <Toggle {...args} disabled>
+        Off
+      </Toggle>
+      <Toggle {...args} disabled defaultPressed>
+        On
+      </Toggle>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const off = canvas.getByRole("button", { name: "Off" });
+    const on = canvas.getByRole("button", { name: "On" });
+    await expect(getComputedStyle(on).backgroundColor).not.toBe(
+      getComputedStyle(off).backgroundColor,
+    );
+  },
+};
+
 export const Sizes: Story = {
   render: (args) => (
     <div className="flex items-center gap-3">
@@ -65,14 +85,5 @@ export const Sizes: Story = {
         Large
       </Toggle>
     </div>
-  ),
-};
-
-export const InField: Story = {
-  render: (args) => (
-    <Field>
-      <FieldLabel>Formatting</FieldLabel>
-      <Toggle {...args}>Italic</Toggle>
-    </Field>
   ),
 };

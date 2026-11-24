@@ -7,6 +7,8 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
 
+import { resolveToken } from "./border-color";
+
 const meta = {
   title: "Forms/NumberField",
   component: NumberField,
@@ -94,6 +96,16 @@ export const Keyboard: Story = {
   },
 };
 
+export const CustomLabels: Story = {
+  args: { decrementLabel: "Verringern", incrementLabel: "Erhöhen" },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("button", { name: "Verringern" }),
+    ).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Erhöhen" })).toBeVisible();
+  },
+};
+
 export const Disabled: Story = {
   args: { disabled: true },
   play: async ({ canvas }) => {
@@ -103,6 +115,47 @@ export const Disabled: Story = {
     await expect(
       canvas.getByRole("button", { name: "Increase" }),
     ).toHaveAttribute("data-disabled");
+  },
+};
+
+export const InFieldWithCustomLabel: Story = {
+  args: { "aria-label": undefined },
+  render: (args) => (
+    <Field>
+      <FieldLabel nativeLabel={false}>Seats</FieldLabel>
+      <NumberField {...args} />
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("textbox", { name: "Seats" })).toBeVisible();
+  },
+};
+
+export const DescribedAndInvalid: Story = {
+  args: { "aria-label": "Seats" },
+  render: (args) => (
+    <div>
+      <NumberField
+        {...args}
+        aria-describedby="seats-hint"
+        aria-invalid
+        aria-errormessage="seats-hint"
+        aria-details="seats-hint"
+      />
+      <p id="seats-hint">How many people are coming.</p>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("textbox", { name: "Seats" });
+    await expect(input).toHaveAccessibleDescription(
+      "How many people are coming.",
+    );
+    await expect(input).toHaveAttribute("aria-invalid", "true");
+    await expect(input).toHaveAttribute("aria-details", "seats-hint");
+    await expect(input.closest("[aria-details]")).toBe(input);
+    await expect(getComputedStyle(input).borderTopColor).toBe(
+      resolveToken("--color-danger"),
+    );
   },
 };
 

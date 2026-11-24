@@ -26,7 +26,7 @@ export function Toggle({ className, size = "md", ...rest }: ToggleProps) {
     <BaseToggle
       className={cn(
         BASE,
-        "rounded-ds-md border-control-border text-ink hover:not-data-disabled:bg-surface-hover data-pressed:not-data-disabled:bg-fill data-pressed:not-data-disabled:text-on-fill data-pressed:hover:not-data-disabled:bg-fill-hover bg-transparent font-semibold data-pressed:not-data-disabled:border-transparent",
+        "rounded-ds-md border-control-border text-ink hover:not-data-disabled:bg-surface-hover data-pressed:not-data-disabled:bg-fill data-pressed:not-data-disabled:text-on-fill data-pressed:hover:not-data-disabled:bg-fill-hover data-pressed:data-disabled:bg-ink-faint data-pressed:data-disabled:text-surface bg-transparent font-semibold data-pressed:not-data-disabled:border-transparent forced-colors:data-pressed:not-data-disabled:bg-[Highlight] forced-colors:data-pressed:not-data-disabled:text-[HighlightText] forced-colors:data-pressed:hover:not-data-disabled:bg-[Highlight] forced-colors:data-pressed:data-disabled:bg-[GrayText] forced-colors:data-pressed:data-disabled:text-[Canvas]",
         SIZE[size],
         className,
       )}

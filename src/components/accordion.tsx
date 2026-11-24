@@ -1,5 +1,7 @@
+"use client";
+
 import { Accordion as BaseAccordion } from "@base-ui/react/accordion";
-import type { ComponentProps } from "react";
+import { type ComponentProps, createElement } from "react";
 
 import { FOCUS_RING, TRANSITION_INTERACTIVE } from "../lib/class-presets";
 import { cn } from "../lib/cn";
@@ -37,7 +39,7 @@ export function AccordionItem({ className, ...rest }: AccordionItemProps) {
   return (
     <BaseAccordion.Item
       className={cn(
-        "border-divider border-t border-solid first:border-t-0",
+        "border-divider border-t border-solid first:rounded-t-[inherit] first:border-t-0 last:rounded-b-[inherit]",
         className,
       )}
       {...rest}
@@ -50,19 +52,25 @@ export type AccordionTriggerProps = Omit<
   "className" | "render"
 > & {
   className?: string;
+  /** The heading level that wraps the button; pick the one that fits the page outline. Defaults to 3. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 };
 
 /** The heading button that opens and closes its section; its children are the section's name. */
 export function AccordionTrigger({
   className,
   children,
+  headingLevel = 3,
   ...rest
 }: AccordionTriggerProps) {
   return (
-    <BaseAccordion.Header className="m-0 flex">
+    <BaseAccordion.Header
+      className="m-0 flex rounded-[inherit]"
+      render={createElement(`h${String(headingLevel)}`)}
+    >
       <BaseAccordion.Trigger
         className={cn(
-          "touch-target text-ink text-ds-base hover:not-data-disabled:bg-surface-hover data-disabled:text-ink-faint group box-border flex w-full cursor-pointer items-center justify-between gap-3 border-0 bg-transparent px-4 py-3 text-start font-semibold data-disabled:cursor-not-allowed data-disabled:forced-colors:text-[GrayText]",
+          "touch-target text-ink text-ds-base hover:not-data-disabled:bg-surface-hover data-disabled:text-ink-faint group box-border flex w-full cursor-pointer items-center justify-between gap-3 rounded-[inherit] border-0 bg-transparent px-4 py-3 text-start font-semibold data-disabled:cursor-not-allowed data-panel-open:rounded-b-none data-disabled:forced-colors:text-[GrayText]",
           TRANSITION_INTERACTIVE,
           FOCUS_RING,
           className,
