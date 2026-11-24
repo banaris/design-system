@@ -43,6 +43,12 @@
   }
 }
 
+@keyframes ds-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
 @keyframes ds-spin {
   to {
     transform: rotate(360deg);
