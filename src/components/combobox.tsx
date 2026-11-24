@@ -15,25 +15,21 @@ import { cn } from "../lib/cn";
 import { CheckIcon, ChevronIcon } from "../lib/control-icons";
 import {
   PopupHiddenProvider,
-  usePopupHidden,
-  useReportPopupHidden,
+  usePopupHiddenInputProps,
+  usePositionerRef,
 } from "../lib/popup-hidden";
 import { usePopupCollisionPadding } from "../lib/safe-area";
 
 export type ComboboxProps = ComponentProps<typeof BaseCombobox.Root>;
 
 /** Owns the value, query and open state; pass `items` so the list filters and the input shows labels. */
-export function Combobox<
-  Value,
-  Multiple extends boolean | undefined = false,
-  Item = Value,
->(props: BaseCombobox.Root.Props<Value, Multiple, Item>) {
+export const Combobox: typeof BaseCombobox.Root = function Combobox(props) {
   return (
     <PopupHiddenProvider>
       <BaseCombobox.Root {...props} />
     </PopupHiddenProvider>
   );
-}
+};
 
 export type ComboboxInputProps = Omit<
   ComponentProps<typeof BaseCombobox.Input>,
@@ -44,7 +40,7 @@ export type ComboboxInputProps = Omit<
 
 /** The text input with a chevron; clicking the input opens the list. Name it with `aria-label` or a `Field` label. */
 export function ComboboxInput({ className, ...rest }: ComboboxInputProps) {
-  const popupHidden = usePopupHidden();
+  const popupHiddenProps = usePopupHiddenInputProps();
   return (
     <BaseCombobox.InputGroup className="group/combobox relative flex w-full">
       <BaseCombobox.Input
@@ -54,10 +50,7 @@ export function ComboboxInput({ className, ...rest }: ComboboxInputProps) {
           "w-full min-w-0 pe-10",
           className,
         )}
-        {...(popupHidden && {
-          "aria-expanded": false,
-          "aria-controls": undefined,
-        })}
+        {...popupHiddenProps}
         {...rest}
       />
       <ChevronIcon className="text-ink-dim group-data-disabled/combobox:text-ink-faint pointer-events-none absolute inset-y-0 end-4 my-auto size-4 forced-colors:text-[CanvasText] group-data-disabled/combobox:forced-colors:text-[GrayText]" />
@@ -77,14 +70,15 @@ export function ComboboxContent({
   children,
   ...rest
 }: ComboboxContentProps) {
+  const positionerRef = usePositionerRef();
   const collisionPadding = usePopupCollisionPadding();
-  const reportPopupHidden = useReportPopupHidden();
   return (
     <BaseCombobox.Portal>
       <BaseCombobox.Positioner
         sideOffset={4}
         collisionPadding={collisionPadding}
         className="z-[var(--z-dropdown)]"
+        ref={positionerRef}
       >
         <BaseCombobox.Popup
           className={cn(
@@ -93,7 +87,6 @@ export function ComboboxContent({
             "min-w-[min(var(--anchor-width),var(--available-width))]",
             className,
           )}
-          ref={reportPopupHidden}
           {...rest}
         >
           {children}

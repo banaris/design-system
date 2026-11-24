@@ -86,6 +86,19 @@ export const KeepsUnmatchedText: Story = {
   },
 };
 
+export const EmptyItems: Story = {
+  args: { items: [] },
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("combobox");
+    await userEvent.click(input);
+    await userEvent.keyboard("{ArrowDown}");
+    await waitFor(() =>
+      expect(input).toHaveAttribute("aria-expanded", "false"),
+    );
+    await expect(input).not.toHaveAttribute("aria-controls");
+  },
+};
+
 export const Choosing: Story = {
   args: { onValueChange: fn() },
   play: async ({ args, canvas }) => {

@@ -3,9 +3,8 @@
 import {
   createContext,
   type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
+  use,
+  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
@@ -13,7 +12,7 @@ import {
 const PopupHiddenContext = createContext<{
   hidden: boolean;
   setHidden: (hidden: boolean) => void;
-} | null>(null);
+}>({ hidden: false, setHidden: () => undefined });
 
 /* Base UI keeps `open` true while CSS hides an empty popup, so the input must report it. */
 export function PopupHiddenProvider({ children }: { children: ReactNode }) {
@@ -22,21 +21,25 @@ export function PopupHiddenProvider({ children }: { children: ReactNode }) {
   return <PopupHiddenContext value={value}>{children}</PopupHiddenContext>;
 }
 
-export function usePopupHidden() {
-  return useContext(PopupHiddenContext)?.hidden ?? false;
+export function usePopupHiddenInputProps() {
+  return use(PopupHiddenContext).hidden
+    ? { "aria-expanded": false, "aria-controls": undefined }
+    : undefined;
 }
 
-export function useReportPopupHidden() {
-  const setHidden = useContext(PopupHiddenContext)?.setHidden;
-  const [popup, setPopup] = useState<HTMLElement | null>(null);
-  useEffect(() => {
-    if (!popup || !setHidden) return;
+/** Ref for the popup's positioner; its first child is the popup, so a consumer's own popup `ref` stays free. */
+export function usePositionerRef() {
+  const { setHidden } = use(PopupHiddenContext);
+  const [positioner, setPositioner] = useState<HTMLDivElement | null>(null);
+  useLayoutEffect(() => {
+    const popup = positioner?.firstElementChild;
+    if (!positioner || !popup) return;
     const measure = () => {
       setHidden(getComputedStyle(popup).display === "none");
     };
     measure();
     const observer = new MutationObserver(measure);
-    observer.observe(popup, {
+    observer.observe(positioner, {
       subtree: true,
       childList: true,
       characterData: true,
@@ -46,8 +49,6 @@ export function useReportPopupHidden() {
       observer.disconnect();
       setHidden(false);
     };
-  }, [popup, setHidden]);
-  return useCallback((node: HTMLElement | null) => {
-    setPopup(node);
-  }, []);
+  }, [positioner, setHidden]);
+  return setPositioner;
 }
