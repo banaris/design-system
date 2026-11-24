@@ -1,4 +1,10 @@
-import { extendTailwindMerge } from "tailwind-merge";
+import {
+  type ConfigExtension,
+  type DefaultClassGroupIds,
+  type DefaultThemeGroupIds,
+  extendTailwindMerge,
+  mergeConfigs,
+} from "tailwind-merge";
 
 /* The design system's own `tailwind-merge` instance, and the `cn` helper every
  * component builds its class string with.
@@ -35,37 +41,57 @@ import { extendTailwindMerge } from "tailwind-merge";
  * classification, because a misgrouping is invisible to the type checker, the
  * build and the linter alike — it surfaces only as a consumer's broken layout.
  *
- * ── Not public ─────────────────────────────────────────────────────────
- * `src/index.ts` does not export this. A consumer depending on the internal
- * merge configuration would break every time a token is added.
+ * ── Public through `createCn` only ─────────────────────────────────────
+ * `src/index.ts` exports `createCn`, not the config object or the instance, so
+ * a consumer's `cn` always carries the tokens of the version it is installed
+ * with and the config's shape stays ours to change.
  */
-export const twMerge = extendTailwindMerge({
-  extend: {
-    theme: {
-      text: [
-        "display",
-        "h1",
-        "h2",
-        "h3",
-        "body",
-        "small",
-        "label",
-        "input",
-        "ds-xs",
-        "ds-sm",
-        "ds-base",
-        "ds-lg",
-      ],
-      radius: ["shell", "pill", "ds-xs", "ds-sm", "ds-md", "ds-lg"],
-      shadow: ["soft", "raised", "overlay", "focus"],
-      ease: ["spring", "standard"],
-    },
+const tokenExtension = {
+  theme: {
+    text: [
+      "display",
+      "h1",
+      "h2",
+      "h3",
+      "body",
+      "small",
+      "label",
+      "input",
+      "ds-xs",
+      "ds-sm",
+      "ds-base",
+      "ds-lg",
+    ],
+    radius: ["shell", "pill", "ds-xs", "ds-sm", "ds-md", "ds-lg"],
+    shadow: ["soft", "raised", "overlay", "focus"],
+    ease: ["spring", "standard"],
   },
-});
+} satisfies ConfigExtension<string, string>["extend"];
+
+/**
+ * A `cn` that knows the package's tokens plus `extend`, which takes
+ * `tailwind-merge`'s own `extend` option: `createCn({ theme: { text: ["tiny"] } })`.
+ */
+export const createCn = <
+  AdditionalClassGroupIds extends string = never,
+  AdditionalThemeGroupIds extends string = never,
+>(
+  extend: ConfigExtension<
+    DefaultClassGroupIds | AdditionalClassGroupIds,
+    DefaultThemeGroupIds | AdditionalThemeGroupIds
+  >["extend"] = {},
+) =>
+  extendTailwindMerge<AdditionalClassGroupIds, AdditionalThemeGroupIds>(
+    (config) =>
+      mergeConfigs(mergeConfigs(config, { extend: tokenExtension }), {
+        extend,
+      }),
+  );
+
+export const twMerge = extendTailwindMerge({ extend: tokenExtension });
 
 /**
  * Build a class string, resolving Tailwind conflicts left to right — later
  * arguments win. Pass the caller's `className` last so it beats the component.
  */
-export const cn = (...classes: (string | false | null | undefined)[]): string =>
-  twMerge(classes.filter(Boolean).join(" "));
+export const cn = createCn();

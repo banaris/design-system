@@ -106,6 +106,23 @@ Typography has two tiers. The **semantic** tier (`text-display`, `text-h1`, `tex
 
 Every token, rendered from the live cascade, is in the catalogue under **Foundations / Tokens**.
 
+### Merging classes with your own tokens
+
+Stock `tailwind-merge` does not know this package's tokens, so a `cn()` of your own misreads them: `text-small` is taken for a colour and drops `text-ink`, and `rounded-shell` does not replace `rounded-md`. `createCn` returns a `cn` that knows the package's tokens, and the ones you add:
+
+```ts
+import { createCn } from "@banaris/design-system";
+
+// Your own `--text-tiny` and `--radius-card`, registered beside the package's.
+export const cn = createCn({
+  theme: { text: ["tiny"], radius: ["card"] },
+});
+
+cn("text-ink text-small", "text-tiny"); // "text-ink text-tiny"
+```
+
+The argument is `tailwind-merge`'s own `extend` option, merged on top of the package's. Call `createCn()` with nothing for the package's tokens alone. The package's own configuration stays internal, so it can follow `theme.css` without a breaking change; build your `cn` with `createCn` rather than copying it.
+
 ## Icons
 
 The package exports `Icon` and `IconButton` but no glyphs; the few its own components draw are internal. For any glyph, install [`lucide-react`](https://lucide.dev/) yourself (it is not a dependency of this package) and pass the glyph as `icon`:
