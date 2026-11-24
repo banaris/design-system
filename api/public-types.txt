@@ -234,10 +234,10 @@ FieldProps.validate?: ((value: unknown, formValues: Record<string, any>) => stri
 FieldProps.validationDebounceTime?: number | undefined
 FieldProps.validationMode?: FormValidationMode | undefined
 Fieldset: ({ className, error, "aria-describedby": describedBy, ...rest }: FieldsetProps) => Element
-FieldsetError: ({ className, children, ...rest }: FieldsetErrorProps) => Element | null
-FieldsetErrorProps.className?: string | undefined
-FieldsetHint: ({ className, ...rest }: FieldsetHintProps) => Element
-FieldsetHintProps.className?: string | undefined
+FieldsetError: ({ children, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>) => Element | null
+FieldsetErrorProps: no own properties
+FieldsetHint: ({ className, children, ...rest }: DetailedHTMLProps<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>) => Element | null
+FieldsetHintProps: no own properties
 FieldsetLegend: ({ className, ...rest }: FieldsetLegendProps) => Element
 FieldsetLegendProps.className?: string | undefined
 FieldsetLegendProps.style?: CSSProperties | ((state: FieldsetLegendState) => CSSProperties | undefined) | undefined

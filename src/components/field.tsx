@@ -6,9 +6,13 @@ import { Children, type ComponentProps, createContext, use } from "react";
 import { cn } from "../lib/cn";
 
 const ErrorContext = createContext("");
-const StateContext = createContext({ disabled: false, invalid: false });
+const StateContext = createContext<{
+  disabled: boolean;
+  invalid: boolean;
+  name: string | undefined;
+}>({ disabled: false, invalid: false, name: undefined });
 
-/** The enclosing `Field`'s state, for a control that must not register with it. */
+/** The enclosing `Field`'s disabled, invalid and `name`, for a control that must not register with it. */
 export const useFieldState = () => use(StateContext);
 
 export type FieldProps = Omit<
@@ -31,7 +35,11 @@ export function Field({
   return (
     <ErrorContext value={error}>
       <StateContext
-        value={{ disabled: rest.disabled === true, invalid: marked }}
+        value={{
+          disabled: rest.disabled === true,
+          invalid: marked,
+          name: rest.name,
+        }}
       >
         <BaseField.Root
           invalid={marked}
@@ -90,7 +98,7 @@ export type FieldErrorProps = Omit<
   className?: string;
 };
 
-/** Shows the `Field`'s `error`, or the native validation message when none; `match` narrows when. */
+/** Shows `children`, else the `Field`'s `error`, else the native validation message; `match` picks which validity state shows it. */
 export function FieldError({
   className,
   children,
@@ -100,9 +108,10 @@ export function FieldError({
   const error = use(ErrorContext);
   const { invalid } = use(StateContext);
   const content = children ?? (error === "" ? undefined : error);
+  const showCustom = invalid && content !== undefined;
   return (
     <BaseField.Error
-      match={match ?? (invalid && content !== undefined ? true : undefined)}
+      match={match ?? (showCustom || undefined)}
       role="alert"
       className={cn("text-small text-danger", className)}
       {...rest}

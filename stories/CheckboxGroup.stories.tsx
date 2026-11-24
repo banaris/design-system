@@ -46,3 +46,27 @@ export const Disabled: Story = {
     );
   },
 };
+
+export const SubmitsTheTickedBoxesWithTheForm: Story = {
+  render: (args) => (
+    <form data-testid="form">
+      <CheckboxGroup {...args}>
+        {["mon", "tue", "wed"].map((value) => (
+          <label
+            key={value}
+            className="text-ink text-ds-base flex items-center gap-2"
+          >
+            <Checkbox name="days" value={value} />
+            {value}
+          </label>
+        ))}
+      </CheckboxGroup>
+    </form>
+  ),
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    if (!(form instanceof HTMLFormElement)) throw new Error("form missing");
+    await userEvent.click(canvas.getByRole("checkbox", { name: "wed" }));
+    await expect(new FormData(form).getAll("days")).toEqual(["mon", "wed"]);
+  },
+};

@@ -56,7 +56,7 @@ export const CheckboxChoiceWithError: Story = {
       <CheckboxGroup defaultValue={[]}>
         {["mon", "tue"].map((value) => (
           <label key={value} className={label}>
-            <Checkbox name={value} />
+            <Checkbox value={value} />
             {value}
           </label>
         ))}
@@ -68,10 +68,55 @@ export const CheckboxChoiceWithError: Story = {
     await expect(canvas.getByRole("alert")).toHaveTextContent(
       "Pick at least one day.",
     );
-    await expect(
-      canvas.getByRole("group", { name: "Days" }),
-    ).toHaveAccessibleDescription(
+    const groups = canvas.getAllByRole("group", { name: "Days" });
+    await expect(groups).toHaveLength(2);
+    await expect(groups[0]).toHaveAccessibleDescription(
       "Reminders go out on these days. Pick at least one day.",
     );
+  },
+};
+
+export const ErrorMarksTheRadioGroupInvalid: Story = {
+  args: { error: "Choose how often." },
+  render: (args) => (
+    <Fieldset {...args}>
+      <FieldsetLegend>Repeat</FieldsetLegend>
+      <RadioGroup name="repeat">
+        {["daily", "weekly"].map((value) => (
+          <label key={value} className={label}>
+            <Radio value={value} />
+            {value}
+          </label>
+        ))}
+      </RadioGroup>
+      <FieldsetError />
+    </Fieldset>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("radiogroup", { name: "Repeat" }),
+    ).toHaveAttribute("aria-invalid", "true");
+  },
+};
+
+export const AHintPassedAnUndefinedIdIsStillDescribed: Story = {
+  render: (args) => (
+    <Fieldset {...args}>
+      <FieldsetLegend>Repeat</FieldsetLegend>
+      <FieldsetHint id={undefined}>Pick one.</FieldsetHint>
+      <RadioGroup name="repeat">
+        {["daily"].map((value) => (
+          <label key={value} className={label}>
+            <Radio value={value} />
+            {value}
+          </label>
+        ))}
+      </RadioGroup>
+    </Fieldset>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole("group", { name: "Repeat" }),
+    ).toHaveAccessibleDescription("Pick one.");
   },
 };

@@ -970,3 +970,76 @@ export const ARefReachesTheTrigger: Story = {
     ).toHaveFocus();
   },
 };
+
+export const TakesItsNameFromTheField: Story = {
+  args: { initial: "2030-06-15T09:30" },
+  render: (args) => (
+    <form data-testid="form">
+      <Field name="starts">
+        <FieldLabel>Starts</FieldLabel>
+        <Harness {...args} />
+      </Field>
+    </form>
+  ),
+  play: async ({ canvas }) => {
+    await expect(submittedValue(canvas.getByTestId("form"), "starts")).toBe(
+      "2030-06-15T09:30",
+    );
+  },
+};
+
+export const ADisabledFieldLeavesItOutOfTheForm: Story = {
+  args: { required: true, initial: "" },
+  render: (args) => (
+    <form data-testid="form">
+      <Field name="starts" disabled>
+        <FieldLabel>Starts</FieldLabel>
+        <Harness {...args} />
+      </Field>
+    </form>
+  ),
+  play: async ({ canvas }) => {
+    const form = canvas.getByTestId("form");
+    if (!(form instanceof HTMLFormElement)) throw new Error("form missing");
+    await expect(form.checkValidity()).toBe(true);
+    await expect(submittedValue(form, "starts")).toBeNull();
+  },
+};
+
+const refCleanup = fn();
+const refNodes: (HTMLButtonElement | null)[] = [];
+
+function RemovablePicker(args: PickerArgs) {
+  const [shown, setShown] = useState(true);
+  return (
+    <>
+      <Button
+        onClick={() => {
+          setShown(false);
+        }}
+      >
+        Remove the picker
+      </Button>
+      {shown && (
+        <Harness
+          {...args}
+          ref={(node: HTMLButtonElement | null) => {
+            refNodes.push(node);
+            return refCleanup;
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+export const ACleanupRefRunsItsCleanupAndIsNeverCalledWithNull: Story = {
+  render: (args) => <RemovablePicker {...args} />,
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Remove the picker" }),
+    );
+    await waitFor(() => expect(refCleanup).toHaveBeenCalled());
+    await expect(refNodes).not.toContain(null);
+  },
+};

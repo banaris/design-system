@@ -28,7 +28,6 @@ function HabitForm() {
   const [submitted, setSubmitted] = useState("");
   return (
     <form
-      noValidate={false}
       className="flex max-w-sm flex-col gap-4"
       data-testid="form"
       onSubmit={(event: SubmitEvent<HTMLFormElement>) => {
@@ -40,7 +39,7 @@ function HabitForm() {
         );
       }}
     >
-      <Field name="title">
+      <Field name="title" validationMode="onBlur">
         <FieldLabel>Habit name</FieldLabel>
         <TextField required />
         <FieldError />
@@ -105,6 +104,11 @@ export const SubmitsThroughFormData: Story = {
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Save" }));
     await expect(canvas.getByTestId("submitted")).toBeEmptyDOMElement();
+    const title = canvas.getByRole("textbox", { name: "Habit name" });
+    await userEvent.type(title, "x");
+    await userEvent.clear(title);
+    await userEvent.tab();
+    await expect(await canvas.findByRole("alert")).toBeVisible();
 
     await userEvent.type(
       canvas.getByRole("textbox", { name: "Habit name" }),

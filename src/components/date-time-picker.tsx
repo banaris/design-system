@@ -4,8 +4,8 @@ import {
   type ComponentProps,
   type KeyboardEvent,
   type Ref,
-  useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from "react";
@@ -29,6 +29,7 @@ import {
 } from "../lib/date-time";
 import { Button } from "./button";
 import { DateTimeCalendar } from "./date-time-calendar";
+import { useFieldState } from "./field";
 import {
   Popover,
   PopoverContent,
@@ -159,6 +160,7 @@ function PopupInput({ className, ...rest }: ComponentProps<"input">) {
   );
 }
 
+/* `readOnly` would bar the input from constraint validation (HTML spec), so `required` would stop blocking submit. */
 const noop = () => undefined;
 
 const preventEnter = (event: KeyboardEvent) => {
@@ -190,15 +192,11 @@ export function DateTimePicker({
   const [focusDay, setFocusDay] = useState<CalendarDate>(today);
   const settled = useRef(true);
   const body = useRef<HTMLDivElement>(null);
-  const trigger = useRef<HTMLButtonElement | null>(null);
-  const setTrigger = useCallback(
-    (node: HTMLButtonElement | null) => {
-      trigger.current = node;
-      if (typeof ref === "function") return ref(node);
-      if (ref) ref.current = node;
-    },
-    [ref],
-  );
+  const trigger = useRef<HTMLButtonElement>(null);
+  useImperativeHandle(ref, () => {
+    if (trigger.current === null) throw new Error("trigger not mounted");
+    return trigger.current;
+  }, []);
 
   function begin() {
     const next = known ?? EMPTY;
@@ -258,6 +256,8 @@ export function DateTimePicker({
     if (day !== null) setFocusDay(day);
   }
 
+  const field = useFieldState();
+  const submitName = name ?? field.name;
   const submitted = known === null ? "" : value;
 
   return (
@@ -279,7 +279,7 @@ export function DateTimePicker({
         }}
       >
         <PopoverTrigger
-          ref={setTrigger}
+          ref={trigger}
           variant="secondary"
           inField
           {...triggerProps}
@@ -382,13 +382,13 @@ export function DateTimePicker({
           </div>
         </PopoverContent>
       </Popover>
-      {(name !== undefined || required === true) && (
+      {(submitName !== undefined || required === true) && (
         <input
           aria-hidden
           tabIndex={-1}
-          name={name}
+          name={submitName}
           required={required}
-          disabled={triggerProps.disabled}
+          disabled={triggerProps.disabled === true || field.disabled}
           value={submitted}
           onChange={noop}
           onFocus={() => {
