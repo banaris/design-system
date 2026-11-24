@@ -2,6 +2,88 @@
 Alert: ({ status, title, className, children, ...rest }: AlertProps) => Element
 AlertProps.status?: StatusTone | undefined
 AlertProps.title?: ReactNode
+Autocomplete: { <Items extends readonly { items: readonly any[]; }[]>(props: Omit<Props<Items[number]["items"][number]>, "items"> & { items: Items; }): Element; <ItemValue>(props: Omit<Props<ItemValue>, "items"> & { items?: readonly ItemValue[] | undefined; }): Element; }
+Autocomplete(props).actionsRef?: RefObject<AutocompleteRootActions | null> | undefined
+Autocomplete(props).autoHighlight?: boolean | "always" | undefined
+Autocomplete(props).children?: ReactNode
+Autocomplete(props).defaultOpen?: boolean | undefined
+Autocomplete(props).defaultValue?: string | number | readonly string[] | undefined
+Autocomplete(props).disabled?: boolean | undefined
+Autocomplete(props).filter?: ((item: Items[number]["items"][number], query: string, itemToString?: ((item: Items[number]["items"][number]) => string) | undefined) => boolean) | null | undefined
+Autocomplete(props).filteredItems?: readonly Items[number]["items"][number][] | readonly Group<Items[number]["items"][number]>[] | undefined
+Autocomplete(props).form?: string | undefined
+Autocomplete(props).grid?: boolean | undefined
+Autocomplete(props).highlightItemOnHover?: boolean | undefined
+Autocomplete(props).id?: string | undefined
+Autocomplete(props).inline?: boolean | undefined
+Autocomplete(props).inputRef?: Ref<HTMLInputElement> | undefined
+Autocomplete(props).items: Items
+Autocomplete(props).itemToStringValue?: ((itemValue: Items[number]["items"][number]) => string) | undefined
+Autocomplete(props).keepHighlight?: boolean | undefined
+Autocomplete(props).limit?: number | undefined
+Autocomplete(props).locale?: LocalesArgument
+Autocomplete(props).loopFocus?: boolean | undefined
+Autocomplete(props).modal?: boolean | undefined
+Autocomplete(props).mode?: "none" | "inline" | "list" | "both" | undefined
+Autocomplete(props).name?: string | undefined
+Autocomplete(props).onItemHighlighted?: ((highlightedValue: Items[number]["items"][number] | undefined, eventDetails: HighlightEventDetails) => void) | undefined
+Autocomplete(props).onOpenChange?: ((open: boolean, eventDetails: AutocompleteRootOpenChangeEventDetails) => void) | undefined
+Autocomplete(props).onOpenChangeComplete?: ((open: boolean) => void) | undefined
+Autocomplete(props).onValueChange?: ((value: string, eventDetails: AutocompleteRootChangeEventDetails) => void) | undefined
+Autocomplete(props).open?: boolean | undefined
+Autocomplete(props).openOnInputClick?: boolean | undefined
+Autocomplete(props).readOnly?: boolean | undefined
+Autocomplete(props).required?: boolean | undefined
+Autocomplete(props).submitOnItemClick?: boolean | undefined
+Autocomplete(props).value?: string | number | readonly string[] | undefined
+Autocomplete(props).virtualized?: boolean | undefined
+AutocompleteInput: ({ className, ...rest }: AutocompleteInputProps) => Element
+AutocompleteInputProps.className?: string | undefined
+AutocompleteInputProps.disabled?: boolean | undefined
+AutocompleteInputProps.style?: CSSProperties | ((state: ComboboxInputState) => CSSProperties | undefined) | undefined
+AutocompleteItem: ({ className, ...rest }: AutocompleteItemProps) => Element
+AutocompleteItemProps.children?: ReactNode
+AutocompleteItemProps.className?: string | undefined
+AutocompleteItemProps.disabled?: boolean | undefined
+AutocompleteItemProps.index?: number | undefined
+AutocompleteItemProps.nativeButton?: boolean | undefined
+AutocompleteItemProps.onClick?: ((event: BaseUIEvent<MouseEvent<HTMLDivElement, MouseEvent>>) => void) | undefined
+AutocompleteItemProps.style?: CSSProperties | ((state: AutocompleteItemState) => CSSProperties | undefined) | undefined
+AutocompleteItemProps.value?: any
+AutocompleteProps.actionsRef?: RefObject<AutocompleteRootActions | null> | undefined
+AutocompleteProps.autoHighlight?: boolean | "always" | undefined
+AutocompleteProps.children?: ReactNode
+AutocompleteProps.defaultOpen?: boolean | undefined
+AutocompleteProps.defaultValue?: string | number | readonly string[] | undefined
+AutocompleteProps.disabled?: boolean | undefined
+AutocompleteProps.filter?: ((item: unknown, query: string, itemToString?: ((item: unknown) => string) | undefined) => boolean) | null | undefined
+AutocompleteProps.filteredItems?: readonly unknown[] | readonly Group<unknown>[] | undefined
+AutocompleteProps.form?: string | undefined
+AutocompleteProps.grid?: boolean | undefined
+AutocompleteProps.highlightItemOnHover?: boolean | undefined
+AutocompleteProps.id?: string | undefined
+AutocompleteProps.inline?: boolean | undefined
+AutocompleteProps.inputRef?: Ref<HTMLInputElement> | undefined
+AutocompleteProps.items?: readonly unknown[] | undefined
+AutocompleteProps.itemToStringValue?: ((itemValue: unknown) => string) | undefined
+AutocompleteProps.keepHighlight?: boolean | undefined
+AutocompleteProps.limit?: number | undefined
+AutocompleteProps.locale?: LocalesArgument
+AutocompleteProps.loopFocus?: boolean | undefined
+AutocompleteProps.modal?: boolean | undefined
+AutocompleteProps.mode?: "none" | "inline" | "list" | "both" | undefined
+AutocompleteProps.name?: string | undefined
+AutocompleteProps.onItemHighlighted?: ((highlightedValue: unknown, eventDetails: HighlightEventDetails) => void) | undefined
+AutocompleteProps.onOpenChange?: ((open: boolean, eventDetails: AutocompleteRootOpenChangeEventDetails) => void) | undefined
+AutocompleteProps.onOpenChangeComplete?: ((open: boolean) => void) | undefined
+AutocompleteProps.onValueChange?: ((value: string, eventDetails: AutocompleteRootChangeEventDetails) => void) | undefined
+AutocompleteProps.open?: boolean | undefined
+AutocompleteProps.openOnInputClick?: boolean | undefined
+AutocompleteProps.readOnly?: boolean | undefined
+AutocompleteProps.required?: boolean | undefined
+AutocompleteProps.submitOnItemClick?: boolean | undefined
+AutocompleteProps.value?: string | number | readonly string[] | undefined
+AutocompleteProps.virtualized?: boolean | undefined
 Badge: ({ status, className, children, ...rest }: BadgeProps) => Element
 BadgeProps.status?: StatusTone | undefined
 Button: ({ variant, size, loading, disabled, pill, type, nativeButton, role, children, className, ...rest }: ButtonProps) => Element
