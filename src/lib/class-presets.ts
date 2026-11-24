@@ -57,6 +57,13 @@ export const STATUS_TONE: Record<StatusTone, string> = {
 export const OVERLAY_POPUP =
   "border-border bg-surface shadow-overlay text-ink box-border rounded-ds-lg border border-solid font-ds-sans outline-none";
 
+export const OVERLAY_BACKDROP =
+  "fixed inset-0 animate-[ds-fade-in_var(--duration-base)_var(--ease-standard)] bg-black/40 transition-opacity duration-[var(--duration-fast)] data-ending-style:opacity-0";
+
+export const OVERLAY_TITLE = "text-h3 text-ink font-ds-sans";
+
+export const OVERLAY_DESCRIPTION = "text-small text-ink-dim mt-2";
+
 /* Enter is a keyframe and exit a transition: Base UI keeps the popup mounted
  * until both finish, and `--duration-*` is zeroed under reduced motion. */
 export const OVERLAY_MOTION =

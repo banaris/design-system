@@ -3,7 +3,13 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import type { ComponentProps } from "react";
 
-import { OVERLAY_MOTION, OVERLAY_POPUP } from "../lib/class-presets";
+import {
+  OVERLAY_BACKDROP,
+  OVERLAY_DESCRIPTION,
+  OVERLAY_MOTION,
+  OVERLAY_POPUP,
+  OVERLAY_TITLE,
+} from "../lib/class-presets";
 import { cn } from "../lib/cn";
 import {
   renderTriggerButton,
@@ -52,7 +58,7 @@ export function DialogContent({
 }: DialogContentProps) {
   return (
     <BaseDialog.Portal className="relative z-[var(--z-overlay)]">
-      <BaseDialog.Backdrop className="fixed inset-0 animate-[ds-fade-in_var(--duration-base)_var(--ease-standard)] bg-black/40 transition-opacity duration-[var(--duration-fast)] data-ending-style:opacity-0" />
+      <BaseDialog.Backdrop className={OVERLAY_BACKDROP} />
       <BaseDialog.Popup
         className={cn(
           OVERLAY_POPUP,
@@ -77,10 +83,7 @@ export type DialogTitleProps = Omit<
 
 export function DialogTitle({ className, ...rest }: DialogTitleProps) {
   return (
-    <BaseDialog.Title
-      className={cn("text-h3 text-ink font-ds-sans", className)}
-      {...rest}
-    />
+    <BaseDialog.Title className={cn(OVERLAY_TITLE, className)} {...rest} />
   );
 }
 
@@ -97,7 +100,7 @@ export function DialogDescription({
 }: DialogDescriptionProps) {
   return (
     <BaseDialog.Description
-      className={cn("text-small text-ink-dim mt-2", className)}
+      className={cn(OVERLAY_DESCRIPTION, className)}
       {...rest}
     />
   );

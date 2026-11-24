@@ -33,9 +33,10 @@ Keep a menu to secondary choices. The one action the page is for belongs on a vi
 - `Link` is a link inside a sentence or beside text, in the accent colour and underlined.
 - A link that stands alone as the page's call to action is a `Button` rendered as a link (`render` with `nativeButton={false}`). Pass the router's link element to either to navigate without a page load.
 
-## Dialog, Popover and Tooltip
+## Dialog, Drawer, Popover and Tooltip
 
 - `Dialog` interrupts. It dims the page and asks for a decision or a short task, and the reader answers or dismisses it. Name it with a `DialogTitle`.
+- `Drawer` is a `Dialog` that slides in from the bottom (default) or a side edge, and a finger can swipe it away. Use it on a phone for a secondary task or a menu that needs more room than a `Popover`: filters, a settings panel, a list of actions. It is just as modal as a `Dialog`, so name it with a `DrawerTitle` too.
 - `Popover` stays beside what opened it. Use it for a small panel the reader can ignore: extra detail, a quick setting.
 - `Tooltip` only describes its trigger, in a few words. It must not carry anything the reader needs: it is brief, and a touch user has no hover to open it.
 

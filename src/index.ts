@@ -45,6 +45,21 @@ export {
   type DialogTriggerProps,
 } from "./components/dialog";
 export {
+  Drawer,
+  DrawerClose,
+  type DrawerCloseProps,
+  DrawerContent,
+  type DrawerContentProps,
+  DrawerDescription,
+  type DrawerDescriptionProps,
+  type DrawerProps,
+  type DrawerSide,
+  DrawerTitle,
+  type DrawerTitleProps,
+  DrawerTrigger,
+  type DrawerTriggerProps,
+} from "./components/drawer";
+export {
   DropdownMenu,
   DropdownMenuContent,
   type DropdownMenuContentProps,
