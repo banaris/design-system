@@ -132,6 +132,45 @@ DialogTriggerProps.pill?: boolean | undefined
 DialogTriggerProps.size?: ButtonSize | undefined
 DialogTriggerProps.style?: CSSProperties | ((state: DialogTriggerState) => CSSProperties | undefined) | undefined
 DialogTriggerProps.variant?: ButtonVariant | undefined
+Drawer: (props: DrawerProps) => Element
+DrawerClose: ({ variant, size, pill, className, children, ...rest }: DrawerCloseProps) => Element
+DrawerCloseProps.className?: string | undefined
+DrawerCloseProps.nativeButton?: boolean | undefined
+DrawerCloseProps.pill?: boolean | undefined
+DrawerCloseProps.size?: ButtonSize | undefined
+DrawerCloseProps.style?: CSSProperties | ((state: DrawerCloseState) => CSSProperties | undefined) | undefined
+DrawerCloseProps.variant?: ButtonVariant | undefined
+DrawerContent: ({ className, side, children, ...rest }: DrawerContentProps) => Element
+DrawerContentProps.className?: string | undefined
+DrawerContentProps.finalFocus?: boolean | RefObject<HTMLElement | null> | ((closeType: InteractionType) => boolean | void | HTMLElement | null) | undefined
+DrawerContentProps.initialFocus?: boolean | RefObject<HTMLElement | null> | ((openType: InteractionType) => boolean | void | HTMLElement | null) | undefined
+DrawerContentProps.side?: DrawerSide | undefined
+DrawerContentProps.style?: CSSProperties | ((state: DrawerPopupState) => CSSProperties | undefined) | undefined
+DrawerDescription: ({ className, ...rest }: DrawerDescriptionProps) => Element
+DrawerDescriptionProps.className?: string | undefined
+DrawerDescriptionProps.style?: CSSProperties | ((state: DrawerDescriptionState) => CSSProperties | undefined) | undefined
+DrawerProps.actionsRef?: RefObject<DrawerRootActions | null> | undefined
+DrawerProps.children?: ReactNode | PayloadChildRenderFunction<unknown>
+DrawerProps.defaultOpen?: boolean | undefined
+DrawerProps.defaultTriggerId?: string | null | undefined
+DrawerProps.disablePointerDismissal?: boolean | undefined
+DrawerProps.modal?: boolean | "trap-focus" | undefined
+DrawerProps.onOpenChange?: ((open: boolean, eventDetails: DrawerRootChangeEventDetails) => void) | undefined
+DrawerProps.onOpenChangeComplete?: ((open: boolean) => void) | undefined
+DrawerProps.open?: boolean | undefined
+DrawerProps.triggerId?: string | null | undefined
+DrawerSide = "bottom" | "left" | "right"
+DrawerTitle: ({ className, ...rest }: DrawerTitleProps) => Element
+DrawerTitleProps.className?: string | undefined
+DrawerTitleProps.style?: CSSProperties | ((state: DrawerTitleState) => CSSProperties | undefined) | undefined
+DrawerTrigger: ({ variant, size, pill, className, children, ...rest }: DrawerTriggerProps) => Element
+DrawerTriggerProps.className?: string | undefined
+DrawerTriggerProps.id?: string | undefined
+DrawerTriggerProps.nativeButton?: boolean | undefined
+DrawerTriggerProps.pill?: boolean | undefined
+DrawerTriggerProps.size?: ButtonSize | undefined
+DrawerTriggerProps.style?: CSSProperties | ((state: DrawerTriggerState) => CSSProperties | undefined) | undefined
+DrawerTriggerProps.variant?: ButtonVariant | undefined
 DropdownMenu: <Payload>(props: Props<Payload>) => Element
 DropdownMenu(props).actionsRef?: RefObject<MenuRootActions | null> | undefined
 DropdownMenu(props).children?: ReactNode | PayloadChildRenderFunction<Payload>
